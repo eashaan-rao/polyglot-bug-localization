@@ -250,9 +250,13 @@ def run_blaze(arm, src, tgt, scenario, source_train_ids, target_train_ids,
 
 
 # ---------------------------------------------------------------------------
-# BM25 — classical IR ranker over the FAISS top-K candidates. CPU, no training.
+# BM25 — classical IR baseline. Ranks the WHOLE snapshot (every embedded blob),
+# NOT the FAISS top-K: classical retrieval processes every file type by
+# construction, so restricting it to the neural retriever's candidates would
+# defeat the point of the Step 4 comparison. CPU, no training.
 # ---------------------------------------------------------------------------
 _TOK = None
+BM25_MAX_DOCS = 40000        # cap tokenised docs per snapshot (large repos)
 
 
 def _tokenize(text):
@@ -282,6 +286,7 @@ def run_bm25(tgt, target_test_ids, cls_map):
     repo = git.Repo(os.path.join(P.REPO_BASE_PATH, lang, stub))
     MAX_BYTES = 2_000_000
     diag = []
+    doc_cache = {}   # sha -> tokenised doc, reused across bugs sharing a snapshot
     for bug_id in target_test_ids:
         meta = bug_db.get(str(bug_id))
         if not meta:
@@ -302,33 +307,38 @@ def run_bm25(tgt, target_test_ids, cls_map):
                    if any(p == g or p.endswith("/" + g) for g in gts)}
         if not gt_shas:
             continue
-        # FAISS top-K candidate restriction (same as the neural models)
+        sha2path = {v: k for k, v in p2s.items()}
+
+        # FAISS order (for the "where would the neural retriever put it" column)
         snap = list(p2s.values())
         E = np.stack([blob_db[s].astype("float32") for s in snap])
         E /= (np.linalg.norm(E, axis=1, keepdims=True) + 1e-10)
         be = meta["embedding"].astype("float32"); be /= (np.linalg.norm(be) + 1e-10)
-        order = np.argsort(E @ be)[::-1][:FAISS_TOP_K]
-        cand_shas = [snap[i] for i in order]
-        sha2path = {v: k for k, v in p2s.items()}
+        faiss_order = [snap[i] for i in np.argsort(E @ be)[::-1]]
+        faiss_rank_of = {s: i + 1 for i, s in enumerate(faiss_order)}
+
+        # BM25 over the WHOLE snapshot (cap at BM25_MAX_DOCS)
+        items = list(p2s.items())[:BM25_MAX_DOCS]
         docs, keep_shas = [], []
-        for s in cand_shas:
-            path = sha2path[s]
+        for path, s in items:
+            if s in doc_cache:
+                docs.append(doc_cache[s]); keep_shas.append(s); continue
             try:
                 blob = commit.tree / path
                 if blob.size > MAX_BYTES:
-                    continue
-                content = blob.data_stream.read().decode("utf-8", "replace")
+                    tok = _tokenize(path)
+                else:
+                    tok = _tokenize(path + " " + blob.data_stream.read().decode("utf-8", "replace"))
             except Exception:
-                continue
-            docs.append(_tokenize(path + " " + content))
-            keep_shas.append(s)
+                tok = _tokenize(path)
+            doc_cache[s] = tok
+            docs.append(tok); keep_shas.append(s)
         if not docs:
             continue
         bm = BM25Okapi(docs)
         scores = bm.get_scores(_tokenize(bug_text.get(str(bug_id), "")))
         ranked = [keep_shas[i] for i in np.argsort(scores)[::-1]]
         rank_of = {s: i + 1 for i, s in enumerate(ranked)}
-        faiss_rank_of = {s: i + 1 for i, s in enumerate(cand_shas)}
         for gs in gt_shas:
             gp = sha2path.get(gs, "")
             diag.append({
