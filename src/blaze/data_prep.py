@@ -25,12 +25,14 @@ from tqdm import tqdm
 # ---------------------------------------------------------------------------
 # Paths (all hardcoded, consistent with tranp_cnn / cooba)
 # ---------------------------------------------------------------------------
-REPO_BASE_PATH = "/home/cs21d002_eashaan/PhD/Objective2/data/repos"
-BUG_METADATA_DIR = "/home/cs21d002_eashaan/PhD/Objective2/data/processed/embedding_dbs"
-BLOB_DB_DIR = "/home/cs21d002_eashaan/PhD/Objective2/data/processed/embedding_dbs"
-PROJECTS_METADATA_PATH = "/home/cs21d002_eashaan/PhD/Objective2/data/processed/project_metadata.parquet"
-BUG_REPORTS_PATH = "/home/cs21d002_eashaan/PhD/Objective2/data/processed/bug_reports_clean.parquet"
-BLAZE_CACHE_DIR = "/home/cs21d002_eashaan/PhD/Objective2/data/processed/blaze_cache"
+_OBJ2_ROOT = os.environ.get("OBJ2_ROOT") or os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # repo root
+REPO_BASE_PATH = os.path.join(_OBJ2_ROOT, "data/repos")
+BUG_METADATA_DIR = os.path.join(_OBJ2_ROOT, "data/processed/embedding_dbs")
+BLOB_DB_DIR = os.path.join(_OBJ2_ROOT, "data/processed/embedding_dbs")
+PROJECTS_METADATA_PATH = os.path.join(_OBJ2_ROOT, "data/processed/project_metadata.parquet")
+BUG_REPORTS_PATH = os.path.join(_OBJ2_ROOT, "data/processed/bug_reports_clean.parquet")
+BLAZE_CACHE_DIR = os.path.join(_OBJ2_ROOT, "data/processed/blaze_cache")
 
 # Chunker settings (mirrors BLAZE paper defaults)
 CHUNK_MAX_WINDOW_SIZE = 20   # max lines per chunk (~512 tokens at ~25 chars/line)

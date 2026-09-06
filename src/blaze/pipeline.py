@@ -53,7 +53,9 @@ from .data_prep import (
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
-RESULT_PATH = "/home/cs21d002_eashaan/PhD/Objective2/results"
+_OBJ2_ROOT = os.environ.get("OBJ2_ROOT") or os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # repo root
+RESULT_PATH = os.path.join(_OBJ2_ROOT, "results")
 
 # Backbone model — same as the rest of the framework
 BGE_MODEL_NAME = "BAAI/bge-code-v1"

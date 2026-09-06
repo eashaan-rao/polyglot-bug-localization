@@ -98,7 +98,8 @@ test specs + `build.gradle`; liquibase = Java+Groovy + XML/SQL; dolphinscheduler
 localstack = JSON snapshots (the brief's motivating example).
 
 Data lives under `data/` (git-ignored): the 6 repos, fp32 BGE embeddings, and the
-bug-report parquet, all copied from Objective 1. Paths: `Scripts/paths.py`.
+bug-report parquet. A fresh clone does not contain them — see **§8.2** for how to
+obtain / rebuild each part. Paths: `Scripts/paths.py`.
 
 ---
 
@@ -234,37 +235,100 @@ python Scripts/analysis/obj2_figures.py
 
 ---
 
-## 8. Reproduce from scratch
+## 8. Setup
+
+### 8.1 Environment
+
+Python **3.12**. From the repo root:
 
 ```bash
-source /home/cs21d002_eashaan/PhD/Objective1/obj1/bin/activate
-pip install rank_bm25 bm25s pyyaml tabulate       # extras
-
-python Scripts/extract_fix_commits.py
-python Scripts/classify_bugs.py
-python Scripts/prevalence_report.py
-python Scripts/boundary_sensitivity.py
-python Scripts/feasibility_matrix.py
-python Scripts/retrieval_recall_by_class.py       # supplementary
-python Scripts/make_annotation_sample.py
-
-OBJ2_MODELS=BM25  python Scripts/run_obj2_experiments.py
-OBJ2_MODELS=BLAZE python Scripts/run_obj2_experiments.py   # GPU
-OBJ2_MODELS=FLIM  python Scripts/run_obj2_experiments.py   # GPU
-
-python Scripts/analysis/obj2_wp_analysis.py
-python Scripts/analysis/obj2_classical_vs_parsing.py
-python Scripts/analysis/obj2_failure_analysis.py
-python Scripts/analysis/obj2_tables.py
-python Scripts/analysis/obj2_figures.py
+python3.12 -m venv .venv
+source .venv/bin/activate
+pip install -U pip
+pip install -r requirements.txt
 ```
 
-Smoke a GPU technique first: `OBJ2_SMOKE=1 OBJ2_MODELS=BLAZE python Scripts/run_obj2_experiments.py`
-(1 project — localstack — 1 epoch).
+`requirements.txt` pins `torch==2.8.0`; the runs were done with a CUDA 12.6 build
+(`torch==2.8.0+cu126`). For a GPU install a CUDA-matched wheel from
+<https://pytorch.org/get-started/locally/> **before** `pip install -r requirements.txt`
+(or reinstall torch afterwards). CPU-only is fine for Steps 0–2 and the BM25
+baseline; BLAZE and FLIM need a GPU (~16 GB).
+
+All script paths resolve relative to the repo root (`Scripts/paths.py`, and
+`_OBJ2_ROOT` in the `src/` modules — override with `export OBJ2_ROOT=/abs/path`
+if you run the code from outside the tree).
+
+### 8.2 Data (not in the repository)
+
+`data/` is git-ignored — a fresh clone has **no repositories, embeddings or bug
+reports**. This is a within-lab reproduction: the inputs come from Objective 1.
+
+```
+data/
+  processed/
+    bug_reports_clean.parquet      BeetleBox bug reports (all projects; filtered at classify time)
+    project_metadata.parquet       per-project language / LoC / domain
+    embedding_dbs/
+      <proj>_blob_embeddings32.pkl  fp32 BAAI/bge-code-v1 embedding per file blob
+      <proj>_bug_metadata32.pkl     fp32 embedding + commit_sha + ground_truth_files per bug
+  repos/
+    java/{elastic_elasticsearch,liquibase_liquibase,apache_dolphinscheduler}
+    python/{ansible_ansible,apache_airflow,localstack_localstack}   # full history, not shallow
+```
+
+- **Repos:** `git clone` each of the six at full depth into
+  `data/repos/<lang>/<owner>_<name>/`.
+- **Bug reports + metadata:** from the BeetleBox dataset (Chakraborty et al.,
+  *BLAZE*, TSE 2025), reshaped to the parquet schema above
+  (`repo_name, bug_id, bug_report_text, ground_truth_files, pre_fix_commit_sha,
+  fix_commit_sha, language, source_dataset, …`).
+- **Embeddings:** `Scripts/_obj1_reference/build_embed_database_pipeline.py`
+  builds the `embedding_dbs/` pickles with `BAAI/bge-code-v1`
+  (`CHUNK_SIZE=512`, `CHUNK_OVERLAP=50`); GPU, several hours per large project.
+
+The six projects and their languages are declared in
+`Scripts/paths.py::SELECTED_PROJECTS`.
 
 ---
 
-## 9. Open items needing a human
+## 9. Running
+
+```bash
+source .venv/bin/activate
+
+# --- descriptive core (CPU, minutes) ---
+python Scripts/extract_fix_commits.py            # -> data/obj2/fix_files_raw.parquet
+python Scripts/classify_bugs.py                  # -> results/obj2/bug_classification.csv
+python Scripts/prevalence_report.py              # RQ1
+python Scripts/boundary_sensitivity.py           # RQ1 sensitivity range
+python Scripts/feasibility_matrix.py             # RQ2  (CPU, ~2 min)
+python Scripts/retrieval_recall_by_class.py      # supplementary (CPU, ~20 min)
+python Scripts/make_annotation_sample.py         # 50-bug agreement sheet
+
+# --- experiments: full-snapshot ranking, within-project (resumable) ---
+OBJ2_MODELS=BM25  python Scripts/run_obj2_experiments.py    # CPU, ~1 h all 6 projects
+OBJ2_MODELS=BLAZE python Scripts/run_obj2_experiments.py    # GPU, ~half a day
+OBJ2_MODELS=FLIM  python Scripts/run_obj2_experiments.py    # GPU, ~half a day; first run pulls microsoft/codebert-base
+
+# smoke a GPU technique first (1 project = localstack, 1 epoch):
+OBJ2_SMOKE=1 OBJ2_MODELS=BLAZE python Scripts/run_obj2_experiments.py
+
+# --- analysis (CPU; re-run after each technique lands) ---
+python Scripts/analysis/obj2_wp_analysis.py            # RQ3
+python Scripts/analysis/obj2_classical_vs_parsing.py   # RQ4  (inversion test)
+python Scripts/analysis/obj2_failure_analysis.py       # RQ4  (composition + truncation)
+python Scripts/analysis/obj2_tables.py                 # results/obj2/tables/
+python Scripts/analysis/obj2_figures.py                # results/obj2/figures/
+```
+
+Every step writes to `results/obj2/` (and `data/obj2/` for the two derived
+parquets). Experiment runs are **resumable** — each finished project is appended
+to `results/obj2/wp_cp_summary.csv` and skipped on rerun. Select a subset with
+`OBJ2_MODELS=BM25,BLAZE` or `OBJ2_SMOKE_PROJECT=liquibase/liquibase`.
+
+---
+
+## 10. Open items needing a human
 
 1. **GPU time** for the BLAZE + FLIM runs (~1–1.5 days).
 2. **Second annotator** for the 50-bug agreement check (`results/obj2/annotation/README.md`

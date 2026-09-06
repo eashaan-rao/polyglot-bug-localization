@@ -27,16 +27,18 @@ from .ast_parsers import PythonASTParser, JavaASTParser
 from .utils import load_glove, glove_lookup, text_to_glove_sequence
 
 
-REPO_BASE_PATH = "/home/cs21d002_eashaan/PhD/Objective2/data/repos"
-BUG_METADATA_DIR = "/home/cs21d002_eashaan/PhD/Objective2/data/processed/embedding_dbs"
-BLOB_DB_DIR = "/home/cs21d002_eashaan/PhD/Objective2/data/processed/embedding_dbs"
-RESULT_PATH = "/home/cs21d002_eashaan/PhD/Objective2/results"
-PROJECTS_METADATA_PATH = "/home/cs21d002_eashaan/PhD/Objective2/data/processed/project_metadata.parquet"
-BUG_REPORTS_PATH = "/home/cs21d002_eashaan/PhD/Objective2/data/processed/bug_reports_clean.parquet"
-CACHE_DIR = "/home/cs21d002_eashaan/PhD/Objective2/data/processed/cooba_cache"
+_OBJ2_ROOT = os.environ.get("OBJ2_ROOT") or os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # repo root
+REPO_BASE_PATH = os.path.join(_OBJ2_ROOT, "data/repos")
+BUG_METADATA_DIR = os.path.join(_OBJ2_ROOT, "data/processed/embedding_dbs")
+BLOB_DB_DIR = os.path.join(_OBJ2_ROOT, "data/processed/embedding_dbs")
+RESULT_PATH = os.path.join(_OBJ2_ROOT, "results")
+PROJECTS_METADATA_PATH = os.path.join(_OBJ2_ROOT, "data/processed/project_metadata.parquet")
+BUG_REPORTS_PATH = os.path.join(_OBJ2_ROOT, "data/processed/bug_reports_clean.parquet")
+CACHE_DIR = os.path.join(_OBJ2_ROOT, "data/processed/cooba_cache")
 
 # GloVe configuration (used for COOBA training — retrieval stage still uses BGE)
-GLOVE_PATH = "/home/cs21d002_eashaan/PhD/Objective2/data/glove/glove.6B.300d.txt"
+GLOVE_PATH = os.path.join(_OBJ2_ROOT, "data/glove/glove.6B.300d.txt")
 GLOVE_DIM = 300
 
 # Experiment settings

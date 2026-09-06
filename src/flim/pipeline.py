@@ -45,11 +45,13 @@ from .encoder import CodeBERTEncoder
 from .model   import FLIMRanker
 
 # ─── Paths ────────────────────────────────────────────────────────────────────
-REPO_BASE_PATH         = "/home/cs21d002_eashaan/PhD/Objective2/data/repos"
-BUG_METADATA_DIR       = "/home/cs21d002_eashaan/PhD/Objective2/data/processed/embedding_dbs"
-BLOB_DB_DIR            = "/home/cs21d002_eashaan/PhD/Objective2/data/processed/embedding_dbs"
-PROJECTS_METADATA_PATH = "/home/cs21d002_eashaan/PhD/Objective2/data/processed/project_metadata.parquet"
-BUG_REPORTS_PATH       = "/home/cs21d002_eashaan/PhD/Objective2/data/processed/bug_reports_clean.parquet"
+_OBJ2_ROOT = os.environ.get("OBJ2_ROOT") or os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # repo root
+REPO_BASE_PATH         = os.path.join(_OBJ2_ROOT, "data/repos")
+BUG_METADATA_DIR       = os.path.join(_OBJ2_ROOT, "data/processed/embedding_dbs")
+BLOB_DB_DIR            = os.path.join(_OBJ2_ROOT, "data/processed/embedding_dbs")
+PROJECTS_METADATA_PATH = os.path.join(_OBJ2_ROOT, "data/processed/project_metadata.parquet")
+BUG_REPORTS_PATH       = os.path.join(_OBJ2_ROOT, "data/processed/bug_reports_clean.parquet")
 
 # ─── Experiment settings ──────────────────────────────────────────────────────
 TOP_K_CANDIDATES    = 300

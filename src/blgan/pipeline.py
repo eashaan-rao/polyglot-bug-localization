@@ -64,7 +64,9 @@ from .ast_parsers import get_parser_for_language
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
-RESULT_PATH = "/home/cs21d002_eashaan/PhD/Objective2/results"
+_OBJ2_ROOT = os.environ.get("OBJ2_ROOT") or os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # repo root
+RESULT_PATH = os.path.join(_OBJ2_ROOT, "results")
 
 BGE_DIM = 1536
 TOP_K_CANDIDATES = 300     # FAISS for labeled / evaluation
