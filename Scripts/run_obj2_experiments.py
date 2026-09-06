@@ -410,7 +410,8 @@ def main():
     epochs = 1 if SMOKE else 10
 
     # ---- WP arm only (no retrieval stage: every technique ranks the full snapshot) ----
-    wp_projects = [P.SELECTED_REPO_NAMES[0]] if SMOKE else P.SELECTED_REPO_NAMES
+    _smoke_proj = os.environ.get("OBJ2_SMOKE_PROJECT", "localstack/localstack")
+    wp_projects = [_smoke_proj] if SMOKE else P.SELECTED_REPO_NAMES
     models = ["BM25", "BLAZE"] if SMOKE else ["BM25", "BLAZE", "FLIM"]
     if ONLY_MODELS:
         models = [m for m in models if m in ONLY_MODELS]
