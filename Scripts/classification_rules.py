@@ -22,7 +22,7 @@ import re
 from dataclasses import dataclass, field, replace
 from typing import Optional
 
-RULESET_VERSION = "0.1.0-draft"   # bump on any rule change; frozen value recorded in the paper
+RULESET_VERSION = "0.2.0-draft"   # bump on any rule change; frozen value recorded in the paper
 
 # ---------------------------------------------------------------------------
 # 1. Extension -> (language_id, category)
@@ -191,6 +191,38 @@ class FileVerdict:
     flags: list = field(default_factory=list)
 
 
+# ---------------------------------------------------------------------------
+# Secondary-language admission (advisor decision).
+#
+#   C1  formal grammar        -> a parser for it could exist
+#   C2  not parseable by the evaluated AST techniques (i.e. not Java/Python) -- checked at use site
+#   C3  behaviour-bearing     -> baked into category: docs are already excluded upstream
+#   C4  attested as ground truth -> checked in classify_bugs against the dataset
+#   C5  >=15 poly-fix bugs / >=2 projects -> only governs whether a type gets its OWN stats row
+#
+# A language passes C1+C3 iff it is in GRAMMAR_LANGUAGES below. INI/properties,
+# plain-text fixtures, SPI class lists, CSV etc. fail C1 (a format, not a language).
+# ---------------------------------------------------------------------------
+GRAMMAR_LANGUAGES = {
+    # programming languages
+    "Python", "Java", "TypeScript", "JavaScript", "Vue", "Groovy", "Scala",
+    "Kotlin", "Shell", "PowerShell", "Batch", "C#", "Go", "Ruby", "Cython",
+    # schema / IDL / grammar
+    "SQL", "ANTLR", "JavaCC", "Protobuf", "XML-Schema",
+    # structured data / config with a grammar
+    "YAML", "JSON", "XML", "TOML", "Jinja", "Template", "Terraform", "Policy",
+    # styling
+    "CSS",
+    # build
+    "Gradle", "Docker", "Make", "MSBuild", "Installer", "Autotools",
+}
+# the four types that additionally pass C5 in this dataset -> the HEADLINE grain
+TIER1_SECONDARY = {"YAML", "JSON", "XML", "SQL"}
+# reported as named qualitative cases (C1-C4 pass, C5 fails: single project / small N)
+TIER2_SECONDARY = {"Gradle", "Groovy", "TypeScript", "Vue", "JavaScript",
+                   "ANTLR", "JavaCC", "Docker", "Make", "XML-Schema"}
+
+
 @dataclass
 class FixClass:
     label: str                     # Mono-fix | Poly-fix | Other-fix | Excluded
@@ -200,6 +232,9 @@ class FixClass:
     n_files_counted: int
     boundary_flags: list           # union of all per-file flags
     per_file: list                 # list[FileVerdict]
+    programming_languages: list = field(default_factory=list)   # counted, category == source
+    secondary_languages: list = field(default_factory=list)     # counted, != primary, in GRAMMAR_LANGUAGES
+    grains: dict = field(default_factory=dict)   # {headline, broad, strict, tier3_only} -> bool
 
 
 def _basename(path: str) -> str:
@@ -323,11 +358,33 @@ def classify_fix(files: list, project_language: str,
     if proj and proj in prog_langs:
         primary = proj
 
+    secondaries = sorted({l for l in langs
+                          if l != primary and l in GRAMMAR_LANGUAGES})
+    grains = {
+        "headline": label == "Poly-fix" and bool(set(secondaries) & TIER1_SECONDARY),
+        "broad":    label == "Poly-fix" and len(secondaries) >= 1,
+        "strict":   label == "Poly-fix" and len(prog_langs) >= 2,
+        "tier3_only": (label == "Poly-fix"
+                       and not secondaries and len(prog_langs) < 2),
+    }
+
     return FixClass(
         label=label, languages=langs, primary_language=primary,
         n_files_raw=len(files), n_files_counted=len(counted),
         boundary_flags=all_flags, per_file=verdicts,
+        programming_languages=prog_langs, secondary_languages=secondaries,
+        grains=grains,
     )
+
+
+def keep_bug(fc: FixClass, project_language: str) -> bool:
+    """
+    Bug-level filter (separate from language admission): keep a bug only if its
+    fix touches >=1 file in the project's primary language, so the parsing
+    technique always has a parseable localization target.
+    """
+    proj = {"java": "Java", "python": "Python"}.get((project_language or "").lower())
+    return proj is not None and proj in fc.programming_languages
 
 
 # named toggle sets for the sensitivity sweep -------------------------------
@@ -372,7 +429,7 @@ if __name__ == "__main__":
     ]
     for name, files, lang in ex:
         r = classify_fix(files, lang)
+        g = [k for k, v in r.grains.items() if v]
         print(f"{name}\n  -> {r.label}  langs={r.languages}  primary={r.primary_language}  "
+              f"secondary={r.secondary_languages}  grains={g}  keep={keep_bug(r, lang)}  "
               f"flags={r.boundary_flags}")
-        r2 = classify_fix(files, lang, SENSITIVITY_SETS["strict_source_only"])
-        print(f"  strict_source_only -> {r2.label}  langs={r2.languages}")

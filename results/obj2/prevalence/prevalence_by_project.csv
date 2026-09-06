@@ -1,0 +1,8 @@
+project,kept_bugs,mono_fix,poly_fix,poly_pct_headline,poly_pct_broad,poly_pct_strict,n_headline,n_broad,n_strict,smaller_class_n
+elastic/elasticsearch,721,564,157,15.1,17.8,0.3,109,128,2,157
+liquibase/liquibase,199,99,100,20.1,49.7,35.7,40,99,71,99
+apache/dolphinscheduler,698,523,175,14.6,23.6,10.7,102,165,75,175
+ansible/ansible,626,352,274,39.1,43.5,13.4,245,272,84,274
+apache/airflow,917,739,178,14.2,18.8,5.5,130,172,50,178
+localstack/localstack,433,284,149,29.6,34.4,2.8,128,149,12,149
+POOLED,3594,2561,1033,21.0,27.4,8.2,754,985,294,1033

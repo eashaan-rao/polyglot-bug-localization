@@ -1,8 +1,48 @@
 # Classification rules
 
-**Status: DRAFT v0.1.0 — to be frozen (Phase C) with the advisor before any bug
-is classified.** `Scripts/classification_rules.py` is the executable form; this
-document and that file must agree, and both carry `RULESET_VERSION`.
+**Status: DRAFT v0.2.0 — to be frozen (Phase C) with the advisor.**
+`Scripts/classification_rules.py` is the executable form; this document and that
+file must agree, and both carry `RULESET_VERSION`. Numbers below are from
+`classify_bugs.py` / `boundary_sensitivity.py` over all 4995 bugs.
+
+## Secondary-language admission (advisor decision)
+
+A file type in a fix counts as a **second language** only if it passes:
+
+- **C1 formal grammar** — a parser for it could exist. Rejects `.ini` / `.cfg` /
+  `.properties` (key–value *format*), plain-text `.expected` / `.stdout`
+  fixtures, `META-INF/services` class lists, `.csv`.
+- **C2 not parseable by the evaluated AST techniques** — not Java, not Python
+  (FLIM / COOBA / BL-GAN parse only these two).
+- **C3 behaviour-bearing** — encodes behaviour, expected output, a schema, or
+  build/deploy wiring; a thing a developer edits *to fix a bug*. Rejects docs,
+  changelog fragments, licences, `.gitignore`, CI config (handled by boundary
+  rules).
+- **C4 attested** — the file appears in the dataset's own `ground_truth_files`
+  for ≥1 bug. In this dataset **every** counted secondary file is also a
+  ground-truth target.
+- **C5** (per-type stats only) ≥15 Poly-fix bugs across ≥2 projects.
+
+C1+C3 ⇔ membership of `GRAMMAR_LANGUAGES` in `classification_rules.py`.
+
+**Three reported grains** (a bug can be in several):
+
+| grain | secondary must be… | pooled Poly-fix % (kept set) | N |
+|---|---|---|---|
+| **headline** | YAML, JSON, XML, or SQL (also pass C5) | **21.0 %** | 754 |
+| **broad** (operational) | any `GRAMMAR_LANGUAGES` member (adds build scripts, 2nd programming language, Shell, Jinja, grammars) | **27.4 %** | 985 |
+| **strict** | the fix spans ≥ 2 *programming* languages | **8.2 %** | 294 |
+
+`broad` includes Shell (101 bugs, mostly test glue); `broad` − Shell ≈ 884.
+48 Poly-fix bugs are `tier3_only` (only a non-grammar secondary) → in none of
+the grains, flagged.
+
+## Bug-level keep filter
+
+Keep a bug only if its fix touches ≥ 1 file in the **project's primary language**
+(Java for the JVM repos, Python for the Python repos), so the parsing technique
+always has a parseable localization target. → **3594 / 4995 kept (72 %)**;
+`Other-fix` becomes empty by construction.
 
 The rules carry the headline number. Every SANER objection about definitions
 traces to rules being implicit. Two people apply the frozen rules to a 50-bug
@@ -76,57 +116,71 @@ language (Java / Python) breaks ties.
 
 ## 5. Sensitivity toggles → prevalence reported as a range
 
-Dry-run prevalence over the 4995 bugs (Poly-fix as a share of Mono+Poly):
+`boundary_sensitivity.py`, Poly-fix (raw label, any ≥2 languages) as a share of
+Mono+Poly in the kept set:
 
-| Toggle set | Mono | Poly | Other | Excl | Poly-fix % |
-|---|---|---|---|---|---|
-| **headline** (all toggles off) | 3082 | 1121 | 374 | 418 | **26.7 %** |
-| `strict_source_only` (Poly needs ≥2 *programming* languages) | 3884 | 319 | 0 | 792 | 7.6 % |
-| `exclude_tests` | 3460 | 472 | 343 | 720 | 12.0 % |
-| `include_changelog_fragments` | 2604 | 1599 | 392 | 400 | 38.0 % |
-| `include_docs` | 3082 | 1121 | 374 | 418 | 26.7 % (no change) |
-| `collapse_data_config` (all data/config = one language) | 3082 | 1121 | 374 | 418 | 26.7 % (no change) |
-| `count_deletions` | 3077 | 1127 | 374 | 417 | 26.8 % |
+| Toggle set | Mono | Poly | Poly-fix % | Δ vs headline |
+|---|---|---|---|---|
+| **headline** | 2561 | 1033 | **28.7 %** | — |
+| `strict_source_only` (≥2 programming languages) | 3300 | 294 | 8.2 % | −20.5 pp |
+| `exclude_tests` | 2937 | 387 | 11.6 % | −17.1 pp |
+| `include_changelog_fragments` | 2087 | 1507 | 41.9 % | +13.2 pp |
+| `include_docs` | 2561 | 1033 | 28.7 % | 0.0 |
+| `collapse_data_config` | 2561 | 1033 | 28.7 % | 0.0 |
+| `count_deletions` | 2558 | 1037 | 28.8 % | +0.1 pp |
 
-Read: the headline figure is **robust to how documentation and data-config
-sub-types are treated** (no change). It is **sensitive to two choices** — whether
-test code/data counts (26.7 % → 12.0 %) and whether changelog fragments count
-(26.7 % → 38.0 %) — and to the strict "two programming languages" reading
-(→ 7.6 %). The paper reports **26.7 % [7.6 % – 38.0 %]** and names the two
-load-bearing rules.
+The figure is **robust to documentation and data-config treatment** (no change).
+It is **sensitive to three choices**: whether test code/data counts
+(28.7 % → 11.6 %), whether changelog fragments count (→ 41.9 %), and the strict
+"two programming languages" reading (→ 8.2 %). The paper reports the operational
+(broad-grain) figure with the range **[8.2 % – 41.9 %]** and names these rules.
 
-## 6. Per-project (headline)
+## 6. Per-project (kept set)
 
-| Project | Mono | Poly | Other | Poly-fix % | min class n |
-|---|---|---|---|---|---|
-| ansible/ansible | 359 | 278 | 23 | 43.6 % | 278 |
-| apache/airflow | 821 | 195 | 60 | 19.2 % | 195 |
-| apache/dolphinscheduler | 944 | 238 | 121 | 20.1 % | 238 |
-| elastic/elasticsearch | 567 | 157 | 126 | 21.7 % | 157 |
-| liquibase/liquibase | 103 | 100 | 30 | 49.3 % | 100 |
-| localstack/localstack | 293 | 148 | 12 | 33.6 % | 148 |
+| Project | kept | Mono | Poly | headline % | broad % | strict % | smaller class n |
+|---|---|---|---|---|---|---|---|
+| elastic/elasticsearch | 721 | 564 | 157 | 15.1 % | 17.8 % | 0.3 % | 157 |
+| liquibase/liquibase | 199 | 99 | 100 | 20.1 % | 49.7 % | 35.7 % | 99 |
+| apache/dolphinscheduler | 698 | 523 | 175 | 14.6 % | 23.6 % | 10.7 % | 175 |
+| ansible/ansible | 626 | 352 | 274 | 39.1 % | 43.5 % | 13.4 % | 274 |
+| apache/airflow | 917 | 739 | 178 | 14.2 % | 18.8 % | 5.5 % | 178 |
+| localstack/localstack | 433 | 284 | 149 | 29.6 % | 34.4 % | 2.8 % | 149 |
+| **POOLED** | 3594 | 2561 | 1033 | 21.0 % | 27.4 % | 8.2 % | — |
 
-Every project has ≥ 100 bugs in its smaller class → a within-project
-Mono-vs-Poly comparison with balanced subsampling is viable for all six.
+Every project has ≥ ~100 bugs in its smaller class → balanced within-project
+comparison viable for all six. Per-project character: ES = YAML test specs +
+`build.gradle`; liquibase = Java+Groovy + XML/SQL; dolphinscheduler = XML +
+frontend TS/Vue + SQL; ansible = YAML playbooks; airflow = mixed config;
+localstack = JSON snapshots (the motivating example).
 
-## 7. Secondary languages in headline Poly-fix (bug counts)
+## 7. Secondary languages in Poly-fix (kept set, bug counts)
 
-YAML 511 · JSON 174 · XML 122 · Shell 101 · Groovy 72 · INI 53 · TypeScript 51 ·
-JavaScript 43 · Vue 39 · TestData 38 · CSS 36 · Gradle 33 · Docker 24 · SQL 19 ·
-Jinja 18 · PowerShell 9 · Make 7 · (rest ≤ 5)
+YAML 497 (6 proj) · JSON 163 (6) · XML 117 (4) · Shell 101 (5) · Groovy 72 (2) ·
+TypeScript 47 (2) · JavaScript 43 (3) · Gradle 33 (1) · SQL 19 (2) · Vue 19 (1) ·
+Jinja 18 (2) · Docker 14 (3) · Python 13 (1) · PowerShell 8 · Java 7 · Make 6 ·
+XML-Schema 5 · (rest ≤ 3). Every one is also a ground-truth localization target.
 
-## 8. Open decisions for the freeze (Phase C, with advisor)
+## 8. Decisions taken (advisor-confirmed) and still open
 
-1. **Shell / Groovy as `source`.** A `.py` + test `.sh` fix is currently
-   Poly-fix, and counts as two programming languages under `strict_source_only`.
-   Keep (they are languages an AST tool cannot parse) or demote to a
-   `script`/`build` category that the strict reading ignores? 101 Shell + 72
-   Groovy Poly-fix bugs ride on this.
-2. **`.gradle` = Gradle (build), not Groovy.** Currently `build`, so it counts in
-   the headline but not under `strict_source_only`. Agreed?
-3. **Test scope regex.** Confirm the ES `src/yamlRestTest/…` and ansible
-   `test/integration/targets/…` patterns are complete.
-4. **`Other-fix` handling.** 374 bugs have only non-programming files
-   (config/schema only). Report as a third class, or fold into "not analysed"?
-5. **`strict_source_only`** — is this a reported sensitivity row, or the paper's
-   *secondary headline* (the "language-specific model" reading)?
+**Taken:**
+- Secondary-language admission = criteria C1–C4 (§ top). INI/properties,
+  plain-text fixtures, SPI lists, CSV are **not** languages.
+- Three reported grains: headline (YAML/JSON/XML/SQL), broad (any grammar
+  language — the operational definition), strict (≥2 programming languages).
+- Bug-level keep filter: fix must touch the project's primary language →
+  `Other-fix` is filtered out, not a third analysed class.
+- Shell / Groovy stay as languages with a grammar (→ in `broad`); Shell is
+  reported separately so a reader can subtract it.
+- `.gradle` → language "Gradle", category `build` (counts in broad, not strict).
+- Java / Python **can** be a secondary language (`.java`+`.py` fixes: 20 bugs) —
+  these land in `strict` and test mixed-corpus degradation, a *different*
+  mechanism from the unparseable-file case; analysed as their own sub-set.
+
+**Still open for the freeze:**
+1. Test-scope regex completeness — confirm ES `src/yamlRestTest/…`,
+   `src/internalClusterTest/…` and ansible `test/integration/targets/…` are all
+   covered (spot-check in the 50-bug review).
+2. Which grain is *the* headline number in the abstract — recommend **broad**
+   (operational, 27.4 %) with headline (21.0 %) and strict (8.2 %) as reported
+   cuts.
+3. Second annotator for the 50-bug agreement check.
