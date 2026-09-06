@@ -1,83 +1,132 @@
 # Classification rules
 
-**Status: DRAFT. To be frozen (Phase C) before any bug is classified.**
-Every rule is stated with a decision and a rationale before it is applied.
-`Scripts/classification_rules.py` is the executable form; this document and that
-file must agree, and both carry `RULESET_VERSION`.
+**Status: DRAFT v0.1.0 — to be frozen (Phase C) with the advisor before any bug
+is classified.** `Scripts/classification_rules.py` is the executable form; this
+document and that file must agree, and both carry `RULESET_VERSION`.
 
 The rules carry the headline number. Every SANER objection about definitions
 traces to rules being implicit. Two people apply the frozen rules to a 50-bug
 sample independently; disagreements are resolved by **amending a rule**, not by
 adjudicating the case.
 
+Numbers below are from a dry run over all **4995** BeetleBox bugs in the six
+projects (100% fix-commit recovery).
+
+---
+
 ## 1. Changed-file set
 
 The fix commit's changed files = the diff of `fix_commit_sha` against its first
-parent (`commit.stats.files`), recorded in full **before any filtering**, each
-with its extension. A bug whose fix commit cannot be resolved in the local clone
-is **recorded, not dropped**, and reported.
+parent (empty tree for a root commit). Recorded in full **before any filtering**,
+each with its extension and change type (A/M/D/R). A merge fix commit
+(2.4% of bugs) is diffed against its first parent. A bug whose fix commit cannot
+be resolved is **recorded, not dropped** (0 such bugs here).
 
-## 2. Extension and language attribution
+Purely-**deleted** files do not count toward composition by default
+(`COUNT_DELETIONS` toggle; effect is < 0.1 pp).
 
-- Extension = basename substring after the final `.`, lowercased.
-- No `.` in basename → rule 6 (special names).
-- Extension → language via a vendored copy of GitHub Linguist `languages.yml`,
-  extended to every extension actually present in the six projects' fix files.
-  Each extension is assigned one category:
-  `source | data-config | build | docs | test-data | other`.
-- Assumption, stated in the paper: the extension determines the language for the
-  file types in scope.
+## 2. Language attribution
 
-## 3. Boundary rules (each: decision + rationale + sensitivity toggle)
+Extension → `(language_id, category)` via the table in
+`classification_rules.py::EXT_LANG`, seeded from GitHub Linguist and extended to
+every extension present in the six projects' fix files. Dialect variants collapse
+to one `language_id` (`yml`+`yaml`→YAML, `ts`+`tsx`→TypeScript, `py`+`pyi`→Python,
+`js`+`jsx`+`mjs`+`cjs`→JavaScript). Files with no usable extension are matched by
+basename (`Dockerfile*`, `Makefile`, `MANIFEST.in`, `Jenkinsfile`, `LICENSE`, …).
 
-| Category | Match (draft) | Default decision | Rationale | Toggle |
-|---|---|---|---|---|
-| Generated files | path contains `/generated/`, `.pb.go`, `_pb2.py`, `.g.dart`, Linguist `generated?` heuristics | **exclude** | not authored in the fix; presence is a build artefact | `INCLUDE_GENERATED` |
-| Vendored dependencies | path contains `vendor/`, `third_party/`, `node_modules/`, `.venv/` | **exclude** | not the project's own code | `INCLUDE_VENDORED` |
-| Lock files | `*.lock`, `package-lock.json`, `poetry.lock`, `Pipfile.lock`, `go.sum`, `yarn.lock` | **exclude** | mechanically regenerated | `INCLUDE_LOCKFILES` |
-| Documentation | `.md`, `.rst`, `.adoc`, `.txt` under `docs/`, `LICENSE*`, `CHANGELOG*`, `NOTICE*` | **exclude** | not a localization target | `INCLUDE_DOCS` |
-| Changelog fragments | `changelogs/fragments/*.yml` (ansible), `.changes/` | **exclude** | release-notes bookkeeping, not a fix | `INCLUDE_CHANGELOG_FRAGMENTS` |
-| Test code | files under `test/`, `tests/`, `*_test.py`, `*Test.java`, `test_*.py` | **include, tagged `test`** | tests are part of many real fixes; tagging lets the paper report with and without | `EXCLUDE_TESTS` |
-| Test data / fixtures | data files (`.json`, `.yml`, `.sql`, `.snapshot`, `.expected`) under a test path | **include, tagged `test-data`** | these are the multi-language part of many Poly-fix bugs | `EXCLUDE_TEST_DATA` |
-| CI config | `.github/`, `.gitlab-ci.yml`, `.travis.yml`, `Jenkinsfile` | **exclude** | infrastructure, not the fix | `INCLUDE_CI` |
-| Version-control artefacts | `.gitignore`, `.gitattributes`, `.mailmap` | **exclude** | not code | — |
-| Binary / media | `.png`, `.jpg`, `.pdf`, `.zip`, `.jar`, `.class`, `.mp4`, ... | **exclude** | not a text localization target | — |
+**Categories** and whether they count toward the Mono/Poly language set in the
+**headline** configuration:
 
-## 4. Classification (after rules 1–3)
+| Category | Counts? | Members (examples) |
+|---|---|---|
+| `source` | yes | Python, Java, TypeScript, JavaScript, Vue, Groovy, Shell, PowerShell, C#, Go, Ruby, Batch |
+| `schema` | yes | SQL, `.xsd`, `.g4` (ANTLR), `.jj` (JavaCC), `.proto` |
+| `data-config` | yes | YAML, JSON, XML, TOML, INI/`.cfg`/`.conf`/`.properties`, Jinja (`.j2`), Terraform, `.policy`, SPI (`META-INF/services/*`) |
+| `build` | yes | Gradle, Dockerfile, Make, `MANIFEST.in`, MSBuild (`.csproj`/`.sln`), install4j |
+| `style` | yes | CSS / SCSS / LESS |
+| `test-data` | yes (tagged) | `.csv-spec`, `.sql-spec`, `.expected`, `.stdout`, `.stderr`, `.sha1/.sha256`, `.snap`, `.interp` |
+| `docs` | **no** | Markdown, reST, AsciiDoc, HTML, plain `.txt`, `.inv`, `LICENSE`, `NOTICE`, `CHANGELOG`, `README` |
+| `other` | no | binaries, media, certs, codegen templates (`.java.st`), unclassified |
 
-Let `L` = set of languages of the in-scope files.
+## 3. Path rules (applied before the extension map)
 
-- `|in-scope| == 0` → **Excluded**
-- no in-scope file is a `source` language → **Other-fix**
+| Rule | Match (regex in `classification_rules.py`) | Default | Toggle |
+|---|---|---|---|
+| Changelog fragment | `changelogs/fragments/`, `docs/changelog/`, `newsfragments/`, `.changes/` | **exclude** | `INCLUDE_CHANGELOG_FRAGMENTS` |
+| Lock file | `package-lock.json`, `yarn.lock`, `poetry.lock`, `go.sum`, `*.lock` | **exclude** | `INCLUDE_LOCKFILES` |
+| Vendored | `vendor/`, `third_party/`, `node_modules/`, `.venv/` | **exclude** | `INCLUDE_VENDORED` |
+| Generated / codegen | `generated/`, `*.pb.go`, `*_pb2.py`, `*.java.st`, `*.generated.*` | **exclude** | `INCLUDE_GENERATED` |
+| CI config | `.github/`, `.gitlab-ci.yml`, `.azure-pipelines/`, `Jenkinsfile`, `.pre-commit-config.*`, `.ci/` | **exclude** | `INCLUDE_CI` |
+| Dev tooling | `.flake8`, `.coveragerc`, `.editorconfig`, `.eslint*`, `.prettier*`, `.babelrc`, `tox.ini`, `setup.cfg`, `.gitignore`, `.gitattributes`, `.gitmodules`, `sanity.*.in` | **exclude** (no toggle) | — |
+| SPI registration | `META-INF/services/` | keep as `data-config` | — |
+| Documentation path | `docs/`, `documentation/`, `site/` + a docs extension | **exclude** | `INCLUDE_DOCS` |
+| Test scope | `test/`, `tests/`, `qa/`, `testFixtures/`, `src/test/`, `src/yamlRestTest/`, `*Test.java`, `*IT.java`, `test_*.py`, `*_test.py`, `*Spec.groovy` | **keep, tag `test` / `test_asset`** | `EXCLUDE_TESTS` |
+
+## 4. Classification
+
+After rules 1–3, let `L` = set of `language_id`s of the files that count.
+
+- `|counting files| == 0` → **Excluded**
+- no counting file is a programming language (`source`) → **Other-fix**
 - `|L| == 1` → **Mono-fix**
 - `|L| >= 2` → **Poly-fix**
 
-`fix_primary_language` = the `source` language of the source file(s); project
-language as tiebreak.
+`fix_primary_language` = a `source` language of the fix; the project's own
+language (Java / Python) breaks ties.
 
-## 5. Recorded per bug
+## 5. Sensitivity toggles → prevalence reported as a range
 
-`repo_name`, `bug_id`, `fix_commit_sha`, `n_files_raw`, `files_raw` (with
-extensions), `n_files_inscope`, `files_inscope`, `fix_extensions`,
-`fix_languages`, `fix_primary_language`, `class`, `boundary_flags` (which rules
-fired), `commit_recovered` (bool), `tangled_flag` (rule 7).
+Dry-run prevalence over the 4995 bugs (Poly-fix as a share of Mono+Poly):
 
-## 6. Special filenames (no extension)
+| Toggle set | Mono | Poly | Other | Excl | Poly-fix % |
+|---|---|---|---|---|---|
+| **headline** (all toggles off) | 3082 | 1121 | 374 | 418 | **26.7 %** |
+| `strict_source_only` (Poly needs ≥2 *programming* languages) | 3884 | 319 | 0 | 792 | 7.6 % |
+| `exclude_tests` | 3460 | 472 | 343 | 720 | 12.0 % |
+| `include_changelog_fragments` | 2604 | 1599 | 392 | 400 | 38.0 % |
+| `include_docs` | 3082 | 1121 | 374 | 418 | 26.7 % (no change) |
+| `collapse_data_config` (all data/config = one language) | 3082 | 1121 | 374 | 418 | 26.7 % (no change) |
+| `count_deletions` | 3077 | 1127 | 374 | 417 | 26.8 % |
 
-`Dockerfile` → build; `Makefile`/`makefile` → build; `Jenkinsfile` → CI (exclude);
-`.python-version`, `.ruby-version` → other (exclude); `requirements*.txt` → build;
-anything else with no extension → `other`, tagged for manual review if it appears
-in a Poly-fix.
+Read: the headline figure is **robust to how documentation and data-config
+sub-types are treated** (no change). It is **sensitive to two choices** — whether
+test code/data counts (26.7 % → 12.0 %) and whether changelog fragments count
+(26.7 % → 38.0 %) — and to the strict "two programming languages" reading
+(→ 7.6 %). The paper reports **26.7 % [7.6 % – 38.0 %]** and names the two
+load-bearing rules.
 
-## 7. Commit tangling
+## 6. Per-project (headline)
 
-A fix commit that also touches files clearly unrelated to the report (large
-refactors, unrelated features) is flagged `tangled_flag` for a manual audit of
-~30 Poly-fix commits. The dataset's `ground_truth_files` remains the primary
-localization ground truth; the raw commit file set is used only for composition
-classification, and divergence between the two is reported.
+| Project | Mono | Poly | Other | Poly-fix % | min class n |
+|---|---|---|---|---|---|
+| ansible/ansible | 359 | 278 | 23 | 43.6 % | 278 |
+| apache/airflow | 821 | 195 | 60 | 19.2 % | 195 |
+| apache/dolphinscheduler | 944 | 238 | 121 | 20.1 % | 238 |
+| elastic/elasticsearch | 567 | 157 | 126 | 21.7 % | 157 |
+| liquibase/liquibase | 103 | 100 | 30 | 49.3 % | 100 |
+| localstack/localstack | 293 | 148 | 12 | 33.6 % | 148 |
 
-## 8. Sensitivity
+Every project has ≥ 100 bugs in its smaller class → a within-project
+Mono-vs-Poly comparison with balanced subsampling is viable for all six.
 
-`Scripts/boundary_sensitivity.py` re-runs classification with each toggle above
-flipped and reports the prevalence range and which toggles move the headline.
+## 7. Secondary languages in headline Poly-fix (bug counts)
+
+YAML 511 · JSON 174 · XML 122 · Shell 101 · Groovy 72 · INI 53 · TypeScript 51 ·
+JavaScript 43 · Vue 39 · TestData 38 · CSS 36 · Gradle 33 · Docker 24 · SQL 19 ·
+Jinja 18 · PowerShell 9 · Make 7 · (rest ≤ 5)
+
+## 8. Open decisions for the freeze (Phase C, with advisor)
+
+1. **Shell / Groovy as `source`.** A `.py` + test `.sh` fix is currently
+   Poly-fix, and counts as two programming languages under `strict_source_only`.
+   Keep (they are languages an AST tool cannot parse) or demote to a
+   `script`/`build` category that the strict reading ignores? 101 Shell + 72
+   Groovy Poly-fix bugs ride on this.
+2. **`.gradle` = Gradle (build), not Groovy.** Currently `build`, so it counts in
+   the headline but not under `strict_source_only`. Agreed?
+3. **Test scope regex.** Confirm the ES `src/yamlRestTest/…` and ansible
+   `test/integration/targets/…` patterns are complete.
+4. **`Other-fix` handling.** 374 bugs have only non-programming files
+   (config/schema only). Report as a third class, or fold into "not analysed"?
+5. **`strict_source_only`** — is this a reported sensitivity row, or the paper's
+   *secondary headline* (the "language-specific model" reading)?
