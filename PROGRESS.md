@@ -41,11 +41,27 @@ tractable classical baseline.
 | 3 analysis | `Scripts/analysis/obj2_wp_analysis.py` | runs once `results/obj2/diagnostics/*.csv` exist |
 | 4 analysis | `Scripts/analysis/obj2_classical_vs_parsing.py` | same (parsing technique = FLIM; CP/COOBA references are dormant) |
 
-## Not started
+## Done since (analysis + artifacts)
 
-- `Scripts/analysis/obj2_tables.py`, `obj2_figures.py` — paper artifacts, after results.
-- 50-bug two-person classification agreement check (needs a second annotator).
-- GitHub repo: `gh repo create polyglot-bug-localization --private` then `git remote add origin … && git push -u origin master`.
+- `analysis/obj2_tables.py` — Tables 1–4 (Markdown + CSV), run on BM25 data.
+- `analysis/obj2_figures.py` — 4 PNGs (`results/obj2/figures/`), run.
+- `analysis/obj2_failure_analysis.py` — failure-set composition + chi-sq, truncation
+  check. On BM25: 329 failure pairs, 19.5 % first-changed-line beyond a 512-token window.
+- `make_annotation_sample.py` — `results/obj2/annotation/` (50-bug blank sheet + key + README).
+- `docs/PREMISE_NOTE.md` — resolved: mainstream IRBL benchmarks (Bench4BL) are
+  source-only; the data-quality literature treats non-source/test ground truth as
+  noise to remove. BeetleBox is the exception. Framing narrows to "what fixes
+  contain vs what evaluations reach".
+
+## Remaining
+
+- **BLAZE + FLIM GPU runs** — smoke test in progress (GPU shared with another job).
+  After: rerun `obj2_wp_analysis.py`, `obj2_classical_vs_parsing.py`,
+  `obj2_failure_analysis.py`, `obj2_tables.py`, `obj2_figures.py` (all pick up the
+  new diagnostics automatically).
+- 50-bug two-person agreement check — sheet is ready, needs a second annotator.
+- `docs/SANER_REVIEW_RESPONSE.md`, `GLOSSARY.md` — drafted, final prose pass.
+- GitHub repo: `gh repo create polyglot-bug-localization --private` then push.
 
 ## Supplementary — what a retrieval stage would have cost (not used)
 
