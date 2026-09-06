@@ -1,0 +1,29 @@
+# Data (copied from Objective 1; regenerable / large)
+data/repos/
+data/processed/embedding_dbs/
+data/processed/*.parquet
+data/processed/*_cache/
+data/glove/
+data/obj2/*.parquet
+
+# Results — keep small CSVs and markdown, ignore heavy outputs
+results/obj2/diagnostics/
+results/obj2/**/*.pkl
+results/obj2/**/*.pt
+results/obj2/prevalence/*.png
+results/obj2/*.png
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.ipynb_checkpoints/
+
+# Env / editor
+.venv/
+obj2/venv/
+.DS_Store
+*.log
+
+# Source PDFs are large but small enough to keep for provenance
+!obj2/*.pdf
