@@ -1,0 +1,6 @@
+**Table 3.** Within-project performance, macro-averaged over the six projects, by fix class. Full-snapshot ranking (no retrieval stage). BLAZE is reported on its own row and never averaged with the others.
+
+| technique   | class    |   n bugs |   Top@1 |   Top@5 |   Top@10 |   MAP |   MRR |
+|:------------|:---------|---------:|--------:|--------:|---------:|------:|------:|
+| BM25        | Mono-fix |      517 |   0.103 |   0.244 |    0.34  | 0.134 | 0.181 |
+| BM25        | Poly-fix |      205 |   0.13  |   0.293 |    0.419 | 0.13  | 0.219 |

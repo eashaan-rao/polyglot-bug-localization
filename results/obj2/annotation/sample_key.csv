@@ -1,0 +1,51 @@
+repo_name,bug_id,ruleset_label,ruleset_secondary_languages,grain_headline,grain_broad,grain_strict,boundary_flags
+apache/dolphinscheduler,7401,Poly-fix,[],False,False,False,"[""test""]"
+apache/dolphinscheduler,10916,Mono-fix,[],False,False,False,[]
+localstack/localstack,6458,Mono-fix,[],False,False,False,"[""test""]"
+apache/dolphinscheduler,10386,Mono-fix,[],False,False,False,"[""test""]"
+ansible/ansible,73946,Poly-fix,"[""JSON""]",True,True,False,"[""changelog_fragment"", ""test_asset""]"
+elastic/elasticsearch,100262,Mono-fix,[],False,False,False,[]
+apache/dolphinscheduler,9406,Poly-fix,"[""SQL""]",True,True,False,"[""test""]"
+liquibase/liquibase,1395,Mono-fix,[],False,False,False,"[""test""]"
+apache/dolphinscheduler,5468,Poly-fix,"[""Template""]",False,True,False,[]
+ansible/ansible,73202,Poly-fix,"[""CSS""]",False,True,False,[]
+ansible/ansible,60750,Mono-fix,[],False,False,False,[]
+apache/dolphinscheduler,10815,Poly-fix,"[""TypeScript""]",False,True,True,[]
+localstack/localstack,8030,Poly-fix,"[""JSON""]",True,True,False,[]
+apache/airflow,20580,Mono-fix,[],False,False,False,[]
+ansible/ansible,68471,Poly-fix,"[""YAML""]",True,True,False,"[""changelog_fragment"", ""test_asset""]"
+liquibase/liquibase,2018,Poly-fix,"[""Groovy"", ""XML""]",True,True,True,"[""test"", ""test_asset""]"
+localstack/localstack,5674,Poly-fix,"[""JSON""]",True,True,False,"[""test"", ""test_asset""]"
+apache/airflow,12881,Poly-fix,"[""Docker"", ""Shell""]",False,True,True,"[""documentation"", ""test""]"
+apache/dolphinscheduler,1682,Mono-fix,[],False,False,False,[]
+ansible/ansible,63502,Mono-fix,[],False,False,False,[]
+liquibase/liquibase,2899,Poly-fix,"[""XML-Schema""]",False,True,False,[]
+apache/airflow,11074,Mono-fix,[],False,False,False,"[""test""]"
+localstack/localstack,1677,Mono-fix,[],False,False,False,[]
+apache/airflow,34535,Mono-fix,[],False,False,False,[]
+elastic/elasticsearch,92521,Mono-fix,[],False,False,False,[]
+elastic/elasticsearch,96425,Mono-fix,[],False,False,False,"[""changelog_fragment""]"
+liquibase/liquibase,5098,Mono-fix,[],False,False,False,"[""test""]"
+elastic/elasticsearch,96761,Mono-fix,[],False,False,False,"[""test""]"
+localstack/localstack,6096,Poly-fix,"[""YAML""]",True,True,False,"[""test"", ""test_asset""]"
+localstack/localstack,2436,Poly-fix,"[""Docker""]",False,True,False,[]
+ansible/ansible,72628,Poly-fix,"[""Shell""]",False,True,True,"[""changelog_fragment"", ""test""]"
+liquibase/liquibase,4734,Poly-fix,"[""XML""]",True,True,False,"[""spi_registration"", ""test_asset""]"
+apache/airflow,13891,Mono-fix,[],False,False,False,"[""documentation"", ""test""]"
+liquibase/liquibase,1452,Mono-fix,[],False,False,False,[]
+apache/airflow,35137,Poly-fix,"[""YAML""]",True,True,False,"[""documentation"", ""test""]"
+liquibase/liquibase,1760,Poly-fix,"[""XML-Schema""]",False,True,False,[]
+elastic/elasticsearch,92153,Poly-fix,"[""Gradle""]",False,True,False,[]
+localstack/localstack,5468,Mono-fix,[],False,False,False,"[""test""]"
+ansible/ansible,66464,Mono-fix,[],False,False,False,"[""changelog_fragment"", ""documentation""]"
+apache/airflow,19581,Poly-fix,"[""Shell""]",False,True,True,[]
+elastic/elasticsearch,79187,Poly-fix,"[""JSON"", ""YAML""]",True,True,False,"[""documentation"", ""test_asset""]"
+elastic/elasticsearch,92390,Poly-fix,"[""YAML""]",True,True,False,"[""test_asset""]"
+localstack/localstack,8092,Mono-fix,[],False,False,False,[]
+apache/airflow,13597,Poly-fix,"[""JavaScript""]",False,True,True,[]
+liquibase/liquibase,1657,Mono-fix,[],False,False,False,[]
+apache/dolphinscheduler,4721,Mono-fix,[],False,False,False,"[""test""]"
+elastic/elasticsearch,83311,Poly-fix,"[""XML""]",True,True,False,[]
+elastic/elasticsearch,96438,Mono-fix,[],False,False,False,"[""changelog_fragment"", ""test""]"
+ansible/ansible,66529,Mono-fix,[],False,False,False,"[""changelog_fragment""]"
+liquibase/liquibase,5034,Mono-fix,[],False,False,False,[]
