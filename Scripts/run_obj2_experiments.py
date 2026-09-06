@@ -37,6 +37,8 @@ from Scripts import paths as P
 from Scripts.classification_rules import EXT_LANG, GRAMMAR_LANGUAGES
 
 SMOKE = os.environ.get("OBJ2_SMOKE") == "1"
+ONLY_MODELS = set(os.environ.get("OBJ2_MODELS", "").split(",")) - {""}  # e.g. OBJ2_MODELS=BM25
+ONLY_ARMS = set(os.environ.get("OBJ2_ARMS", "").split(",")) - {""}      # e.g. OBJ2_ARMS=WP
 SEED = 42
 FAISS_TOP_K = 300
 OUT_DIR = P.RESULT_PATH
@@ -362,7 +364,7 @@ def run_flim_or_cooba(model_name, src, tgt, scenario, s_tr, t_tr, t_test_by_clas
 # ---------------------------------------------------------------------------
 def main():
     kept = load_kept()
-    cls_map = {r.bug_id: r["class"] for r in kept.itertuples(index=False)}
+    cls_map = dict(zip(kept["bug_id"], kept["class"]))
     epochs = 1 if SMOKE else 10
 
     jobs = []
@@ -389,7 +391,11 @@ def main():
                 jobs.append(dict(arm="CP", model=mdl, src=s, tgt=t, scenario="CP-transfer",
                                  s_tr=s_ids, t_tr=t_tr, t_test=t_te, t_test_by_class=te_by_class))
 
-    print(f"{len(jobs)} runs  (SMOKE={SMOKE})")
+    if ONLY_MODELS:
+        jobs = [j for j in jobs if j["model"] in ONLY_MODELS]
+    if ONLY_ARMS:
+        jobs = [j for j in jobs if j["arm"] in ONLY_ARMS]
+    print(f"{len(jobs)} runs  (SMOKE={SMOKE}  models={ONLY_MODELS or 'all'}  arms={ONLY_ARMS or 'all'})")
     for i, j in enumerate(jobs, 1):
         if already_done(j["arm"], j["model"], j["src"], j["tgt"], j["scenario"]):
             print(f"[{i}/{len(jobs)}] {j['model']} {j['src']}->{j['tgt']} — done, skip")

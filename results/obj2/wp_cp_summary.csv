@@ -1,0 +1,4 @@
+arm,model,source_project,target_project,scenario,bug_class,n_test_bugs,n_gt_files,top1,top5,top10,MAP,MRR,wall_time_sec
+WP,BM25,elastic/elasticsearch,elastic/elasticsearch,WP,Mono-fix,109,312,0.0092,0.0092,0.0092,0.0137,0.0099,212.7
+WP,BM25,elastic/elasticsearch,elastic/elasticsearch,WP,Poly-fix,36,147,0.0,0.0,0.0,0.0117,0.0,212.7
+WP,BM25,elastic/elasticsearch,elastic/elasticsearch,WP,ALL,145,459,0.0069,0.0069,0.0069,0.0132,0.0075,212.7

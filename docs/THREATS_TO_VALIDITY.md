@@ -23,7 +23,13 @@ Drafted early (per the brief). Each threat has a pre-defined mitigation.
   stated where techniques are introduced.
 - **Retrieval bounds the reranker.** A reranker cannot rank a file the retriever
   never returned. Mitigation: retrieval recall by class is computed and reported
-  before any reranker result.
+  before any reranker result. **Measured: bug-level Recall@500 is low and
+  project-dependent** — 0.90 (localstack) down to 0.11 (elasticsearch), pooled
+  0.26 Mono / 0.47 Poly. The reranker comparison is read as conditional on this;
+  restricted evaluation on the retriever-surfaced subset is used so the reranker
+  is not blamed for files the retriever never returned. Poly-fix file-level
+  recall is depressed further because Poly-fix fixes more often add new files
+  absent from the buggy snapshot.
 - **Commit tangling.** Fix commits that also contain refactors inflate the
   changed-file set. Mitigation: `tangled_flag`; manual audit of ~30 Poly-fix
   commits; report the tangled proportion.
