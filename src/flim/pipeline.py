@@ -358,6 +358,9 @@ def _cosine_sims(query: np.ndarray, matrix: np.ndarray) -> np.ndarray:
     return (m_norm @ q_norm).astype('float32')
 
 
+_FUNC_EMB_CACHE: dict = {}   # blob_sha -> CodeBERT function embeddings (obj2 full-snapshot caching)
+
+
 def _compute_flim_features(
     candidates:      dict,
     bug_texts_map:   dict,
@@ -403,8 +406,13 @@ def _compute_flim_features(
                 })
                 continue
 
-            # Encode all functions of this file in a single batched call
-            func_embs = encoder.encode_batch(funcs)  # (n_funcs, 768)
+            # Encode all functions of this file once; cache by blob_sha since
+            # function embeddings are bug-independent and snapshots repeat across
+            # bugs of the same project (obj2: full-snapshot ranking).
+            func_embs = _FUNC_EMB_CACHE.get(sha)
+            if func_embs is None:
+                func_embs = encoder.encode_batch(funcs)  # (n_funcs, 768)
+                _FUNC_EMB_CACHE[sha] = func_embs
 
             sum_sims  = _cosine_sims(sum_emb,  func_embs)   # (n_funcs,)
             desc_sims = _cosine_sims(desc_emb, func_embs)   # (n_funcs,)
@@ -627,6 +635,13 @@ def run_flim_experiment(
     test_df          = test_df.copy()
     test_df['result'] = ranker.predict_scores(test_df)
     metrics          = _compute_metrics(test_df)
+
+    # obj2: dump per-(bug, file) scores for class-sliced diagnostics
+    _diag = os.environ.get("FLIM_DIAG_CSV")
+    if _diag:
+        _dd = test_df.reset_index()[['bug_id', 'blob_sha', 'used_in_fix', 'result']].copy()
+        _dd.to_csv(_diag, index=False)
+        print(f"[FLIM]   wrote diagnostics -> {_diag}  ({len(_dd)} rows)")
 
     print(f"[FLIM]   Top-1={metrics['Top-1']:.3f}  Top-5={metrics['Top-5']:.3f}  "
           f"Top-10={metrics['Top-10']:.3f}  MAP={metrics['MAP']:.3f}  "

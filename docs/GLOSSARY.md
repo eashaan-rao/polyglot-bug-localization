@@ -29,17 +29,22 @@ alongside the introduction; do not use a term in prose until it has an entry.
 
 ## Retrieval and ranking
 
+- **No retrieval stage.** This study has no Top-K pre-filter. Each technique
+  scores and ranks *every* file in the bug's pre-fix snapshot. So "retrieval
+  recall" and "reranker" (below) describe the wider IRBL literature and a
+  supplementary measurement, not this study's own pipeline.
 - **FAISS** — a library for approximate nearest-neighbour search over dense
-  vectors; used here to index file embeddings and return the closest ones to a
-  bug-report embedding.
-- **Retrieval stage** — the first stage that returns the Top-K candidate files for
-  a bug report (BGE embeddings + FAISS, or BM25).
-- **Top-K** — the K highest-scoring candidate files returned by the retrieval
-  stage. K is fixed for all reranking runs (chosen from the recall curve).
-- **Retrieval recall (by class)** — the proportion of a bug's ground-truth files
-  that appear in the Top-K, averaged over bugs, reported separately for Mono-fix
-  and Poly-fix. A property of the setup, not a research question.
-- **Reranker** — a technique that reorders the Top-K candidates.
+  vectors. Used only in the supplementary "what a retrieval stage would have
+  cost" figure.
+- **Full-snapshot ranking** — each technique assigns a score to every file in the
+  snapshot and orders them; the ground-truth file's position in that order is its
+  rank. A ground-truth file that does not exist in the pre-fix snapshot (a fix
+  that adds a file) has rank ∞.
+- **Retrieval recall (supplementary)** — the proportion of a bug's ground-truth
+  files a hypothetical BGE+FAISS Top-K would have returned. Reported once, for
+  context; not part of any research question.
+- **Reranker** — in the wider literature, a technique that reorders a retrieval
+  stage's Top-K. Here the techniques are rankers over the full snapshot.
 - **MRR** — mean reciprocal rank: the mean over bugs of 1/(rank of the first
   ground-truth file in the ranked list), 0 if none is ranked.
 - **MAP** — mean average precision: the mean over bugs of the average of the

@@ -1,4 +1,4 @@
-# Step 1 — Prevalence  (RULESET_VERSION 0.2.0-draft)
+# Step 1 — Prevalence  (RULESET_VERSION 0.2.0)
 
 Kept bug set: **3594** of 4995 bugs (72.0%) — fix touches the project's primary (AST-parseable) language.
 

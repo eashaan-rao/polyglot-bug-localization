@@ -21,15 +21,18 @@ Drafted early (per the brief). Each threat has a pre-defined mitigation.
 - **Data leakage: BeetleBox was built alongside BLAZE.** Mitigation: BLAZE is
   reported in its own column and never aggregated with the other techniques;
   stated where techniques are introduced.
-- **Retrieval bounds the reranker.** A reranker cannot rank a file the retriever
-  never returned. Mitigation: retrieval recall by class is computed and reported
-  before any reranker result. **Measured: bug-level Recall@500 is low and
-  project-dependent** — 0.90 (localstack) down to 0.11 (elasticsearch), pooled
-  0.26 Mono / 0.47 Poly. The reranker comparison is read as conditional on this;
-  restricted evaluation on the retriever-surfaced subset is used so the reranker
-  is not blamed for files the retriever never returned. Poly-fix file-level
-  recall is depressed further because Poly-fix fixes more often add new files
-  absent from the buggy snapshot.
+- **No retrieval stage.** The design deliberately has no FAISS/BGE top-K
+  pre-filter: every technique (BM25, BLAZE, FLIM) ranks the whole pre-fix
+  snapshot, so a technique is never blamed for a file a retriever failed to
+  surface. Cost: full-corpus ranking is compute-heavy on large projects
+  (elasticsearch ≈ 27 k files/snapshot); mitigated by per-snapshot embedding
+  caching and `bm25s`. A supplementary measurement shows a BGE-code retriever
+  would have had low, project-dependent recall (0.11–0.90), which is itself
+  consistent with the monolingual-assumption thesis.
+- **Ground-truth files absent from the buggy snapshot.** A Poly-fix fix that
+  *adds* a new file (test, snapshot) means that file cannot be ranked at all in
+  the pre-fix snapshot. Mitigation: such files are recorded as rank = ∞ and the
+  fraction is reported per class (Poly-fix is affected more).
 - **Commit tangling.** Fix commits that also contain refactors inflate the
   changed-file set. Mitigation: `tangled_flag`; manual audit of ~30 Poly-fix
   commits; report the tangled proportion.

@@ -1,6 +1,24 @@
 # Objective 2 — progress
 
-RULESET_VERSION `0.2.0-draft` (freeze with advisor before writing).
+RULESET_VERSION **`0.2.0` — FROZEN 2026-09-06** (bump to 0.2.1 only if the 50-bug
+two-person check finds a rule error; re-running `classify_bugs.py` +
+`prevalence_report.py` then takes seconds).
+
+## Decisions locked with the advisor (2026-09-06)
+
+| Decision | Choice |
+|---|---|
+| Headline Poly-fix number | **broad / operational grain — 27.4 %** (985 bugs); headline 21.0 % and strict 8.2 % also reported. Range [8.2 % – 41.9 %]. |
+| Retrieval component | **Removed.** No FAISS/BGE top-K stage. Every technique (BM25, BLAZE, FLIM) ranks the **whole pre-fix snapshot**. Retrieval recall is 100 % by construction; "retrieval bounds the reranker" no longer applies. `retrieval_recall_by_class.py` output is kept only as a supplementary "why we don't use a retrieval stage" figure. |
+| GPU scope | **WP arm only** — BM25 + BLAZE + FLIM × the 6 projects. No cross-project arm (COOBA dropped for now). |
+| Ruleset freeze | **0.2.0 frozen now**; 50-bug two-person agreement check runs in parallel. |
+| Techniques | **BM25** (classical, CPU) + **BLAZE** (fine-tuned language-agnostic, GPU) + **FLIM** (parsing, GPU), all full-snapshot. |
+
+Compute note: full-snapshot ranking is heavier than a top-K reranker. Per-snapshot
+caching (`blob_cache` in BLAZE, `_FUNC_EMB_CACHE` added to `src/flim/pipeline.py`)
+means only the first bug of each project pays the full encode; elasticsearch
+(~27 k files/snapshot) is the long pole. `bm25s` (not `rank_bm25`) is used for a
+tractable classical baseline.
 
 ## Done and run
 
@@ -19,23 +37,21 @@ RULESET_VERSION `0.2.0-draft` (freeze with advisor before writing).
 
 | Phase | Script | Needs |
 |---|---|---|
-| 3 experiments | `Scripts/run_obj2_experiments.py` | **BM25 WP arm: running (CPU).** BLAZE/FLIM (WP) + BLAZE/COOBA (CP): GPU, ~2.5–3 days. Resumable. `OBJ2_SMOKE=1` for a 1-project check. `OBJ2_MODELS=BM25 OBJ2_ARMS=WP` etc. to select. |
+| 3 experiments | `Scripts/run_obj2_experiments.py` | **WP only, full-snapshot.** BM25 (CPU, `bm25s`) — running. BLAZE + FLIM — GPU, ~1–1.5 days, resumable. `OBJ2_SMOKE=1` for a 1-project check; `OBJ2_MODELS=BM25` to select. First FLIM run downloads `microsoft/codebert-base`. |
 | 3 analysis | `Scripts/analysis/obj2_wp_analysis.py` | runs once `results/obj2/diagnostics/*.csv` exist |
-| 4 analysis | `Scripts/analysis/obj2_classical_vs_parsing.py` | same |
+| 4 analysis | `Scripts/analysis/obj2_classical_vs_parsing.py` | same (parsing technique = FLIM; CP/COOBA references are dormant) |
 
 ## Not started
 
 - `Scripts/analysis/obj2_tables.py`, `obj2_figures.py` — paper artifacts, after results.
-- COOBA needs GloVe: `cp -r ../Objective1/data/glove PhD/Objective2/data/` before the CP arm.
-- FLIM adapter: `run_flim_experiment` already has the right signature; smoke-test it
-  (`OBJ2_SMOKE`) once GPU time is available — first FLIM run downloads `microsoft/codebert-base`.
 - 50-bug two-person classification agreement check (needs a second annotator).
 - GitHub repo: `gh repo create polyglot-bug-localization --private` then `git remote add origin … && git push -u origin master`.
 
-## Finding — retrieval recall is low and project-dependent
+## Supplementary — what a retrieval stage would have cost (not used)
 
-The FAISS + BGE-code retriever (cached embeddings, 89–98 % snapshot coverage,
-100 % on code files) surfaces a ground-truth file in the Top-500 for:
+The design **has no retrieval stage** (advisor decision). For context, a FAISS +
+BGE-code top-K retriever (cached embeddings, 89–98 % snapshot coverage, 100 % on
+code files) would surface a ground-truth file in the Top-500 for:
 
 | project | Mono bug-recall@500 | Poly bug-recall@500 |
 |---|---|---|
@@ -47,18 +63,11 @@ The FAISS + BGE-code retriever (cached embeddings, 89–98 % snapshot coverage,
 | elastic/elasticsearch | 0.11 | 0.24 |
 | **POOLED** | **0.26** | **0.47** |
 
-- Not a data bug — genuine retrieval difficulty on large snapshots (elasticsearch
-  ≈ 27 k files/snapshot; Top-500 ≈ 1.8 %).
+- Genuine retrieval difficulty on large snapshots (elasticsearch ≈ 27 k
+  files/snapshot; Top-500 ≈ 1.8 %). This is one of the reasons the design drops
+  the retrieval stage — full-corpus ranking removes the ceiling entirely.
 - Poly-fix **bug-level** recall > Mono-fix because Poly-fix bugs have more
-  ground-truth files (more chances of ≥ 1 hit); **file-level** recall is similar
-  or lower for Poly (pooled 0.186 vs 0.166; ES 0.054 vs 0.038), partly because
-  Poly-fix fixes more often **add** new files absent from the buggy snapshot.
-- Reported as a **property of the setup**. The reranker comparison is meaningful
-  mainly on **localstack** (and partially **liquibase**); for the other four the
-  reranker is evaluated on the retriever-surfaced subset and read as
-  retrieval-limited. This is itself consistent with the study's thesis: the
-  pipeline, retriever included, is tuned for single-language code search.
-- Advisor decision needed: (a) proceed and report this prominently; (b) raise K;
-  (c) restricted evaluation on the retrievable subset (recommended, matches
-  Objective 1); (d) add a BM25-union retrieval stage (scope creep — the brief
-  says retrieval is not a research question).
+  ground-truth files; **file-level** recall is similar or lower for Poly, partly
+  because Poly-fix fixes more often **add** files absent from the buggy snapshot.
+- Kept only as a supplementary figure: it is itself consistent with the thesis —
+  a BGE-code retriever is tuned for single-language code search.

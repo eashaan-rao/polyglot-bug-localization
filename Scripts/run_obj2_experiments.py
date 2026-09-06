@@ -233,8 +233,8 @@ def run_blaze(arm, src, tgt, scenario, source_train_ids, target_train_ids,
             faiss_ranked = [snap[i] for i in order]
         else:
             faiss_ranked = []
-        topk = set(faiss_ranked[:FAISS_TOP_K])
-        ranked = [s for s, _ in sorted(scores.items(), key=lambda x: -x[1]) if s in topk]
+        # obj2: NO retrieval stage -- BLAZE ranks the whole snapshot
+        ranked = [s for s, _ in sorted(scores.items(), key=lambda x: -x[1])]
         rank_of = {s: i + 1 for i, s in enumerate(ranked)}
         faiss_rank_of = {s: i + 1 for i, s in enumerate(faiss_ranked)}
         sha2path = {v: k for k, v in p2s.items()}
@@ -275,7 +275,7 @@ def _tokenize(text):
 
 def run_bm25(tgt, target_test_ids, cls_map):
     import pickle, git
-    from rank_bm25 import BM25Okapi
+    import bm25s
     stub = tgt.replace("/", "_")
     lang = dict(P.SELECTED_PROJECTS)[tgt]
     blob_db = pickle.load(open(os.path.join(P.EMBEDDING_DB_DIR, f"{stub}_blob_embeddings32.pkl"), "rb"))
@@ -335,10 +335,13 @@ def run_bm25(tgt, target_test_ids, cls_map):
             docs.append(tok); keep_shas.append(s)
         if not docs:
             continue
-        bm = BM25Okapi(docs)
-        scores = bm.get_scores(_tokenize(bug_text.get(str(bug_id), "")))
-        ranked = [keep_shas[i] for i in np.argsort(scores)[::-1]]
-        rank_of = {s: i + 1 for i, s in enumerate(ranked)}
+        retriever = bm25s.BM25()
+        retriever.index(docs, show_progress=False)
+        res, _sc = retriever.retrieve(
+            [_tokenize(bug_text.get(str(bug_id), "")) or ["_"]],
+            k=len(docs), show_progress=False,
+        )
+        rank_of = {keep_shas[int(idx)]: r + 1 for r, idx in enumerate(res[0])}
         for gs in gt_shas:
             gp = sha2path.get(gs, "")
             diag.append({
@@ -354,21 +357,50 @@ def run_bm25(tgt, target_test_ids, cls_map):
 
 
 # ---------------------------------------------------------------------------
-def run_flim_or_cooba(model_name, src, tgt, scenario, s_tr, t_tr, t_test_by_class):
-    """FLIM/COOBA expose only aggregate metrics -> call once per class."""
-    if model_name == "FLIM":
-        from src.flim.pipeline import run_flim_experiment as fn
-    else:
-        from src.cooba.pipeline import run_cooba_experiment as fn  # noqa
+# FLIM — WP, full-snapshot (no retrieval filter). We monkey-patch
+# TOP_K_CANDIDATES so LAYER 1 returns every file, and set FLIM_DIAG_CSV so the
+# patched pipeline dumps per-(bug,file) scores; we then compute per-GT-file
+# ranks and slice by class ourselves.
+# ---------------------------------------------------------------------------
+def run_flim(tgt, t_tr, target_test_ids, cls_map, epochs):
+    import pickle
+    import src.flim.pipeline as flp
+    flp.TOP_K_CANDIDATES = 10 ** 9        # LAYER 1 returns the whole snapshot
+    flp._FUNC_EMB_CACHE.clear()
+    if epochs:
+        flp.FINETUNE_EPOCHS = epochs
+    diag_csv = os.path.join(DIAG_DIR, f"_flim_raw_{tgt.replace('/', '_')}.csv")
+    os.environ["FLIM_DIAG_CSV"] = diag_csv
+
+    flp.run_flim_experiment(tgt, tgt, [], t_tr, [str(b) for b in target_test_ids], "WP-large")
+    if not os.path.exists(diag_csv):
+        return pd.DataFrame()
+    raw = pd.read_csv(diag_csv, dtype={"bug_id": str})
+
+    # per bug: rank files by 'result' desc, read off each ground-truth file's rank
+    stub = tgt.replace("/", "_")
+    bug_db = pickle.load(open(os.path.join(P.EMBEDDING_DB_DIR, f"{stub}_bug_metadata32.pkl"), "rb"))
     rows = []
-    for bclass, ids in t_test_by_class.items():
-        if not ids:
-            continue
-        m = fn(src, tgt, s_tr, t_tr, ids, scenario)
-        rows.append({"bug_class": bclass, "n_test_bugs": len(ids), "n_gt_files": None,
-                     "top1": m.get("Top-1"), "top5": m.get("Top-5"), "top10": m.get("Top-10"),
-                     "MAP": m.get("MAP"), "MRR": m.get("MRR")})
-    return rows
+    for bug_id, g in raw.groupby("bug_id"):
+        g = g.sort_values("result", ascending=False).reset_index(drop=True)
+        g["rank"] = g.index + 1
+        gt = g[g["used_in_fix"] == 1.0]
+        gts_meta = bug_db.get(str(bug_id), {}).get("ground_truth_files", [])
+        for _, rr in gt.iterrows():
+            rows.append({
+                "bug_id": str(bug_id), "gt_sha": rr["blob_sha"], "gt_path": "",
+                "ext": "", "faiss_rank": -1, "model_rank": int(rr["rank"]),
+            })
+        # ground-truth files FLIM never scored (no functions / not in candidate list) -> rank -1
+        scored = set(gt["blob_sha"])
+        n_missing = max(0, len(gts_meta) - len(scored))
+        for _ in range(n_missing):
+            rows.append({"bug_id": str(bug_id), "gt_sha": "", "gt_path": "",
+                         "ext": "", "faiss_rank": -1, "model_rank": -1})
+    d = pd.DataFrame(rows)
+    if not d.empty:
+        d["bug_class"] = d["bug_id"].map(cls_map)
+    return d
 
 
 # ---------------------------------------------------------------------------
@@ -377,64 +409,48 @@ def main():
     cls_map = dict(zip(kept["bug_id"], kept["class"]))
     epochs = 1 if SMOKE else 10
 
-    jobs = []
-    # ---- WP arm ----
+    # ---- WP arm only (no retrieval stage: every technique ranks the full snapshot) ----
     wp_projects = [P.SELECTED_REPO_NAMES[0]] if SMOKE else P.SELECTED_REPO_NAMES
+    models = ["BM25", "BLAZE"] if SMOKE else ["BM25", "BLAZE", "FLIM"]
+    if ONLY_MODELS:
+        models = [m for m in models if m in ONLY_MODELS]
+
+    jobs = []
     for repo in wp_projects:
         ids = kept[kept.repo_name == repo]["bug_id"].tolist()
-        tr, te = wp_split(ids)
-        t_tr = train_test_split(tr, train_size=0.99, random_state=SEED)[0]  # ~80% overall
-        te_by_class = {c: [b for b in te if cls_map[b] == c] for c in ("Mono-fix", "Poly-fix")}
-        models = ["BM25", "BLAZE"] if SMOKE else ["BM25", "BLAZE", "FLIM"]
+        tr, te = wp_split(ids)                       # 80 / 20
         for mdl in models:
-            jobs.append(dict(arm="WP", model=mdl, src=repo, tgt=repo, scenario="WP",
-                             s_tr=[], t_tr=t_tr, t_test=te, t_test_by_class=te_by_class))
-    # ---- CP arm ----
-    if not SMOKE:
-        for s, t in cp_pairs():
-            s_ids = kept[kept.repo_name == s]["bug_id"].tolist()
-            t_ids = kept[kept.repo_name == t]["bug_id"].tolist()
-            t_tr_pool, t_te = wp_split(t_ids)
-            t_tr = train_test_split(t_tr_pool, train_size=0.25, random_state=SEED)[0]
-            te_by_class = {c: [b for b in t_te if cls_map[b] == c] for c in ("Mono-fix", "Poly-fix")}
-            for mdl in ("BM25", "BLAZE", "COOBA"):
-                jobs.append(dict(arm="CP", model=mdl, src=s, tgt=t, scenario="CP-transfer",
-                                 s_tr=s_ids, t_tr=t_tr, t_test=t_te, t_test_by_class=te_by_class))
+            jobs.append(dict(model=mdl, tgt=repo, t_tr=tr, t_test=te))
 
-    if ONLY_MODELS:
-        jobs = [j for j in jobs if j["model"] in ONLY_MODELS]
-    if ONLY_ARMS:
-        jobs = [j for j in jobs if j["arm"] in ONLY_ARMS]
-    print(f"{len(jobs)} runs  (SMOKE={SMOKE}  models={ONLY_MODELS or 'all'}  arms={ONLY_ARMS or 'all'})")
+    print(f"{len(jobs)} runs  (WP only, full-snapshot  SMOKE={SMOKE}  models={models})")
     for i, j in enumerate(jobs, 1):
-        if already_done(j["arm"], j["model"], j["src"], j["tgt"], j["scenario"]):
-            print(f"[{i}/{len(jobs)}] {j['model']} {j['src']}->{j['tgt']} — done, skip")
+        if already_done("WP", j["model"], j["tgt"], j["tgt"], "WP"):
+            print(f"[{i}/{len(jobs)}] {j['model']} {j['tgt']} — done, skip")
             continue
-        print(f"\n[{i}/{len(jobs)}] {j['arm']} {j['model']} {j['src']} -> {j['tgt']} ({j['scenario']})")
+        print(f"\n[{i}/{len(jobs)}] WP {j['model']} {j['tgt']}")
         t0 = time.time()
         try:
-            if j["model"] in ("BLAZE", "BM25"):
-                if j["model"] == "BLAZE":
-                    diag = run_blaze(j["arm"], j["src"], j["tgt"], j["scenario"],
-                                     j["s_tr"], j["t_tr"], j["t_test"], cls_map, epochs)
-                else:
-                    diag = run_bm25(j["tgt"], j["t_test"], cls_map)
-                if diag is None or diag.empty:
-                    print("  no diagnostics"); continue
-                tag = f"{j['arm']}_{j['model']}_{j['src'].replace('/', '_')}_{j['tgt'].replace('/', '_')}"
-                diag["bug_class"] = diag["bug_id"].map(cls_map)
-                diag.to_csv(os.path.join(DIAG_DIR, tag + ".csv"), index=False)
-                per_class = metrics_by_class(diag, cls_map)
-            else:
-                per_class = run_flim_or_cooba(j["model"], j["src"], j["tgt"], j["scenario"],
-                                              j["s_tr"], j["t_tr"], j["t_test_by_class"])
+            if j["model"] == "BLAZE":
+                diag = run_blaze("WP", j["tgt"], j["tgt"], "WP", [], j["t_tr"],
+                                 j["t_test"], cls_map, epochs)
+            elif j["model"] == "BM25":
+                diag = run_bm25(j["tgt"], j["t_test"], cls_map)
+            else:  # FLIM
+                diag = run_flim(j["tgt"], j["t_tr"], j["t_test"], cls_map, epochs if SMOKE else 0)
+            if diag is None or diag.empty:
+                print("  no diagnostics"); continue
+            tag = f"WP_{j['model']}_{j['tgt'].replace('/', '_')}"
+            diag["bug_class"] = diag["bug_id"].map(cls_map)
+            diag.to_csv(os.path.join(DIAG_DIR, tag + ".csv"), index=False)
+            per_class = metrics_by_class(diag, cls_map)
         except Exception as e:
+            import traceback; traceback.print_exc()
             print(f"  ERROR: {type(e).__name__}: {e}")
             continue
         wt = round(time.time() - t0, 1)
-        append_rows([{**{"arm": j["arm"], "model": j["model"], "source_project": j["src"],
-                         "target_project": j["tgt"], "scenario": j["scenario"], "wall_time_sec": wt},
-                      **{k: v for k, v in pc.items()}} for pc in per_class])
+        append_rows([{"arm": "WP", "model": j["model"], "source_project": j["tgt"],
+                      "target_project": j["tgt"], "scenario": "WP", "wall_time_sec": wt, **pc}
+                     for pc in per_class])
         print(f"  done in {wt/60:.1f} min: " + " | ".join(
             f"{pc['bug_class']}: MRR={pc['MRR']}" for pc in per_class))
 

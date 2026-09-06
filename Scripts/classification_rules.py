@@ -22,7 +22,7 @@ import re
 from dataclasses import dataclass, field, replace
 from typing import Optional
 
-RULESET_VERSION = "0.2.0-draft"   # bump on any rule change; frozen value recorded in the paper
+RULESET_VERSION = "0.2.0"   # FROZEN 2026-09-06 — bump to 0.2.1 if the 50-bug check finds a rule error
 
 # ---------------------------------------------------------------------------
 # 1. Extension -> (language_id, category)
