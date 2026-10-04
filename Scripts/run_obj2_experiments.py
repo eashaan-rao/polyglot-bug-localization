@@ -132,8 +132,9 @@ def run_blaze(arm, src, tgt, scenario, source_train_ids, target_train_ids,
     )
     from src.blaze.pipeline import (
         BGE_EMBEDDING_DIM, BGE_MODEL_NAME, FREEZE_TRANSFORMER, GRAD_ACCUM_STEPS,
-        HARD_NEGATIVE_SCALE, HARD_POSITIVE_SCALE, LEARNING_RATE, PATIENCE,
-        POSITIVE_SCALE, RESIDUAL_LAYERS, TAU, WARMUP_RATIO, WEIGHT_DECAY,
+        GPU_CHECK_EVERY_N_EVAL_ITEMS, HARD_NEGATIVE_SCALE, HARD_POSITIVE_SCALE,
+        LEARNING_RATE, PATIENCE, POSITIVE_SCALE, RESIDUAL_LAYERS, TAU,
+        WARMUP_RATIO, WEIGHT_DECAY,
         _build_dataloader, _encode_snapshot_blobs, _train_epoch, _val_loss, _wait_for_gpu,
     )
     device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -198,12 +199,16 @@ def run_blaze(arm, src, tgt, scenario, source_train_ids, target_train_ids,
     if best_state:
         model.load_state_dict(best_state)
 
-    # ---- evaluate: per-gt-file model_rank, restricted to FAISS top-K ----
+    # ---- evaluate: per-gt-file model_rank over the WHOLE snapshot (no retrieval stage) ----
     model.eval()
     bug_text = pd.Series(df_bugs["bug_report_text"].values, index=df_bugs["bug_id"].astype(str)).to_dict()
     diag = []
     blob_cache = {}
-    for bug_id in target_test_ids:
+    for bug_idx, bug_id in enumerate(target_test_ids):
+        if bug_idx % GPU_CHECK_EVERY_N_EVAL_ITEMS == 0:
+            _wait_for_gpu(model, device)  # full-snapshot encoding is the spikiest step
+            # (ported from Objective1 df2cf0e: the old training-only GPU check let a
+            # busy shared GPU stall full-snapshot evaluation indefinitely)
         meta = t_bug_db.get(str(bug_id))
         if not meta:
             continue

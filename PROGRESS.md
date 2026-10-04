@@ -55,13 +55,48 @@ tractable classical baseline.
 
 ## Remaining
 
-- **BLAZE + FLIM GPU runs** — smoke test in progress (GPU shared with another job).
-  After: rerun `obj2_wp_analysis.py`, `obj2_classical_vs_parsing.py`,
+- **BLAZE + FLIM GPU runs** — blocked on GPU availability (shared card). After:
+  rerun `obj2_wp_analysis.py`, `obj2_classical_vs_parsing.py`,
   `obj2_failure_analysis.py`, `obj2_tables.py`, `obj2_figures.py` (all pick up the
   new diagnostics automatically).
 - 50-bug two-person agreement check — sheet is ready, needs a second annotator.
 - `docs/SANER_REVIEW_RESPONSE.md`, `GLOSSARY.md` — drafted, final prose pass.
-- GitHub repo: `gh repo create polyglot-bug-localization --private` then push.
+- GitHub repo: done (`eashaan-rao/polyglot-bug-localization`, public).
+
+## Ported from Objective 1 (2026-10-04)
+
+Objective 1 is still an active codebase; periodically diff it for changes worth
+mirroring here. Checked everything since the 2026-09-06 scaffold (18 commits):
+
+- **Ported — BLAZE GPU memory guard (`df2cf0e`, 2026-09-18).** The earlier
+  smoke test's full-snapshot BLAZE evaluation stalled for 40+ minutes on a
+  busy shared GPU — root cause: `GPU_FREE_THRESHOLD_MiB` was the old `8192`
+  (blocks until 8 GB free, rare on a loaded card) and `_wait_for_gpu` was only
+  called once per training epoch, never during evaluation, even though
+  full-snapshot encoding per bug is the spikiest step. Objective 1 fixed this
+  on 2026-09-18, 12 days after this tree was copied, so the fix never made it
+  over. Applied the same change here: `GPU_FREE_THRESHOLD_MiB` 8192 → 3072,
+  new `GPU_CHECK_EVERY_N_EVAL_ITEMS = 1`, and a per-bug `_wait_for_gpu(...)`
+  call added to both `src/blaze/pipeline.py::evaluate()` (unused directly, kept
+  in sync for consistency) and `Scripts/run_obj2_experiments.py::run_blaze()`
+  (the actual driver).
+- **Not applicable — FAISS top-300 restriction family** (`10afdc9` and the
+  `blaze_faiss_restricted_sweep_*` scripts). Objective 1 restricts BLAZE's
+  evaluation to a shared FAISS top-300 candidate pool; Objective 2 deliberately
+  does the opposite — the advisor decision removed the retrieval stage so every
+  technique ranks the whole snapshot. Porting this would undo that decision.
+- **Not applicable — WP-small/CP-transfer budget fix** (`6290b20`). Fixes a
+  mismatch between two of Objective 1's four CPL scenarios (WP-small drew 10%
+  of target bugs, CP-transfer drew 20%). Objective 2 has no such scenario
+  structure — one "WP" arm, a single 80/20 split, no sub-sampled budgets — so
+  there is nothing to match.
+- **Not applicable** — `negative_transfer_analysis.py` noise-floor /
+  symmetric-noise robustness checks (cross-project-learning concept Objective 2
+  dropped), `generate_dc5_presentation.py`, `run_wp_small_matched_budget.py`
+  (Objective 1 orchestration/presentation only). `src/cooba/`, `src/blgan/`,
+  and the four analysis scripts referenced in `_obj1_reference/`
+  (`effect_size_analysis.py`, `equivalence_and_robustness_tests.py`,
+  `main_results_table.py`, `journal_figures.py`) had no changes to port.
 
 ## Supplementary — what a retrieval stage would have cost (not used)
 
