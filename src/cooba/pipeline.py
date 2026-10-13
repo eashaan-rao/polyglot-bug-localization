@@ -119,8 +119,12 @@ def create_labeled_samples(project_name, language, bug_metadata_db, blob_embeddi
         path_to_sha_map = get_path_to_sha_map(repo, commit_sha)
 
         # Assemble snapshot embeddings for Faiss
-        snapshot_blobs = list(path_to_sha_map.values())
-        snapshot_embeddings = np.array([blob_embedding_db[sha] for sha in snapshot_blobs if sha in blob_embedding_db]).astype('float32')
+        # Keep snapshot_blobs aligned with snapshot_embeddings: filter BOTH on
+        # embedding availability. Filtering only the embeddings shifted every
+        # FAISS index past the first missing blob, so result_indices mapped back
+        # to the wrong SHAs (and k could exceed the index size, yielding idx=-1).
+        snapshot_blobs = [sha for sha in path_to_sha_map.values() if sha in blob_embedding_db]
+        snapshot_embeddings = np.array([blob_embedding_db[sha] for sha in snapshot_blobs]).astype('float32')
         if snapshot_embeddings.shape[0] == 0:
             continue
         

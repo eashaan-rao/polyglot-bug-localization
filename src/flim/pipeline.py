@@ -230,12 +230,21 @@ def _faiss_candidates(
     blob_embedding_db: dict,
     repo:           git.Repo,
     is_training:    bool = True,
-    top_k:          int  = TOP_K_CANDIDATES,
+    top_k:          int | None = None,
 ) -> dict:
     """
     Returns {bug_id: [(blob_sha, file_path, is_ground_truth), …]}.
     Ground-truth files are force-included for training splits.
+
+    top_k defaults to the module-level TOP_K_CANDIDATES, resolved here at call
+    time rather than as a default argument. Callers disable the retrieval filter
+    by raising that global (Scripts/run_obj2_experiments.py sets it to 1e9 so
+    LAYER 1 returns the whole snapshot); a default argument would have captured
+    300 at import and silently ignored them.
     """
+    if top_k is None:
+        top_k = TOP_K_CANDIDATES
+
     valid = [b for b in bug_ids if b in bug_metadata_db]
     bugs_by_commit: dict[str, list] = {}
     for bug_id in valid:
