@@ -1,466 +1,177 @@
 """
-Step 3 — Within-project (WP) and same-language cross-project (CP) reranking runs.
+Step 3 — within-project runs: BM25, BLAZE, FLIM on the six projects.
 
-ARMS
-  (a) WP  : for each of the 6 projects, one training run on 80% of the KEPT bugs
-            (both classes), evaluated on the held-out 20%. Models: BLAZE, FLIM.
-  (b) CP  : same-language directed pairs (Java<->Java, Python<->Python), trained
-            on 100% source + 20% target, evaluated on 80% of target. Models:
-            BLAZE, COOBA (COOBA in its designed transfer setting).
+Design (docs/JOURNAL_PLAN.md):
+  * chronological split per project (Scripts/bugs.py: train / val / test,
+    purged), fold 1 = newest 20 % test, fold 2 = rolling origin
+  * every technique scores every file of universe T of each test bug's
+    pre-fix snapshot (Scripts/universe.py); no retrieval stage
+  * no technique computes metrics: Scripts/evaluate.py ranks the score files
+    under universe R/T x view all/parse
+  * seeds for the trained techniques; BM25 is deterministic (seed 0)
 
-The Mono-vs-Poly comparison is NOT done here — it is done in analysis by slicing
-the per-bug diagnostics (which carry `bug_class`) and balanced-subsampling.
-Retrieval recall by class (retrieval_recall_by_class.py) must be run first.
+Outputs
+  results/obj2/scores/<TECH>/fold<F>/seed<S>/<project>.parquet   (bug_id, path, score)
+  results/obj2/scores/<TECH>/fold<F>/seed<S>/<project>.json      (manifest)
+  results/obj2/logs/<TECH>_fold<F>_seed<S>_<project>.log
+Resumable: a run whose score file exists is skipped.
 
-GPU. Expect ~45 min per model-run; the full grid is ~2.5-3 days. Resumable:
-each finished run is appended to results/obj2/wp_cp_summary.csv and skipped on
-rerun. Per-bug diagnostics go to results/obj2/diagnostics/.
+Env
+  OBJ2_TECHS     BM25,BLAZE,FLIM      (default; BLAZE_ALL = ablation trained on all
+                 fix files, fold 1 / seed 13, after BLAZE)
+  OBJ2_FOLDS     1 | 1,2              (default 1)
+  OBJ2_SEEDS     13,42,2027           (default; BM25 always seed 0)
+  OBJ2_PROJECTS  comma list of repo names (default all six)
+  OBJ2_SMOKE=1   tiny run: <=40 train / 10 val / 8 test bugs, results under scores_smoke/
 
-Smoke test:  OBJ2_SMOKE=1 python Scripts/run_obj2_experiments.py
-             (1 project, BLAZE only, 1 epoch)
+GPU techniques must run one at a time on the shared L40 (the October run
+lost BLAZE airflow + localstack to OOM because BLAZE and FLIM ran together).
 
-Run:         python Scripts/run_obj2_experiments.py
+Run:   python Scripts/run_obj2_experiments.py && python Scripts/evaluate.py
 """
 
-import itertools
 import json
 import os
 import sys
 import time
-
-import numpy as np
-import pandas as pd
-from sklearn.model_selection import train_test_split
+import traceback
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from Scripts import paths as P
-from Scripts.classification_rules import EXT_LANG, GRAMMAR_LANGUAGES
+from Scripts import evaluate as EV
+from Scripts.bugs import chrono_split, load_all
+from Scripts.repro import set_seed, wait_for_gpu, write_manifest
 
 SMOKE = os.environ.get("OBJ2_SMOKE") == "1"
-ONLY_MODELS = set(os.environ.get("OBJ2_MODELS", "").split(",")) - {""}  # e.g. OBJ2_MODELS=BM25
-ONLY_ARMS = set(os.environ.get("OBJ2_ARMS", "").split(",")) - {""}      # e.g. OBJ2_ARMS=WP
-SEED = 42
-FAISS_TOP_K = 300
-OUT_DIR = P.RESULT_PATH
-DIAG_DIR = os.path.join(OUT_DIR, "diagnostics")
-SUMMARY_CSV = os.path.join(OUT_DIR, "wp_cp_summary.csv")
-os.makedirs(DIAG_DIR, exist_ok=True)
-
-SUMMARY_COLS = [
-    "arm", "model", "source_project", "target_project", "scenario",
-    "bug_class", "n_test_bugs", "n_gt_files",
-    "top1", "top5", "top10", "MAP", "MRR", "wall_time_sec",
-]
-
-
-# ---------------------------------------------------------------------------
-def load_kept():
-    df = pd.read_parquet(P.BUG_CLASSIFICATION_PARQUET)
-    df = df[df["keep"]].copy()
-    df["bug_id"] = df["bug_id"].astype(str)
-    return df
-
-
-def wp_split(bug_ids):
-    train_pool, test = train_test_split(sorted(bug_ids), test_size=0.20, random_state=SEED)
-    return train_pool, test
+# Score the BeetleBox-removed bugs of the test window with the same trained
+# model (they are never used for training). Scripts/removed_bugs.py first.
+WITH_REMOVED = os.environ.get("OBJ2_WITH_REMOVED", "1") == "1"
+# Category (c), bugs whose fix changes no Java/Python file: scored by these
+# techniques only (parser-dependent ones reach none of their files by
+# construction). Trained models are saved, so others can score them later.
+NOPRIMARY_TECHS = set(os.environ.get("OBJ2_NOPRIMARY_TECHS", "BM25").split(",")) - {""}
+TECHS = [t for t in os.environ.get("OBJ2_TECHS", "BM25,BLAZE,FLIM").split(",") if t]
+FOLDS = [int(x) for x in os.environ.get("OBJ2_FOLDS", "1").split(",") if x]
+SEEDS = [int(x) for x in os.environ.get("OBJ2_SEEDS", "13,42,2027").split(",") if x]
+PROJECTS = [p for p in os.environ.get("OBJ2_PROJECTS", ",".join(P.SELECTED_REPO_NAMES)).split(",") if p]
+LOG_DIR = os.path.join(P.RESULT_PATH, "logs_smoke" if SMOKE else "logs")
+# The L40 is shared with other users: wait for this much free memory before a
+# GPU run, and retry a run that dies of CUDA OOM (after waiting again).
+# Measured peaks: BLAZE (CodeSage-small, full fine-tuning, batch 20, 1024-token
+# reports) > 23 GiB -- OOM'd at 23.0 GiB on 2026-10-31; CodeSage does not
+# support gradient checkpointing. FLIM (CodeBERT, batch 32) fits in ~8 GiB.
+GPU_TECHS = {"BLAZE", "BLAZE_ALL", "FLIM"}
+GPU_MIN_FREE_GIB = {"BLAZE": float(os.environ.get("OBJ2_GPU_MIN_FREE_GIB_BLAZE", "30")),
+                    "BLAZE_ALL": float(os.environ.get("OBJ2_GPU_MIN_FREE_GIB_BLAZE", "30")),
+                    "FLIM": float(os.environ.get("OBJ2_GPU_MIN_FREE_GIB_FLIM", "12"))}
+OOM_RETRIES = int(os.environ.get("OBJ2_OOM_RETRIES", "3"))
 
 
-def cp_pairs():
-    by_lang = {"java": [], "python": []}
-    for repo, lang in P.SELECTED_PROJECTS:
-        by_lang[lang].append(repo)
-    pairs = []
-    for lang, repos in by_lang.items():
-        for s, t in itertools.permutations(repos, 2):
-            pairs.append((s, t))
-    return pairs
+def _module(tech):
+    if tech == "BM25":
+        import src.bm25 as m
+    elif tech in ("BLAZE", "BLAZE_ALL"):
+        import src.blaze.wp as m
+    elif tech == "FLIM":
+        import src.flim.pipeline as m
+    else:
+        raise ValueError(tech)
+    return m
 
 
-def already_done(arm, model, src, tgt, scenario):
-    if not os.path.exists(SUMMARY_CSV):
-        return False
-    d = pd.read_csv(SUMMARY_CSV)
-    return ((d.arm == arm) & (d.model == model) & (d.source_project == src)
-            & (d.target_project == tgt) & (d.scenario == scenario)).any()
+def _smoke(split):
+    s = dict(split)
+    s["train"], s["val"] = split["train"][-40:], split["val"][:10]
+    s["test"], s["test_removed"] = split["test"][:6], split["test_removed"][:2]
+    s["test_noprimary"] = split["test_noprimary"][:2]
+    return s
 
 
-def append_rows(rows):
-    df = pd.DataFrame(rows)
-    df.to_csv(SUMMARY_CSV, mode="a", header=not os.path.exists(SUMMARY_CSV),
-              index=False, columns=SUMMARY_COLS)
-
-
-def metrics_by_class(diag: pd.DataFrame, cls_map: dict):
-    """diag: per-(bug,gt_file) rows with columns bug_id, model_rank. -> per-class dict."""
-    diag = diag.copy()
-    diag["bug_class"] = diag["bug_id"].map(cls_map)
-    out = []
-    for bclass, g in list(diag.groupby("bug_class")) + [("ALL", diag)]:
-        by_bug = g.groupby("bug_id")["model_rank"]
-        first = by_bug.min()
-        rr = (1.0 / first.where(first > 0, np.inf)).replace(np.inf, 0.0)
-        def topk(k):
-            return float((first.between(1, k)).mean())
-        # MAP
-        aps = []
-        for _, gg in g.groupby("bug_id"):
-            ranks = sorted(r for r in gg["model_rank"] if r and r > 0)
-            if not ranks:
-                aps.append(0.0); continue
-            aps.append(float(np.mean([(i + 1) / r for i, r in enumerate(ranks)])))
-        out.append({
-            "bug_class": bclass, "n_test_bugs": g["bug_id"].nunique(), "n_gt_files": len(g),
-            "top1": round(topk(1), 4), "top5": round(topk(5), 4), "top10": round(topk(10), 4),
-            "MAP": round(float(np.mean(aps)) if aps else 0.0, 4),
-            "MRR": round(float(rr.mean()), 4),
-        })
-    return out
-
-
-# ---------------------------------------------------------------------------
-# BLAZE — train once, evaluate with per-bug diagnostics (ported from
-# blaze_faiss_restricted_sweep.py, adapted to WP/CP and class diagnostics).
-# ---------------------------------------------------------------------------
-def run_blaze(arm, src, tgt, scenario, source_train_ids, target_train_ids,
-              target_test_ids, cls_map, epochs):
-    import copy, math, git, torch, torch.nn.functional as F, torch.optim as optim, transformers
-    from src.blaze.model import BlazeEmbedding, NTXentLoss
-    from src.blaze.data_prep import (
-        create_contrastive_samples, get_path_to_sha_map, get_project_path,
-        load_project_databases,
-    )
-    from src.blaze.pipeline import (
-        BGE_EMBEDDING_DIM, BGE_MODEL_NAME, FREEZE_TRANSFORMER, GRAD_ACCUM_STEPS,
-        GPU_CHECK_EVERY_N_EVAL_ITEMS, HARD_NEGATIVE_SCALE, HARD_POSITIVE_SCALE,
-        LEARNING_RATE, PATIENCE, POSITIVE_SCALE, RESIDUAL_LAYERS, TAU,
-        WARMUP_RATIO, WEIGHT_DECAY,
-        _build_dataloader, _encode_snapshot_blobs, _train_epoch, _val_loss, _wait_for_gpu,
-    )
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-    df_bugs = pd.read_parquet(P.BUG_REPORTS_PATH)
-    df_meta = pd.read_parquet(P.PROJECTS_METADATA_PATH)
-
-    s_bug_db, s_blob_db, s_lang = (load_project_databases(src, df_meta) if source_train_ids
-                                   else (None, None, None))
-    t_bug_db, t_blob_db, t_lang = load_project_databases(tgt, df_meta)
-    t_repo = git.Repo(get_project_path(tgt, t_lang))
-
-    def _split(ids, ratio):
-        if not ids or len(ids) * ratio < 1:
-            return ids, []
-        return train_test_split(ids, test_size=ratio, random_state=SEED)
-
-    s_tr, s_val = _split(source_train_ids, 0.2)
-    t_tr, t_val = _split(target_train_ids, 0.2)
-    mk = create_contrastive_samples
-    s_tr_s = mk(src, s_lang, s_bug_db, df_bugs, s_tr) if s_tr else []
-    s_val_s = mk(src, s_lang, s_bug_db, df_bugs, s_val) if s_val else []
-    t_tr_s = mk(tgt, t_lang, t_bug_db, df_bugs, t_tr) if t_tr else []
-    t_val_s = mk(tgt, t_lang, t_bug_db, df_bugs, t_val) if t_val else []
-    if not s_tr_s and not t_tr_s:
-        print("  no training samples, skip"); return None
-
-    s_tr_l = _build_dataloader(s_tr_s, shuffle=True, drop_last=True)
-    s_val_l = _build_dataloader(s_val_s, shuffle=False, drop_last=False)
-    t_tr_l = _build_dataloader(t_tr_s, shuffle=True, drop_last=True)
-    t_val_l = _build_dataloader(t_val_s, shuffle=False, drop_last=False)
-
-    torch.cuda.empty_cache()
-    model = BlazeEmbedding(model_name=BGE_MODEL_NAME, dimension=BGE_EMBEDDING_DIM,
-                           max_length=512, residual_layers=RESIDUAL_LAYERS).to(device)
-    if FREEZE_TRANSFORMER:
-        for p_ in model.transformer.parameters():
-            p_.requires_grad = False
-        model.transformer.eval()
-    loss_fn = NTXentLoss(tau=TAU, hard_negative_scale=HARD_NEGATIVE_SCALE,
-                         hard_positive_scale=HARD_POSITIVE_SCALE, positive_scale=POSITIVE_SCALE)
-    opt = optim.AdamW([p_ for p_ in model.parameters() if p_.requires_grad],
-                      lr=LEARNING_RATE, weight_decay=WEIGHT_DECAY)
-    nb = (len(s_tr_l) if s_tr_l else 0) + (len(t_tr_l) if t_tr_l else 0)
-    steps = max(1, math.ceil(nb / GRAD_ACCUM_STEPS)) * epochs
-    sch = transformers.get_linear_schedule_with_warmup(opt, max(1, int(steps * WARMUP_RATIO)), steps)
-    scaler = torch.amp.GradScaler("cuda")
-    best, best_state, patience = float("inf"), None, 0
-    for ep in range(epochs):
-        _wait_for_gpu(model, device)
-        tl = _train_epoch(model, loss_fn, opt, sch, scaler, s_tr_l, t_tr_l, device, ep)
-        if s_val_l or t_val_l:
-            vl = _val_loss(model, loss_fn, s_val_l, t_val_l, device)
-            if vl < best:
-                best, best_state, patience = vl, copy.deepcopy(model.state_dict()), 0
-            else:
-                patience += 1
-                if patience >= PATIENCE:
-                    break
-        else:
-            best_state = copy.deepcopy(model.state_dict())
-        print(f"  epoch {ep+1}: train_loss={tl:.4f}")
-    if best_state:
-        model.load_state_dict(best_state)
-
-    # ---- evaluate: per-gt-file model_rank over the WHOLE snapshot (no retrieval stage) ----
-    model.eval()
-    bug_text = pd.Series(df_bugs["bug_report_text"].values, index=df_bugs["bug_id"].astype(str)).to_dict()
-    diag = []
-    blob_cache = {}
-    for bug_idx, bug_id in enumerate(target_test_ids):
-        if bug_idx % GPU_CHECK_EVERY_N_EVAL_ITEMS == 0:
-            _wait_for_gpu(model, device)  # full-snapshot encoding is the spikiest step
-            # (ported from Objective1 df2cf0e: the old training-only GPU check let a
-            # busy shared GPU stall full-snapshot evaluation indefinitely)
-        meta = t_bug_db.get(str(bug_id))
-        if not meta:
-            continue
-        sha = meta.get("commit_sha", "")
-        txt = bug_text.get(str(bug_id), "")
-        if not sha or not txt:
-            continue
-        p2s = get_path_to_sha_map(t_repo, sha)
-        if not p2s:
-            continue
-        gt_shas = {s for p, s in p2s.items()
-                   if any(p == g or p.endswith("/" + g) for g in meta.get("ground_truth_files", []))}
-        if not gt_shas:
-            continue
-        chunk_embs = _encode_snapshot_blobs(model, t_repo, p2s, t_lang, device, blob_cache)
-        with torch.no_grad(), torch.amp.autocast(device_type="cuda"):
-            q = model.get_report_embedding([txt])
-        q = F.normalize(q, p=2, dim=1).cpu().numpy()[0]
-        scores = {s: float((ce @ q).max()) for s, ce in chunk_embs.items()}
-        # FAISS top-K restriction
-        snap = [s for s in p2s.values() if s in t_blob_db]
-        if snap:
-            E = np.stack([t_blob_db[s].astype("float32") for s in snap])
-            E /= (np.linalg.norm(E, axis=1, keepdims=True) + 1e-10)
-            be = meta["embedding"].astype("float32"); be /= (np.linalg.norm(be) + 1e-10)
-            order = np.argsort(E @ be)[::-1]
-            faiss_ranked = [snap[i] for i in order]
-        else:
-            faiss_ranked = []
-        # obj2: NO retrieval stage -- BLAZE ranks the whole snapshot
-        ranked = [s for s, _ in sorted(scores.items(), key=lambda x: -x[1])]
-        rank_of = {s: i + 1 for i, s in enumerate(ranked)}
-        faiss_rank_of = {s: i + 1 for i, s in enumerate(faiss_ranked)}
-        sha2path = {v: k for k, v in p2s.items()}
-        for gs in gt_shas:
-            gp = sha2path.get(gs, "")
-            diag.append({
-                "bug_id": str(bug_id), "gt_sha": gs, "gt_path": gp,
-                "ext": gp.rsplit(".", 1)[-1].lower() if "." in gp.rsplit("/", 1)[-1] else "[noext]",
-                "faiss_rank": faiss_rank_of.get(gs, -1),
-                "model_rank": rank_of.get(gs, -1),
-            })
-    return pd.DataFrame(diag)
-
-
-# ---------------------------------------------------------------------------
-# BM25 — classical IR baseline. Ranks the WHOLE snapshot (every embedded blob),
-# NOT the FAISS top-K: classical retrieval processes every file type by
-# construction, so restricting it to the neural retriever's candidates would
-# defeat the point of the Step 4 comparison. CPU, no training.
-# ---------------------------------------------------------------------------
-_TOK = None
-BM25_MAX_DOCS = 40000        # cap tokenised docs per snapshot (large repos)
-
-
-def _tokenize(text):
-    import re
-    global _TOK
-    if _TOK is None:
-        _TOK = (re.compile(r"[^A-Za-z0-9]+"), re.compile(r"(?<=[a-z0-9])(?=[A-Z])"))
-    parts = _TOK[0].split(text or "")
-    out = []
-    for p in parts:
-        for q in _TOK[1].split(p):
-            if q:
-                out.append(q.lower())
-    return out
-
-
-def run_bm25(tgt, target_test_ids, cls_map):
-    import pickle, git
-    import bm25s
-    stub = tgt.replace("/", "_")
-    lang = dict(P.SELECTED_PROJECTS)[tgt]
-    blob_db = pickle.load(open(os.path.join(P.EMBEDDING_DB_DIR, f"{stub}_blob_embeddings32.pkl"), "rb"))
-    bug_db = pickle.load(open(os.path.join(P.EMBEDDING_DB_DIR, f"{stub}_bug_metadata32.pkl"), "rb"))
-    df_bugs = pd.read_parquet(P.BUG_REPORTS_PATH)
-    bug_text = pd.Series(df_bugs["bug_report_text"].values,
-                         index=df_bugs["bug_id"].astype(str)).to_dict()
-    repo = git.Repo(os.path.join(P.REPO_BASE_PATH, lang, stub))
-    MAX_BYTES = 2_000_000
-    diag = []
-    doc_cache = {}   # sha -> tokenised doc, reused across bugs sharing a snapshot
-    for bug_id in target_test_ids:
-        meta = bug_db.get(str(bug_id))
-        if not meta:
-            continue
-        sha = meta.get("commit_sha", "")
-        gts = list(meta.get("ground_truth_files", []))
-        if not sha or not gts:
-            continue
-        try:
-            commit = repo.commit(sha)
-            p2s = {b.path: b.hexsha for b in commit.tree.traverse()
-                   if b.type == "blob" and b.hexsha in blob_db}
-        except Exception:
-            continue
-        if not p2s:
-            continue
-        gt_shas = {s for p, s in p2s.items()
-                   if any(p == g or p.endswith("/" + g) for g in gts)}
-        if not gt_shas:
-            continue
-        sha2path = {v: k for k, v in p2s.items()}
-
-        # FAISS order (for the "where would the neural retriever put it" column)
-        snap = list(p2s.values())
-        E = np.stack([blob_db[s].astype("float32") for s in snap])
-        E /= (np.linalg.norm(E, axis=1, keepdims=True) + 1e-10)
-        be = meta["embedding"].astype("float32"); be /= (np.linalg.norm(be) + 1e-10)
-        faiss_order = [snap[i] for i in np.argsort(E @ be)[::-1]]
-        faiss_rank_of = {s: i + 1 for i, s in enumerate(faiss_order)}
-
-        # BM25 over the WHOLE snapshot (cap at BM25_MAX_DOCS)
-        items = list(p2s.items())[:BM25_MAX_DOCS]
-        docs, keep_shas = [], []
-        for path, s in items:
-            if s in doc_cache:
-                docs.append(doc_cache[s]); keep_shas.append(s); continue
-            try:
-                blob = commit.tree / path
-                if blob.size > MAX_BYTES:
-                    tok = _tokenize(path)
-                else:
-                    tok = _tokenize(path + " " + blob.data_stream.read().decode("utf-8", "replace"))
-            except Exception:
-                tok = _tokenize(path)
-            doc_cache[s] = tok
-            docs.append(tok); keep_shas.append(s)
-        if not docs:
-            continue
-        retriever = bm25s.BM25()
-        retriever.index(docs, show_progress=False)
-        res, _sc = retriever.retrieve(
-            [_tokenize(bug_text.get(str(bug_id), "")) or ["_"]],
-            k=len(docs), show_progress=False,
-        )
-        rank_of = {keep_shas[int(idx)]: r + 1 for r, idx in enumerate(res[0])}
-        for gs in gt_shas:
-            gp = sha2path.get(gs, "")
-            diag.append({
-                "bug_id": str(bug_id), "gt_sha": gs, "gt_path": gp,
-                "ext": gp.rsplit(".", 1)[-1].lower() if "." in gp.rsplit("/", 1)[-1] else "[noext]",
-                "faiss_rank": faiss_rank_of.get(gs, -1),
-                "model_rank": rank_of.get(gs, -1),
-            })
-    d = pd.DataFrame(diag)
-    if not d.empty:
-        d["bug_class"] = d["bug_id"].map(cls_map)
-    return d
-
-
-# ---------------------------------------------------------------------------
-# FLIM — WP, full-snapshot (no retrieval filter). We monkey-patch
-# TOP_K_CANDIDATES so LAYER 1 returns every file, and set FLIM_DIAG_CSV so the
-# patched pipeline dumps per-(bug,file) scores; we then compute per-GT-file
-# ranks and slice by class ourselves.
-# ---------------------------------------------------------------------------
-def run_flim(tgt, t_tr, target_test_ids, cls_map, epochs):
-    import pickle
-    import src.flim.pipeline as flp
-    flp.TOP_K_CANDIDATES = 10 ** 9        # LAYER 1 returns the whole snapshot
-    flp._FUNC_EMB_CACHE.clear()
-    if epochs:
-        flp.FINETUNE_EPOCHS = epochs
-    diag_csv = os.path.join(DIAG_DIR, f"_flim_raw_{tgt.replace('/', '_')}.csv")
-    os.environ["FLIM_DIAG_CSV"] = diag_csv
-
-    flp.run_flim_experiment(tgt, tgt, [], t_tr, [str(b) for b in target_test_ids], "WP-large")
-    if not os.path.exists(diag_csv):
-        return pd.DataFrame()
-    raw = pd.read_csv(diag_csv, dtype={"bug_id": str})
-
-    # per bug: rank files by 'result' desc, read off each ground-truth file's rank
-    stub = tgt.replace("/", "_")
-    bug_db = pickle.load(open(os.path.join(P.EMBEDDING_DB_DIR, f"{stub}_bug_metadata32.pkl"), "rb"))
-    rows = []
-    for bug_id, g in raw.groupby("bug_id"):
-        g = g.sort_values("result", ascending=False).reset_index(drop=True)
-        g["rank"] = g.index + 1
-        gt = g[g["used_in_fix"] == 1.0]
-        gts_meta = bug_db.get(str(bug_id), {}).get("ground_truth_files", [])
-        for _, rr in gt.iterrows():
-            rows.append({
-                "bug_id": str(bug_id), "gt_sha": rr["blob_sha"], "gt_path": "",
-                "ext": "", "faiss_rank": -1, "model_rank": int(rr["rank"]),
-            })
-        # ground-truth files FLIM never scored (no functions / not in candidate list) -> rank -1
-        scored = set(gt["blob_sha"])
-        n_missing = max(0, len(gts_meta) - len(scored))
-        for _ in range(n_missing):
-            rows.append({"bug_id": str(bug_id), "gt_sha": "", "gt_path": "",
-                         "ext": "", "faiss_rank": -1, "model_rank": -1})
-    d = pd.DataFrame(rows)
-    if not d.empty:
-        d["bug_class"] = d["bug_id"].map(cls_map)
-    return d
-
-
-# ---------------------------------------------------------------------------
 def main():
-    kept = load_kept()
-    cls_map = dict(zip(kept["bug_id"], kept["class"]))
-    epochs = 1 if SMOKE else 10
+    kept = load_all()            # kept + removed rows; techniques train on split["train"] only
+    os.makedirs(LOG_DIR, exist_ok=True)
+    jobs = [(f, repo, t, (0 if t == "BM25" else s))
+            for f in FOLDS for repo in PROJECTS for t in TECHS
+            for s in (SEEDS[:1] if t == "BM25" else SEEDS)]
+    jobs = list(dict.fromkeys(jobs))
+    print(f"{len(jobs)} runs  techs={TECHS} folds={FOLDS} seeds={SEEDS} smoke={SMOKE}", flush=True)
 
-    # ---- WP arm only (no retrieval stage: every technique ranks the full snapshot) ----
-    _smoke_proj = os.environ.get("OBJ2_SMOKE_PROJECT", "localstack/localstack")
-    wp_projects = [_smoke_proj] if SMOKE else P.SELECTED_REPO_NAMES
-    models = ["BM25", "BLAZE"] if SMOKE else ["BM25", "BLAZE", "FLIM"]
-    if ONLY_MODELS:
-        models = [m for m in models if m in ONLY_MODELS]
-
-    jobs = []
-    for repo in wp_projects:
-        ids = kept[kept.repo_name == repo]["bug_id"].tolist()
-        tr, te = wp_split(ids)                       # 80 / 20
-        for mdl in models:
-            jobs.append(dict(model=mdl, tgt=repo, t_tr=tr, t_test=te))
-
-    print(f"{len(jobs)} runs  (WP only, full-snapshot  SMOKE={SMOKE}  models={models})")
-    for i, j in enumerate(jobs, 1):
-        if already_done("WP", j["model"], j["tgt"], j["tgt"], "WP"):
-            print(f"[{i}/{len(jobs)}] {j['model']} {j['tgt']} — done, skip")
+    for i, (fold, repo, tech, seed) in enumerate(jobs, 1):
+        out = EV.score_path(tech, fold, seed, repo)
+        if os.path.exists(out):
+            print(f"[{i}/{len(jobs)}] {tech} fold{fold} seed{seed} {repo} — done, skip", flush=True)
             continue
-        print(f"\n[{i}/{len(jobs)}] WP {j['model']} {j['tgt']}")
+        split = chrono_split(repo, fold)
+        if SMOKE:
+            split = _smoke(split)
+        n_kept_test = len(split["test"])
+        if WITH_REMOVED:
+            split["test"] = split["test"] + split["test_removed"]
+        if tech in NOPRIMARY_TECHS:
+            split["test"] = split["test"] + split["test_noprimary"]
+        logf = open(os.path.join(LOG_DIR, f"{tech}_fold{fold}_seed{seed}_{repo.replace('/', '_')}.log"), "a")
+
+        def log(msg):
+            print(msg, flush=True)
+            logf.write(msg + "\n"); logf.flush()
+
+        log(f"\n[{i}/{len(jobs)}] {tech} fold{fold} seed{seed} {repo}: "
+            f"train={len(split['train'])} val={len(split['val'])} test={n_kept_test} "
+            f"+ removed/no-primary {len(split['test']) - n_kept_test} "
+            f"(purged train {split['purged_train']}, val {split['purged_val']})")
         t0 = time.time()
-        try:
-            if j["model"] == "BLAZE":
-                diag = run_blaze("WP", j["tgt"], j["tgt"], "WP", [], j["t_tr"],
-                                 j["t_test"], cls_map, epochs)
-            elif j["model"] == "BM25":
-                diag = run_bm25(j["tgt"], j["t_test"], cls_map)
-            else:  # FLIM
-                diag = run_flim(j["tgt"], j["t_tr"], j["t_test"], cls_map, epochs if SMOKE else 0)
-            if diag is None or diag.empty:
-                print("  no diagnostics"); continue
-            tag = f"WP_{j['model']}_{j['tgt'].replace('/', '_')}"
-            diag["bug_class"] = diag["bug_id"].map(cls_map)
-            diag.to_csv(os.path.join(DIAG_DIR, tag + ".csv"), index=False)
-            per_class = metrics_by_class(diag, cls_map)
-        except Exception as e:
-            import traceback; traceback.print_exc()
-            print(f"  ERROR: {type(e).__name__}: {e}")
+        res = None
+        for attempt in range(1, OOM_RETRIES + 2):
+            if tech in GPU_TECHS:
+                wait_for_gpu(GPU_MIN_FREE_GIB[tech], log)
+            set_seed(seed)
+            os.environ["OBJ2_CURRENT_TECH"] = tech
+            os.environ["BLAZE_TRAIN_ALL_FILES"] = "1" if tech == "BLAZE_ALL" else "0"
+            try:
+                if tech in GPU_TECHS:
+                    import torch
+                    if torch.cuda.is_available():
+                        torch.cuda.reset_peak_memory_stats()
+                m = _module(tech)
+                res = m.run_wp(repo, split, kept, seed, log=log)
+                break
+            except Exception as e:
+                traceback.print_exc(file=logf); traceback.print_exc()
+                oom = "out of memory" in str(e).lower() or type(e).__name__ == "OutOfMemoryError"
+                log(f"  ERROR (attempt {attempt}): {type(e).__name__}: {e}")
+                if not (oom and tech in GPU_TECHS and attempt <= OOM_RETRIES):
+                    break
+                try:
+                    import gc, torch
+                    gc.collect()
+                    torch.cuda.empty_cache()
+                except Exception:
+                    pass
+                log("  CUDA OOM on the shared GPU -- waiting and retrying")
+        if res is None:
+            logf.close()
             continue
-        wt = round(time.time() - t0, 1)
-        append_rows([{"arm": "WP", "model": j["model"], "source_project": j["tgt"],
-                      "target_project": j["tgt"], "scenario": "WP", "wall_time_sec": wt, **pc}
-                     for pc in per_class])
-        print(f"  done in {wt/60:.1f} min: " + " | ".join(
-            f"{pc['bug_class']}: MRR={pc['MRR']}" for pc in per_class))
+        scores, info = res if isinstance(res, tuple) else (res, {})
+        gpu_peak_gib = None
+        if tech in GPU_TECHS:
+            try:
+                import torch
+                gpu_peak_gib = round(torch.cuda.max_memory_allocated() / 2**30, 2)
+            except Exception:
+                pass
+        os.makedirs(os.path.dirname(out), exist_ok=True)
+        scores.to_parquet(out + ".tmp", index=False)
+        os.replace(out + ".tmp", out)
+        wall = time.time() - t0
+        write_manifest(out[:-8] + ".json", technique=tech, project=repo, fold=fold, seed=seed,
+                       smoke=SMOKE, wall_time_sec=round(wall, 1), gpu_peak_allocated_gib=gpu_peak_gib,
+                       split={k: (v if not isinstance(v, list) else len(v)) for k, v in split.items()},
+                       test_bug_ids=split["test"], config=getattr(m, "CONFIG", {}), run_info=info)
+        log(f"  done in {wall / 60:.1f} min" + (f", GPU peak {gpu_peak_gib} GiB" if gpu_peak_gib else "")
+            + f" -> {out}")
+        logf.close()
 
-    print(f"\nSummary -> {SUMMARY_CSV}")
+    print("\nnext: python Scripts/evaluate.py", flush=True)
 
 
 if __name__ == "__main__":
