@@ -95,6 +95,12 @@ Updated 2026-10-17 for the journal design (docs/JOURNAL_PLAN.md v2).
   For an LLM-agent arm (E1) this becomes a contamination threat and is measured
   with a closed-book probe.
 
+- **Small validation set for liquibase.** The same split rule for every project leaves
+  liquibase 10 (fold 1) and 8 (fold 2) validation bugs after purging (other projects
+  21–48), so its LR choice and stopping epoch are noisier. Mitigation: rule not changed
+  per project (D18); liquibase is one of the three extra-seed projects, so the
+  seed spread reports the instability directly.
+
 ## External validity
 
 - **Single dataset (BeetleBox).** The only public dataset with multi-language fix

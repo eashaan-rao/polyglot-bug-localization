@@ -24,6 +24,7 @@ Decisions taken by Eashaan on 2026-10-17:
 | D15 (2026-11-01) | Save every trained BLAZE/FLIM model (`data/obj2/models/`); BLAZE-all ablation (fold 1, seed 13, BLAZE's LR); LocAgent variance repeats (2 × 100 fold-1 bugs) in the code |
 | D17 (2026-11-03) | BM25 tokenizer keeps whole identifiers plus camelCase parts (BM25 rerun for localstack, elasticsearch); FLIM's TF-IDF tokenizer unchanged (split-only). Method frozen for the full run (`Scripts/run_full.sh`) |
 | D16 (2026-11-01) | Techniques are evaluated as published; no adaptation to secondary languages (FLIM-fallback, BLAZE-all are labelled diagnostic variants) |
+| D18 (2026-11-03) | Same split rule for every project: liquibase keeps its small validation set (10 / 8 bugs in folds 1 / 2 after purging; others 21–48) for consistency; stated as a threat, instability shown by its extra seeds. Full run launched 2026-11-03 09:21 |
 
 ---
 
