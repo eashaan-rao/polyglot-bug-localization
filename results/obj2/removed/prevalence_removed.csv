@@ -1,0 +1,15 @@
+set,project,n,poly_broad_pct,poly_headline_pct,poly_strict_pct
+kept,ansible/ansible,626,43.5,39.1,13.4
+kept,apache/airflow,917,18.8,14.2,5.5
+kept,apache/dolphinscheduler,698,23.6,14.6,10.7
+kept,elastic/elasticsearch,721,17.8,15.1,0.3
+kept,liquibase/liquibase,199,49.7,20.1,35.7
+kept,localstack/localstack,433,34.4,29.6,2.8
+kept,POOLED,3594,27.4,21.0,8.2
+removed,ansible/ansible,221,35.7,32.1,16.3
+removed,apache/airflow,341,9.1,5.9,2.3
+removed,apache/dolphinscheduler,41,14.6,14.6,4.9
+removed,elastic/elasticsearch,354,5.9,3.7,0.3
+removed,liquibase/liquibase,38,50.0,15.8,39.5
+removed,localstack/localstack,60,20.0,15.0,3.3
+removed,POOLED,1055,15.9,11.8,6.1
