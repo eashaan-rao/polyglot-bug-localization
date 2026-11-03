@@ -5,7 +5,10 @@ definition carries.
 
 Re-classifies every bug under each named toggle set, re-applies the
 primary-language keep filter, and reports Mono/Poly/Other + Poly-fix % against
-the headline.
+the headline. `poly_fix_pct` is the label-level share (any second counted
+language, Mono+Poly denominator); `poly_broad_pct` / `poly_headline_pct` /
+`poly_strict_pct` are the grain-level shares of all kept bugs, which is what the
+paper reports (broad grain).
 
 Output: results/obj2/boundary_sensitivity.csv
 """
@@ -49,6 +52,7 @@ def main():
     headline_poly = None
     for name, tg in SENSITIVITY_SETS.items():
         m = p = o = x = dropped = 0
+        pb = ph = ps = 0          # Poly-fix at the broad / headline / strict grain
         for lang, files in bugs:
             fc = classify_fix(files, lang, tg)
             if not keep_bug(fc, lang):
@@ -58,6 +62,9 @@ def main():
             p += fc.label == "Poly-fix"
             o += fc.label == "Other-fix"
             x += fc.label == "Excluded"
+            pb += fc.grains["broad"]
+            ph += fc.grains["headline"]
+            ps += fc.grains["strict"]
         poly_pct = round(100 * p / (m + p), 1) if (m + p) else 0.0
         if name == "headline":
             headline_poly = poly_pct
@@ -65,6 +72,10 @@ def main():
             "toggle_set": name, "kept": m + p + o + x, "dropped_by_keep": dropped,
             "mono_fix": m, "poly_fix": p, "other_fix": o, "excluded": x,
             "poly_fix_pct": poly_pct,
+            # grain-level prevalence (share of all kept bugs) -- the paper uses the broad grain
+            "poly_broad": pb, "poly_broad_pct": round(100 * pb / max(m + p + o + x, 1), 1),
+            "poly_headline_pct": round(100 * ph / max(m + p + o + x, 1), 1),
+            "poly_strict_pct": round(100 * ps / max(m + p + o + x, 1), 1),
             "delta_vs_headline_pp": round(poly_pct - headline_poly, 1) if headline_poly is not None else 0.0,
         })
     out = pd.DataFrame(rows)
