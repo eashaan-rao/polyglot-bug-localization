@@ -29,6 +29,17 @@ with recoverable fix commits and in-scope ground-truth files.)
 
 ## Language scope — a design choice, and a technical note
 
+**Summary of the justification (as in the paper, 2026-10-30).**
+1. These are the languages in which bug localization is evaluated: Java for
+   IR-based benchmarks (Bench4BL, Ye et al.), Python for LLM-agent localizers
+   (SWE-bench). A gap found here concerns the results the field reports.
+2. The parser-dependent techniques were built for them (FLIM on Java,
+   LocAgent on Python). Another language would need our port of their
+   parsers, and a failure would then measure the port, not the technique.
+3. One statically and one dynamically typed ecosystem.
+Not a data-availability argument: in our copy of BeetleBox, C++ has 5 268 bugs
+and JavaScript 3 783, against Java 3 707 and Python 3 759.
+
 **Design choice.** The study covers one statically-typed and one dynamically-typed
 mainstream ecosystem (Java, Python). This is a deliberate scoping decision for a
 first study of fix composition, not a claim that other ecosystems are

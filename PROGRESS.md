@@ -20,6 +20,69 @@ means only the first bug of each project pays the full encode; elasticsearch
 (~27 k files/snapshot) is the long pole. `bm25s` (not `rank_bm25`) is used for a
 tractable classical baseline.
 
+## Phases F / A / B (2026-10-30)
+
+**F — draft.** `paper/main.tex` (JSS/CAS template from Objective 1, 9 pp.,
+compiles), `paper/refs.bib`, gap list `paper/DRAFT_REVIEW.md`. RQ1 and most of
+RQ2 are written with real numbers (RQ2 reachability is model-free); RQ3/RQ4
+are placeholders.
+
+**A — analysis code.**
+- `Scripts/analysis/obj2_stats.py` — RQ3 (per-project MWU + Cliff's δ with
+  bootstrap CI; mixed model, fallback project-FE + HC3; Top-10 logit) and RQ4
+  (paired Wilcoxon + Holm; inversion via per-bug differences); decomposition,
+  seed spread, split composition; sensitivity conditions S1–S6. Tested on
+  smoke output and on synthetic data with planted effects (recovered).
+- Sensitivity S1 (ground truth without tests): `gt_filter` dimension in
+  `Scripts/evaluate.py`; grains / tangled / report length carried per bug.
+- `boundary_sensitivity.csv` now reports grain-level prevalence (broad 8.2–41.3 %).
+- Removed bugs: `Scripts/removed_bugs.py` -> `data/obj2/removed_bugs.parquet`,
+  `results/obj2/removed/`. 1 226 bugs, 1 055 kept-filter, 15.9 % Poly-fix
+  (kept set 27.4 %). Appended to each fold's test set (202 / 235 bugs), scored
+  by the models trained on the kept bugs; also part of FLIM's version history.
+- Objective 1 report-lookup fix: **not applied** (Objective 1 on hold; changing
+  its code without re-running would desynchronise code and results).
+
+**B — LocAgent** (`third_party/LocAgent` @ 4935b55, unmodified; adapter in
+`Scripts/locagent/`): export instances (fold 1: 395 kept + 121 removed; fold 2:
+395 + 136; Python projects only), build LocAgent's own indexes from local
+clones, run via vLLM (Qwen2.5-Coder-32B-CL, FP8), convert to score files,
+contamination probe. LocAgent and CodeNib are Python-only -> Java = RQ2
+infeasibility.
+
+## Journal redesign (2026-10-17) — see docs/JOURNAL_PLAN.md v2
+
+Target TOSEM; chronological split; BM25 only as classical baseline. An audit
+before the full run found that **every October WP result is invalid** and must
+not be used:
+
+- 20.8 % of kept bugs were queried with another repository's report
+  (`bug_id`-only lookup; fixed in `Scripts/bugs.py`).
+- FLIM: collapsed encoder (BCE on cosine) and a constant-score LTR (tie-biased
+  CV MAP) → elasticsearch MRR 0.001. Rebuilt from the original code.
+- BLAZE: dynamic chunking never ran (tree_sitter_languages broken); frozen
+  1.5 B BGE backbone instead of the original fully fine-tuned CodeSage-small.
+- Different file universes and ground-truth matchers per technique; random split;
+  label instead of the locked broad grain.
+
+New pipeline (code-complete, smoke-tested on liquibase):
+
+| Step | Script | Status |
+|---|---|---|
+| bugs, chronological split + purging | `Scripts/bugs.py` | ✅ |
+| shared parser (ast, tree-sitter-java) | `src/parsing.py` | ✅ |
+| file universe per snapshot (R / T, parse_status) | `Scripts/universe.py` | ⏳ building (tmux `obj2_universe`) |
+| BM25 | `src/bm25.py` | ✅ smoke |
+| BLAZE (original config) | `src/blaze/wp.py` | ✅ smoke; LR sweep running |
+| FLIM (original fine-tuning + 18 IR features + AdaptiveBL LTR) | `src/flim/{encoder,ir_features,adaptive,pipeline}.py` | ✅ smoke |
+| driver (scores + manifests, resumable, sequential GPU) | `Scripts/run_obj2_experiments.py` | ✅ |
+| single evaluator (R/T × all/parse, expected ranks) | `Scripts/evaluate.py` | ✅ |
+| statistics (mixed models) + analysis scripts on `results/obj2/eval/` | — | ❌ to write |
+
+The October outputs (`results/obj2/wp_cp_summary.csv`, `diagnostics/WP_BM25_*`,
+`WP_BLAZE_*`, `WP_FLIM_*`, `_flim_raw_*`) are superseded; keep them only as a
+record of the bug, do not analyse them.
+
 ## Done and run
 
 | Phase | Script | Output | Status |

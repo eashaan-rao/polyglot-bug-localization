@@ -230,6 +230,23 @@ results/obj2/    all outputs (tables/ figures/ analysis/ diagnostics/ prevalence
 
 ## 6. Status
 
+> **2026-10-17 — journal redesign (TOSEM).** An audit found that every October
+> WP result is invalid (20.8 % of bugs queried with another repo's report; FLIM
+> encoder collapse + constant-score LTR; BLAZE dynamic chunking never ran;
+> different file universes per technique; random split). The pipeline was
+> rebuilt — `Scripts/bugs.py`, `Scripts/universe.py`, `Scripts/evaluate.py`,
+> `src/bm25.py`, `src/blaze/wp.py`, `src/flim/` — and smoke-tested. The
+> tables below describe the pre-audit state. Current plan, fixes and open
+> decisions: [docs/JOURNAL_PLAN.md](docs/JOURNAL_PLAN.md). New run commands:
+>
+> ```bash
+> python Scripts/universe.py                 # CPU, once (file tables per snapshot)
+> OBJ2_SMOKE=1 OBJ2_PROJECTS=liquibase/liquibase python Scripts/run_obj2_experiments.py
+> OBJ2_TECHS=BM25 python Scripts/run_obj2_experiments.py             # CPU
+> OBJ2_TECHS=FLIM,BLAZE python Scripts/run_obj2_experiments.py       # GPU, one at a time
+> python Scripts/evaluate.py                 # the only evaluator
+> ```
+
 ### 6a. Implementation-wise
 
 | Component | State |

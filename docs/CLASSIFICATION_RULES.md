@@ -1,6 +1,6 @@
 # Classification rules
 
-**Status: DRAFT v0.2.0 — to be frozen (Phase C) with the advisor.**
+**Status: v0.2.0 — FROZEN 2026-09-06.** Agreement check: `docs/ANNOTATION_PROTOCOL.md`.
 `Scripts/classification_rules.py` is the executable form; this document and that
 file must agree, and both carry `RULESET_VERSION`. Numbers below are from
 `classify_bugs.py` / `boundary_sensitivity.py` over all 4995 bugs.
