@@ -1,0 +1,96 @@
+{
+  "technique": "FLIM",
+  "fold": 1,
+  "project": "elastic/elasticsearch",
+  "selected_lr": 2e-05,
+  "selected_with_seed": 13,
+  "criterion": "validation MAP (universe R)",
+  "runs": [
+    {
+      "lr": 2e-05,
+      "val_map": 0.3268788403190551,
+      "finetune": {
+        "epochs_run": 5,
+        "best_epoch": 2,
+        "best_val_mrr": 0.3645553939489091,
+        "history": [
+          {
+            "epoch": 1,
+            "train_loss": 4.379918540396342,
+            "val_mrr": 0.2714474295284867
+          },
+          {
+            "epoch": 2,
+            "train_loss": 2.1209865663109757,
+            "val_mrr": 0.3645553939489091
+          },
+          {
+            "epoch": 3,
+            "train_loss": 1.3117750214367379,
+            "val_mrr": 0.34881894267774494
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.8644096560594512,
+            "val_mrr": 0.3501784289628627
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.636271406964558,
+            "val_mrr": 0.36423217308554934
+          }
+        ]
+      },
+      "ltr": {
+        "weights_method": "w_gboost",
+        "weights_cv_map": 0.34449669698199104,
+        "regressor": "SGDRegressor(loss='squared_epsilon_insensitive', penalty='l1', random_state=13,\n             shuffle=False)",
+        "cut_perc": 0.15,
+        "reg_cv_map": 0.3055712370595782
+      }
+    },
+    {
+      "lr": 5e-05,
+      "val_map": 0.3173250289617282,
+      "finetune": {
+        "epochs_run": 5,
+        "best_epoch": 2,
+        "best_val_mrr": 0.4164128137512413,
+        "history": [
+          {
+            "epoch": 1,
+            "train_loss": 3.7657321836890243,
+            "val_mrr": 0.36166571669540304
+          },
+          {
+            "epoch": 2,
+            "train_loss": 1.4288657583841464,
+            "val_mrr": 0.4164128137512413
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.8147032202743902,
+            "val_mrr": 0.40062496397848607
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.484409890523771,
+            "val_mrr": 0.38584454605036633
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.3255001161156631,
+            "val_mrr": 0.3777258741690895
+          }
+        ]
+      },
+      "ltr": {
+        "weights_method": "w_adaboost",
+        "weights_cv_map": 0.3842501296169637,
+        "regressor": "SGDRegressor(loss='epsilon_insensitive', random_state=13, shuffle=False)",
+        "cut_perc": 0.05,
+        "reg_cv_map": 0.3844908075914959
+      }
+    }
+  ]
+}

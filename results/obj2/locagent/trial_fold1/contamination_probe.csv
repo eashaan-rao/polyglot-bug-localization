@@ -1,0 +1,4 @@
+project,bug_id,source,study_class,n_named,n_gt,hit10,gt_recall10,named
+ansible/ansible,77049,kept,Mono-fix,10,1,0,0.0,"[""hosts.py"", ""group.py"", ""tasks/group.yml"", ""tests/test_group.py"", ""docs/modules/group.rst"", ""examples/group.md"", ""roles/example_group/tasks/main.yml"", ""playbooks/site.yml"", ""setup.py"", ""setup_data/""]"
+apache/airflow,29663,kept,Poly-fix,6,4,0,0.0,"[""tests/system/test_stats.py"", ""docs/contributors/statsd.rst"", ""airflow/configuration_variables.py"", ""airflow/providers/statsd/__init__.py"", ""airflow/config_templates/default_airflow.cfg.in"", ""airflow/metrics/statsd.py""]"
+localstack/localstack,8002,kept,Mono-fix,8,2,0,0.0,"[""tests/test_s3.py"", ""src/localstack/services/s3/s3.py"", ""src/localstack/aws/stubs/requests_mock.py"", ""src/localstack/utils/__init__.py"", ""src/localstack/config.py"", ""github/workflows/ci.yml"", ""docs/README.md"", ""setup.py""]"
