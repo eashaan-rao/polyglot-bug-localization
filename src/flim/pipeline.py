@@ -1,660 +1,431 @@
 """
-FLIM Pipeline — faithful academic replication.
+FLIM — within-project, full-snapshot (Objective 2).
 
-Two-layer architecture
-──────────────────────
-LAYER 1  (shared retrieval, identical for all models)
-    BGE embeddings + FAISS → top-300 candidate files per bug report
+Liang et al., "Modeling function-level interactions for file-level bug
+localization", EMSE 2022, reimplemented against the original code in
+Resources/flim-main. Per project / fold / seed:
 
-LAYER 2  (FLIM reranker, faithful to paper)
-    a. Extract Python/Java functions from each candidate file via AST
-    b. Fine-tune CodeBERT (microsoft/codebert-base) as a bi-encoder on
-       (bug_report, function_code, label) pairs from the training bugs
-       — random chunk sampling ensures no information is discarded
-    c. After fine-tuning, encode every (bug_summary, bug_description,
-       function) with the fine-tuned CodeBERT using full chunking + mean-pool
-    d. Compute the 4 FLIM semantic features per (bug_report, file) pair:
-         f1  max  cosine_sim(summary_emb,     func_emb_i)  over all functions
-         f2  mean cosine_sim(summary_emb,     func_emb_i)  over all functions
-         f3  max  cosine_sim(description_emb, func_emb_i)  over all functions
-         f4  mean cosine_sim(description_emb, func_emb_i)  over all functions
-    e. Train FLIMRanker (Adaptive LTR) on the 4 features
-    f. Predict and evaluate on test bugs
+  1. Fine-tune CodeBERT (src/flim/encoder.py: pooler output, NL 128 / code 256,
+     in-batch CE, AdamW 2e-5, <= 10 epochs, best validation MRR, patience 3)
+     on (report, function) pairs: the functions of each training fix's
+     ground-truth source files that the fix changed (diff overlap), else the
+     first MAX_FUNCS_POS functions of the file. Validation pairs come from the
+     chronological validation bugs.
+  2. Features per (bug, file): 4 semantic -- max / mean cosine of the report
+     summary and description with the file's functions (Eq. 3-4) -- plus 18 of
+     the 19 IR features (src/flim/ir_features.py; f2 dropped).
+  3. Min-max normalise features on the training rows (AdaptiveBL), train the
+     adaptive pointwise LTR (src/flim/adaptive.py, ported from the original
+     train_adaptive.py, 2-fold CV) on training bugs:
+     their parseable ground-truth files + the top-300 non-buggy parseable files
+     by lexical similarity (Ye et al.'s negative sampling).
+  4. Score every file of universe T for each test bug.
 
-No-truncation policy
-────────────────────
-All texts (bug reports AND function bodies) are chunked (CHUNK_SIZE=450,
-CHUNK_OVERLAP=50) and embedded chunk-by-chunk; chunk embeddings are
-mean-pooled.  During fine-tuning, random chunk sampling is used as
-data augmentation so the model is exposed to every part of long texts.
+Parseability is src/parsing.py's, the same as the universe's parse_status.
+A file the parser accepts is represented by its functions (or, if it has
+none, by line windows of its body). A file the parser cannot read is
+represented by line windows of its text: this is the FLIM-fallback condition.
+The evaluator's "parse" view drops those files -> FLIM-strict, the
+paper-faithful condition. Training (encoder and LTR) uses parseable files
+only, so both conditions share one trained model.
 """
 
-import ast
 import os
-import pickle
 import random
 import re
+import sys
+import time
 
-import faiss
-import git
 import numpy as np
 import pandas as pd
-from tqdm import tqdm
+import scipy.sparse as sp
 
-from .encoder import CodeBERTEncoder
-from .model   import FLIMRanker
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+from Scripts.bugs import eval_ground_truth, project_history
+from Scripts.universe import read_text, repo_obj, scored_files, snapshot
+from src.flim.encoder import CODEBERT_MODEL_NAME, CodeBERTEncoder
+from src.flim.ir_features import (IR_FEATURES, History, _vec, class_name_sim,
+                                  graph_features, make_vectorizer)
+from src.flim.adaptive import AdaptiveLTR
+from src.parsing import parse_file
 
-# ─── Paths ────────────────────────────────────────────────────────────────────
-_OBJ2_ROOT = os.environ.get("OBJ2_ROOT") or os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # repo root
-REPO_BASE_PATH         = os.path.join(_OBJ2_ROOT, "data/repos")
-BUG_METADATA_DIR       = os.path.join(_OBJ2_ROOT, "data/processed/embedding_dbs")
-BLOB_DB_DIR            = os.path.join(_OBJ2_ROOT, "data/processed/embedding_dbs")
-PROJECTS_METADATA_PATH = os.path.join(_OBJ2_ROOT, "data/processed/project_metadata.parquet")
-BUG_REPORTS_PATH       = os.path.join(_OBJ2_ROOT, "data/processed/bug_reports_clean.parquet")
+FINETUNE_EPOCHS = 10
+FINETUNE_BATCH_SIZE = 32
+FINETUNE_LR = 2e-5          # released code (README); the paper text says 5e-5
+# LR grid = the two published values; selected on validation MAP (Scripts/lr_select.py)
+FLIM_LR_GRID = tuple(float(x) for x in os.environ.get("FLIM_LR_GRID", "2e-5,5e-5").split(","))
+PATIENCE = 3
+MAX_FUNCS_POS = 5            # positives per GT file (changed functions first)
+LTR_NEG_TOP = 300            # Ye et al.: top-300 lexically similar non-buggy files
+WINDOW_LINES = 30            # body / fallback representation
+MAX_WINDOWS = 50
+SEM_FEATURES = ["s_sum_max", "s_sum_mean", "s_desc_max", "s_desc_mean"]
+FEATURES = SEM_FEATURES + IR_FEATURES
 
-# ─── Experiment settings ──────────────────────────────────────────────────────
-TOP_K_CANDIDATES    = 300
-
-# Fine-tuning pair sampling
-MAX_FUNCS_POS       = 5    # max functions taken from each GT (positive) file
-MAX_NEG_FILES       = 15   # max non-GT files sampled per bug for negatives
-MAX_FUNCS_NEG       = 3    # max functions taken from each negative file
-MAX_FUNCS_PER_FILE  = 20   # cap when computing features (keeps cost bounded)
-
-# CodeBERT fine-tuning hyper-parameters
-FINETUNE_EPOCHS          = 3
-FINETUNE_BATCH_SIZE      = 32
-FINETUNE_LR              = 2e-5
-FINETUNE_MAX_STEPS_EPOCH = 5000   # hard cap per epoch (for very large datasets)
-
-FLIM_FEATURES = ['f1', 'f2', 'f3', 'f4']
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-#  Data loading helpers
-# ─────────────────────────────────────────────────────────────────────────────
-
-def _load_project_databases(project_name: str, meta_df: pd.DataFrame):
-    language  = meta_df[meta_df['repo_name'] == project_name]['language'].iloc[0]
-    safe      = project_name.replace('/', '_')
-    with open(os.path.join(BLOB_DB_DIR,      safe + '_blob_embeddings32.pkl'), 'rb') as f:
-        blob_db = pickle.load(f)
-    with open(os.path.join(BUG_METADATA_DIR, safe + '_bug_metadata32.pkl'),    'rb') as f:
-        bug_db  = pickle.load(f)
-    return bug_db, blob_db, language
+CONFIG = {
+    "encoder": CODEBERT_MODEL_NAME, "epochs_max": FINETUNE_EPOCHS, "batch": FINETUNE_BATCH_SIZE,
+    "lr_grid": FLIM_LR_GRID, "patience": PATIENCE,
+    "selection": "epochs: val MRR (run.py); LR: val MAP (Scripts/lr_select.py)",
+    "nl_len": 128, "code_len": 256, "max_funcs_pos": MAX_FUNCS_POS, "ltr_neg_top": LTR_NEG_TOP,
+    "window_lines": WINDOW_LINES, "max_windows": MAX_WINDOWS, "features": FEATURES,
+    "dropped_features": ["f2 (API-enriched; JDK-only)"],
+}
 
 
-def _path_to_sha_map(repo: git.Repo, commit_sha: str) -> dict:
-    try:
-        return {b.path: b.hexsha
-                for b in repo.commit(commit_sha).tree.traverse()
-                if b.type == 'blob'}
-    except Exception:
-        return {}
+def split_report(text: str):
+    """(summary, description): first non-empty line, then the rest (or all)."""
+    lines = (text or "").split("\n")
+    for i, ln in enumerate(lines):
+        if ln.strip():
+            desc = "\n".join(lines[i + 1:]).strip()
+            return ln.strip(), desc or text
+    return (text or "")[:300], text or ""
 
 
-# Module-level cache: blob_sha → file content string.
-# Safe because git SHA1 is content-addressed (same SHA = same bytes everywhere).
-_blob_content_cache: dict[str, str] = {}
-_function_cache:     dict[str, list[str]] = {}
+def _windows(text: str):
+    ls = text.split("\n")
+    w = ["\n".join(ls[i:i + WINDOW_LINES]) for i in range(0, len(ls), WINDOW_LINES)]
+    w = [x for x in w if x.strip()]
+    return w[:MAX_WINDOWS] or [text[:2000] or " "]
 
 
-def _blob_content(repo: git.Repo, blob_sha: str) -> str:
-    if blob_sha in _blob_content_cache:
-        return _blob_content_cache[blob_sha]
-    try:
-        from git import Blob
-        from git.util import hex_to_bin
-        content = Blob(repo, hex_to_bin(blob_sha)).data_stream.read().decode('utf-8', 'ignore')
-    except Exception:
-        content = ''
-    _blob_content_cache[blob_sha] = content
-    return content
+class _FileStore:
+    """Per-run cache: parsed fields, units, TF-IDF rows, unit embeddings."""
 
+    def __init__(self, repo: str, language: str):
+        self.repo, self.language = repo, language
+        self.rec: dict = {}            # key -> dict
+        self.vec = None
+        self.unit_rows: dict = {}      # key -> (start, end) in the global unit arrays
+        self.U_txt: list = []          # unit texts (global)
+        self.U_tfidf = None            # csr (n_units, V)
+        self.U_emb = None              # float16 (n_units, 768), unit-normalised
+        self._pending_tfidf: list = []
 
-# ─────────────────────────────────────────────────────────────────────────────
-#  Function extraction
-# ─────────────────────────────────────────────────────────────────────────────
+    @staticmethod
+    def key(sha, parseable):
+        return f"{sha}:{int(bool(parseable))}"
 
-def _extract_python_functions(code: str) -> list[str]:
-    """
-    Extract top-level and class-method function bodies from Python source.
-    Uses Python's built-in `ast` module for accuracy.
-    Falls back to the whole file if parsing fails.
-    """
-    funcs = []
-    try:
-        tree = ast.parse(code)
-        for node in ast.walk(tree):
-            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                seg = ast.get_source_segment(code, node)
-                if seg and len(seg.strip()) > 10:
-                    funcs.append(seg.strip())
-    except SyntaxError:
-        pass
-    return funcs or [code]
-
-
-def _extract_java_functions(code: str) -> list[str]:
-    """
-    Heuristic Java method extractor: finds method signatures then follows
-    matched braces to extract each method body.
-    Falls back to the whole file if nothing is found.
-    """
-    # Simplified method signature pattern (covers most practical cases)
-    sig_re = re.compile(
-        r'(?:(?:public|protected|private|static|final|abstract|'
-        r'synchronized|native|default|strictfp)\s+)*'
-        r'(?:[\w<>\[\],\s]+\s+)?'          # return type (may contain generics)
-        r'\b\w+\s*\([^)]*\)'               # method name + params
-        r'(?:\s*throws\s+[\w,\s]+)?'       # optional throws clause
-        r'\s*\{',                           # opening brace
-        re.MULTILINE,
-    )
-    funcs = []
-    for match in sig_re.finditer(code):
-        depth = 0
-        i     = match.end() - 1  # position of '{'
-        while i < len(code):
-            if   code[i] == '{': depth += 1
-            elif code[i] == '}':
-                depth -= 1
-                if depth == 0:
-                    body = code[match.start(): i + 1].strip()
-                    if len(body) > 20:
-                        funcs.append(body)
-                    break
-            i += 1
-    return funcs or [code]
-
-
-def _get_functions(repo: git.Repo, blob_sha: str, language: str) -> list[str]:
-    """
-    Return function/method strings for a blob.
-    Results are cached by blob_sha (content-addressed, immutable).
-    """
-    cache_key = f"{blob_sha}_{language}"
-    if cache_key in _function_cache:
-        return _function_cache[cache_key]
-
-    code  = _blob_content(repo, blob_sha)
-    lang  = language.lower()
-
-    if not code:
-        funcs = ['']
-    elif lang == 'python':
-        funcs = _extract_python_functions(code)
-    elif lang == 'java':
-        funcs = _extract_java_functions(code)
-    else:
-        funcs = [code]
-
-    _function_cache[cache_key] = funcs
-    return funcs
-
-
-def _split_bug_report(text: str) -> tuple[str, str]:
-    """
-    Split bug_report_text into (summary, description).
-
-    Summary     = first non-empty line (the title / one-liner).
-    Description = everything after the first non-empty line.
-    If the text has only one line, description equals the full text.
-    """
-    lines           = text.split('\n')
-    summary_lines   = []
-    desc_lines      = []
-    found_summary   = False
-
-    for line in lines:
-        if not found_summary:
-            if line.strip():
-                summary_lines.append(line.strip())
-                found_summary = True
+    def add(self, path, sha, parseable):
+        k = self.key(sha, parseable)
+        if k in self.rec:
+            return k
+        text = read_text(self.repo, sha)
+        pf = parse_file(path, text, self.language) if parseable else None
+        if pf is not None and pf.units:
+            units, spans = pf.units, pf.unit_spans
         else:
-            desc_lines.append(line)
+            units, spans = _windows(text), []
+        r = {"units": units, "spans": spans,
+             "cls": pf.class_names if pf else [], "fields": None,
+             "imports": pf.imports if pf else [], "package": pf.package if pf else ""}
+        if pf is not None:
+            r["fields"] = (" ".join(pf.class_names), " ".join(pf.method_names),
+                           " ".join(pf.var_names), " ".join(pf.comments))
+        r["doc"] = path + "\n" + text
+        self.rec[k] = r
+        self.unit_rows[k] = (len(self.U_txt), len(self.U_txt) + len(units))
+        self.U_txt.extend(units)
+        self._pending_tfidf.append(k)
+        return k
 
-    summary     = ' '.join(summary_lines) if summary_lines else text[:300]
-    description = '\n'.join(desc_lines).strip() if desc_lines else text
-    return summary, description
+    def fit_vectorizer(self, docs):
+        self.vec = make_vectorizer(docs)
 
+    def finalize_tfidf(self):
+        """TF-IDF for every record added since the last call."""
+        if not self._pending_tfidf:
+            return
+        ks = self._pending_tfidf
+        self._pending_tfidf = []
+        docs = _vec(self.vec, [self.rec[k]["doc"] for k in ks])
+        for i, k in enumerate(ks):
+            r = self.rec[k]
+            r["doc_v"] = docs[i]
+            if r["fields"] is not None:
+                r["field_v"] = _vec(self.vec, list(r["fields"]))
+            del r["doc"]
+        start = 0 if self.U_tfidf is None else self.U_tfidf.shape[0]
+        new_units = _vec(self.vec, self.U_txt[start:])
+        self.U_tfidf = new_units if self.U_tfidf is None else sp.vstack([self.U_tfidf, new_units]).tocsr()
 
-# ─────────────────────────────────────────────────────────────────────────────
-#  LAYER 1 — FAISS candidate retrieval (uses BGE embeddings)
-# ─────────────────────────────────────────────────────────────────────────────
-
-def _faiss_candidates(
-    bug_ids:        list,
-    bug_metadata_db: dict,
-    blob_embedding_db: dict,
-    repo:           git.Repo,
-    is_training:    bool = True,
-    top_k:          int | None = None,
-) -> dict:
-    """
-    Returns {bug_id: [(blob_sha, file_path, is_ground_truth), …]}.
-    Ground-truth files are force-included for training splits.
-
-    top_k defaults to the module-level TOP_K_CANDIDATES, resolved here at call
-    time rather than as a default argument. Callers disable the retrieval filter
-    by raising that global (Scripts/run_obj2_experiments.py sets it to 1e9 so
-    LAYER 1 returns the whole snapshot); a default argument would have captured
-    300 at import and silently ignored them.
-    """
-    if top_k is None:
-        top_k = TOP_K_CANDIDATES
-
-    valid = [b for b in bug_ids if b in bug_metadata_db]
-    bugs_by_commit: dict[str, list] = {}
-    for bug_id in valid:
-        c = bug_metadata_db[bug_id]['commit_sha']
-        bugs_by_commit.setdefault(c, []).append(bug_id)
-
-    result: dict = {}
-
-    for commit_sha, commit_bugs in tqdm(
-        bugs_by_commit.items(), desc="FAISS retrieval", leave=False
-    ):
-        p2s = _path_to_sha_map(repo, commit_sha)
-        if not p2s:
-            continue
-        s2p = {s: p for p, s in p2s.items()}
-
-        snap = [s for s in p2s.values() if s in blob_embedding_db]
-        if not snap:
-            continue
-
-        embs = np.array([blob_embedding_db[s] for s in snap], dtype='float32')
-        faiss.normalize_L2(embs)
-        index = faiss.IndexFlatIP(embs.shape[1])
-        index.add(embs)
-
-        for bug_id in commit_bugs:
-            info = bug_metadata_db[bug_id]
-            q    = info['embedding'].astype('float32').reshape(1, -1).copy()
-            faiss.normalize_L2(q)
-
-            k       = min(top_k, len(snap))
-            _, idxs = index.search(q, k)
-
-            gt_paths = set(info['ground_truth_files'])
-            gt_shas  = {s for p, s in p2s.items()
-                        if any(p.endswith(g) for g in gt_paths)}
-
-            cands: list[tuple] = []
-            seen:  set         = set()
-            for idx in idxs[0]:
-                if idx < 0:
-                    continue
-                sha = snap[idx]
-                seen.add(sha)
-                cands.append((sha, s2p.get(sha, ''), sha in gt_shas))
-
-            if is_training:
-                for sha in gt_shas:
-                    if sha not in seen and sha in blob_embedding_db:
-                        cands.append((sha, s2p.get(sha, ''), True))
-
-            result[bug_id] = cands
-
-    return result
+    def embed_units(self, encoder: CodeBERTEncoder, log=print):
+        start = 0 if self.U_emb is None else self.U_emb.shape[0]
+        todo = self.U_txt[start:]
+        if not todo:
+            return
+        t = time.time()
+        e = encoder.encode(todo, "code").astype(np.float32)
+        e /= (np.linalg.norm(e, axis=1, keepdims=True) + 1e-8)
+        e = e.astype(np.float16)
+        self.U_emb = e if self.U_emb is None else np.vstack([self.U_emb, e])
+        log(f"[FLIM]   embedded {len(todo)} units in {time.time() - t:.0f}s "
+            f"(total {self.U_emb.shape[0]})")
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-#  LAYER 2a — Fine-tuning pair construction
-# ─────────────────────────────────────────────────────────────────────────────
-
-def _build_finetune_pairs(
-    candidates:     dict,
-    bug_texts_map:  dict,
-    repo:           git.Repo,
-    language:       str,
-) -> tuple[list, list, list]:
-    """
-    Build (bug_text, function_text, label) triples.
-
-    Positive (label=1): bug_text × functions from ground-truth files
-                        (up to MAX_FUNCS_POS per file)
-    Negative (label=0): bug_text × functions from sampled non-GT files
-                        (MAX_NEG_FILES files × MAX_FUNCS_NEG functions each)
-    """
-    bugs_out: list[str] = []
-    func_out: list[str] = []
-    lbl_out:  list[int] = []
-
-    for bug_id, cand_list in tqdm(candidates.items(),
-                                   desc="Building fine-tune pairs", leave=False):
-        bug_text = bug_texts_map.get(str(bug_id), '')
-        if not bug_text:
-            continue
-
-        gt_cands  = [(sha, path) for sha, path, is_gt in cand_list if is_gt]
-        neg_cands = [(sha, path) for sha, path, is_gt in cand_list if not is_gt]
-
-        # Positives
-        for sha, _ in gt_cands:
-            funcs = _get_functions(repo, sha, language)
-            for func in funcs[:MAX_FUNCS_POS]:
-                if func.strip():
-                    bugs_out.append(bug_text)
-                    func_out.append(func)
-                    lbl_out.append(1)
-
-        # Negatives (randomly sampled to limit data size and keep class balance)
-        sampled = random.sample(neg_cands, min(MAX_NEG_FILES, len(neg_cands)))
-        for sha, _ in sampled:
-            funcs  = _get_functions(repo, sha, language)
-            chosen = random.sample(funcs, min(MAX_FUNCS_NEG, len(funcs)))
-            for func in chosen:
-                if func.strip():
-                    bugs_out.append(bug_text)
-                    func_out.append(func)
-                    lbl_out.append(0)
-
-    return bugs_out, func_out, lbl_out
+def _changed_old_lines(repo, pre, fix, old_path, new_path):
+    try:
+        d = repo_obj(repo).git.diff(pre, fix, "-U0", "--", old_path, new_path)
+    except Exception:
+        return set()
+    out = set()
+    for m in re.finditer(r"^@@ -(\d+)(?:,(\d+))? \+\d+(?:,\d+)? @@", d, re.M):
+        a, b = int(m.group(1)), int(m.group(2) or 1)
+        out.update(range(a, a + b) if b else (a, a + 1))
+    return out
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-#  LAYER 2b — FLIM feature computation (uses fine-tuned CodeBERT)
-# ─────────────────────────────────────────────────────────────────────────────
-
-def _cosine_sims(query: np.ndarray, matrix: np.ndarray) -> np.ndarray:
-    """
-    Compute cosine similarity between a query vector and each row of matrix.
-    Both are L2-normalised before the dot product to handle any scale.
-    """
-    q_norm = query / (np.linalg.norm(query) + 1e-8)
-    m_norm = matrix / (np.linalg.norm(matrix, axis=1, keepdims=True) + 1e-8)
-    return (m_norm @ q_norm).astype('float32')
-
-
-_FUNC_EMB_CACHE: dict = {}   # blob_sha -> CodeBERT function embeddings (obj2 full-snapshot caching)
-
-
-def _compute_flim_features(
-    candidates:      dict,
-    bug_texts_map:   dict,
-    repo:            git.Repo,
-    language:        str,
-    encoder:         CodeBERTEncoder,
-) -> pd.DataFrame:
-    """
-    Compute the 4 FLIM semantic features per (bug_id, blob_sha) pair.
-
-    Features (paper-faithful):
-      f1  max  cosine_sim(summary_emb,     func_emb_i)  over functions in file
-      f2  mean cosine_sim(summary_emb,     func_emb_i)  over functions in file
-      f3  max  cosine_sim(description_emb, func_emb_i)  over functions in file
-      f4  mean cosine_sim(description_emb, func_emb_i)  over functions in file
-
-    All embeddings: fine-tuned CodeBERT, full chunking (no truncation),
-    chunk embeddings mean-pooled.
-    """
-    records = []
-
-    for bug_id, cand_list in tqdm(candidates.items(),
-                                   desc="Computing FLIM features", leave=False):
-        bug_text = bug_texts_map.get(str(bug_id), '')
-        if not bug_text:
-            continue
-
-        summary, description = _split_bug_report(bug_text)
-
-        # Encode bug parts once per bug (full text, no truncation)
-        sum_emb  = encoder.encode(summary)      # (768,)
-        desc_emb = encoder.encode(description)  # (768,)
-
-        for sha, path, is_gt in cand_list:
-            label = 1.0 if is_gt else 0.0
-            funcs = _get_functions(repo, sha, language)[:MAX_FUNCS_PER_FILE]
-
-            if not funcs or not any(f.strip() for f in funcs):
-                records.append({
-                    'bug_id': str(bug_id), 'blob_sha': sha,
-                    'used_in_fix': label,
-                    'f1': 0.0, 'f2': 0.0, 'f3': 0.0, 'f4': 0.0,
-                })
+def _pairs(repo, bug_ids, kk, store, rng):
+    """[(group, report_text, function_text)] for the given bugs."""
+    pairs = []
+    for gi, bid in enumerate(bug_ids):
+        meta = kk.loc[bid]
+        snap = snapshot(repo, meta["pre_fix_commit_sha"]).set_index("path")
+        for g in eval_ground_truth(repo, bid):
+            p = g["pre_path"]
+            if p is None or p not in snap.index or not snap.at[p, "parseable"]:
                 continue
-
-            # Encode all functions of this file once; cache by blob_sha since
-            # function embeddings are bug-independent and snapshots repeat across
-            # bugs of the same project (obj2: full-snapshot ranking).
-            func_embs = _FUNC_EMB_CACHE.get(sha)
-            if func_embs is None:
-                func_embs = encoder.encode_batch(funcs)  # (n_funcs, 768)
-                _FUNC_EMB_CACHE[sha] = func_embs
-
-            sum_sims  = _cosine_sims(sum_emb,  func_embs)   # (n_funcs,)
-            desc_sims = _cosine_sims(desc_emb, func_embs)   # (n_funcs,)
-
-            records.append({
-                'bug_id':      str(bug_id),
-                'blob_sha':    sha,
-                'used_in_fix': label,
-                'f1': float(sum_sims.max()),
-                'f2': float(sum_sims.mean()),
-                'f3': float(desc_sims.max()),
-                'f4': float(desc_sims.mean()),
-            })
-
-    if not records:
-        return pd.DataFrame()
-
-    return pd.DataFrame(records).set_index(['bug_id', 'blob_sha'])
+            k = store.add(p, snap.at[p, "blob_sha"], True)
+            r = store.rec[k]
+            if not r["spans"]:
+                continue
+            changed = _changed_old_lines(repo, meta["pre_fix_commit_sha"], meta["fix_commit_sha"],
+                                         p, g["path"])
+            hit = [i for i, (a, b) in enumerate(r["spans"]) if any(a <= ln <= b for ln in changed)]
+            idx = hit or list(range(len(r["units"])))
+            if len(idx) > MAX_FUNCS_POS:
+                idx = rng.sample(idx, MAX_FUNCS_POS)
+            for i in idx:
+                pairs.append((gi, meta["bug_report_text"], r["units"][i]))
+    return pairs
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-#  Evaluation metrics
-# ─────────────────────────────────────────────────────────────────────────────
+class _Run:
+    def __init__(self, repo, language, kept, log):
+        self.repo, self.language, self.log = repo, language, log
+        self.kk = kept[kept["repo_name"] == repo].set_index("bug_id")
+        self.store = _FileStore(repo, language)
+        self.history = None
+        self.graph_cache: dict = {}
+        self.encoder = None
 
-def _compute_metrics(df: pd.DataFrame) -> dict:
-    top1 = top5 = top10 = 0
-    ap_list: list[float] = []
-    rr_list: list[float] = []
-    n_bugs = 0
+    def files_of(self, bug_id):
+        commit = self.kk.loc[bug_id, "pre_fix_commit_sha"]
+        return commit, scored_files(self.repo, commit)
 
-    for _, group in df.groupby(level=0, sort=False):
-        ranked = group.sort_values('result', ascending=False)
-        labels = ranked['used_in_fix'].values
-        n_bugs += 1
+    def graph(self, commit, files, keys):
+        if commit not in self.graph_cache:
+            parsed = {}
+            class _P:  # minimal ParsedFile view for graph_features
+                pass
+            for sha, k in zip(files["blob_sha"], keys):
+                o = _P(); r = self.store.rec[k]
+                o.imports, o.package = r["imports"], r["package"]
+                parsed[sha] = o
+            self.graph_cache[commit] = graph_features(files, parsed, self.language)
+            if len(self.graph_cache) > 64:
+                self.graph_cache.pop(next(iter(self.graph_cache)))
+        return self.graph_cache[commit]
 
-        if labels[:1].sum()  > 0: top1  += 1
-        if labels[:5].sum()  > 0: top5  += 1
-        if labels[:10].sum() > 0: top10 += 1
+    def features(self, bug_id, files: pd.DataFrame, keys: list) -> pd.DataFrame:
+        meta = self.kk.loc[bug_id]
+        text = meta["bug_report_text"]
+        summary, desc = split_report(text)
+        st = self.store
+        rep_v, sum_v, desc_v = (_vec(st.vec, [x]) for x in (text, summary, desc))
+        nl = self.encoder.encode([summary, desc], "nl").astype(np.float32)
+        nl /= (np.linalg.norm(nl, axis=1, keepdims=True) + 1e-8)
 
-        prec, n_rel = [], 0
-        for i, lbl in enumerate(labels):
-            if lbl == 1:
-                n_rel += 1
-                prec.append(n_rel / (i + 1))
-        ap_list.append(float(np.mean(prec)) if prec else 0.0)
+        ranges = [st.unit_rows[k] for k in keys]
+        idx = np.concatenate([np.arange(a, b) for a, b in ranges])
+        starts = np.cumsum([0] + [b - a for a, b in ranges[:-1]])
+        emb = st.U_emb[idx].astype(np.float32)
+        s_sum, s_desc = emb @ nl[0], emb @ nl[1]
+        cnt = np.array([b - a for a, b in ranges], float)
+        out = pd.DataFrame(index=files.index)
+        out["s_sum_max"] = np.maximum.reduceat(s_sum, starts)
+        out["s_sum_mean"] = np.add.reduceat(s_sum, starts) / cnt
+        out["s_desc_max"] = np.maximum.reduceat(s_desc, starts)
+        out["s_desc_mean"] = np.add.reduceat(s_desc, starts) / cnt
 
-        hits = np.where(labels == 1)[0]
-        rr_list.append(1.0 / (hits[0] + 1) if len(hits) else 0.0)
+        u_sim = np.asarray(st.U_tfidf[idx] @ rep_v.T.toarray()).ravel()
+        doc_m = sp.vstack([st.rec[k]["doc_v"] for k in keys])
+        f_doc = np.asarray(doc_m @ rep_v.T.toarray()).ravel()
+        out["f1"] = np.maximum(f_doc, np.maximum.reduceat(u_sim, starts))
 
-    if n_bugs == 0:
-        return {'Top-1': 0.0, 'Top-5': 0.0, 'Top-10': 0.0, 'MAP': 0.0, 'MRR': 0.0}
+        paths = files["path"].tolist()
+        h = self.history.features(rep_v, meta["creation_date"], bug_id, paths)
+        out["f3"] = [h.get(p, (0, 0, 0))[0] for p in paths]
+        out["f5"] = [h.get(p, (0, 0, 0))[1] for p in paths]
+        out["f6"] = [h.get(p, (0, 0, 0))[2] for p in paths]
+        out["f4"] = [class_name_sim(summary, st.rec[k]["cls"] or [p.rsplit("/", 1)[-1].split(".")[0]])
+                     for k, p in zip(keys, paths)]
 
-    return {
-        'Top-1':  top1  / n_bugs,
-        'Top-5':  top5  / n_bugs,
-        'Top-10': top10 / n_bugs,
-        'MAP':    float(np.mean(ap_list)),
-        'MRR':    float(np.mean(rr_list)),
-    }
+        fs = np.zeros((len(keys), 8), np.float32)
+        q = sp.vstack([sum_v, desc_v]).T.toarray()                      # (V, 2)
+        for i, k in enumerate(keys):
+            fv = st.rec[k].get("field_v")
+            if fv is not None:
+                m = np.asarray(fv @ q)                                   # (4, 2)
+                fs[i, :4], fs[i, 4:] = m[:, 0], m[:, 1]
+        for j, f in enumerate(["f7", "f8", "f9", "f10", "f11", "f12", "f13", "f14"]):
+            out[f] = fs[:, j]
+
+        commit = meta["pre_fix_commit_sha"]
+        gf = self.graph(commit, files, keys)
+        z = (0, 0, 0.0, 0.0, 0.0)
+        for j, f in enumerate(["f15", "f16", "f17", "f18", "f19"]):
+            out[f] = [gf.get(p, z)[j] for p in paths]
+        return out[FEATURES]
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-#  Main entry point
-# ─────────────────────────────────────────────────────────────────────────────
+def _train_candidates(R, repo, train_ids, log):
+    """LTR training candidates (encoder-independent): per training bug, its
+    parseable GT files + the top-300 parseable non-GT files by file-level TF-IDF."""
+    out = []
+    for i, bid in enumerate(train_ids, 1):
+        commit, files = R.files_of(bid)
+        gt = {g["pre_path"] for g in eval_ground_truth(repo, bid) if g["pre_path"]}
+        cand = files[files["in_ruleset"] & files["parseable"]].reset_index(drop=True)
+        if cand.empty or not (gt & set(cand["path"])):
+            continue
+        keys_all = [R.store.key(s, True) for s in cand["blob_sha"]]
+        rep_v = _vec(R.store.vec, [R.kk.loc[bid, "bug_report_text"]])
+        sim = np.asarray(sp.vstack([R.store.rec[k]["doc_v"] for k in keys_all])
+                         @ rep_v.T.toarray()).ravel()
+        is_gt = cand["path"].isin(gt).values
+        neg = np.where(~is_gt)[0]
+        neg = neg[np.argsort(-sim[neg], kind="stable")][:LTR_NEG_TOP]
+        keep = np.concatenate([np.where(is_gt)[0], neg])
+        out.append((bid, commit, files, cand.iloc[keep].reset_index(drop=True),
+                    [keys_all[j] for j in keep], is_gt[keep]))
+    return out
 
-def run_flim_experiment(
-    source_project:   str,
-    target_project:   str,
-    source_train_ids: list,
-    target_train_ids: list,
-    target_test_ids:  list,
-    scenario:         str,
-) -> dict:
-    """
-    Run one FLIM experiment for a given source→target pair and scenario.
 
-    Scenarios
-    ---------
-    WP-small      : source_train_ids=[],        target_train_ids=~10 % of target
-    WP-large      : source_train_ids=[],        target_train_ids=~80 % of target
-    CP-cold-start : source_train_ids=all source, target_train_ids=[]
-    CP-transfer   : source_train_ids=all source, target_train_ids=~20 % of target
+def _fit_ltr(R, cands, seed, log):
+    feats = []
+    for bid, commit, files, cand, keys, lab in cands:
+        par = files[files["parseable"]].reset_index(drop=True)
+        R.graph(commit, par, [R.store.key(s, True) for s in par["blob_sha"]])
+        f = R.features(bid, cand, keys)
+        f["used_in_fix"] = lab.astype(float)
+        f["bug_id"] = bid
+        feats.append(f)
+    if not feats:
+        raise RuntimeError("FLIM: no training rows")
+    train_df = pd.concat(feats, ignore_index=True)
+    lo, hi = train_df[FEATURES].min(), train_df[FEATURES].max()
+    span = (hi - lo).replace(0, 1.0)
+    train_df[FEATURES] = (train_df[FEATURES] - lo) / span
+    ranker = AdaptiveLTR(FEATURES, seed=seed, folds=2).fit(train_df)
+    log(f"[FLIM]   LTR on {train_df.bug_id.nunique()} bugs / {len(train_df)} rows: {ranker.log}")
+    return ranker, lo, span, train_df
 
-    Returns
-    -------
-    dict  {'Top-1', 'Top-5', 'Top-10', 'MAP', 'MRR'}  — all floats in [0, 1]
-    """
-    print(f"\n[FLIM] {source_project} → {target_project} | {scenario}")
 
-    # ── Load shared metadata ─────────────────────────────────────────────────
-    meta_df     = pd.read_parquet(PROJECTS_METADATA_PATH)
-    bug_reports = pd.read_parquet(BUG_REPORTS_PATH)
-    bug_texts   = dict(zip(
-        bug_reports['bug_id'].astype(str),
-        bug_reports['bug_report_text'].fillna(''),
-    ))
+def _score(R, bug_ids, ranker, lo, span, log=None, t0=None):
+    out = []
+    for i, bid in enumerate(bug_ids, 1):
+        commit, files = R.files_of(bid)
+        keys = [R.store.key(s, pz) for s, pz in zip(files["blob_sha"], files["parseable"])]
+        par = files[files["parseable"]].reset_index(drop=True)
+        R.graph(commit, par, [R.store.key(s, True) for s in par["blob_sha"]])
+        f = (R.features(bid, files, keys) - lo) / span
+        out.append(pd.DataFrame({"bug_id": bid, "path": files["path"].values,
+                                 "score": ranker.predict(f).astype(np.float32)}))
+        if log and i % 20 == 0:
+            log(f"[FLIM]   scored {i}/{len(bug_ids)} bugs ({(time.time() - t0) / 60:.0f} min)")
+    return pd.concat(out, ignore_index=True) if out else pd.DataFrame(columns=["bug_id", "path", "score"])
 
-    src_bug_db, src_blob_db, src_lang = _load_project_databases(source_project, meta_df)
-    tgt_bug_db, tgt_blob_db, tgt_lang = _load_project_databases(target_project, meta_df)
 
-    src_repo = git.Repo(os.path.join(
-        REPO_BASE_PATH, src_lang.lower(), source_project.replace('/', '_')
-    ))
-    tgt_repo = git.Repo(os.path.join(
-        REPO_BASE_PATH, tgt_lang.lower(), target_project.replace('/', '_')
-    ))
+def run_wp(repo: str, split: dict, kept: pd.DataFrame, seed: int, log=print):
+    import torch
+    from Scripts import lr_select
+    from Scripts.repro import set_seed
+    language = dict(kept.groupby("repo_name")["language"].first())[repo]
+    R = _Run(repo, language, kept, log)
+    rng = random.Random(seed)
+    t0 = time.time()
 
-    # ────────────────────────────────────────────────────────────────────────
-    #  LAYER 1 — FAISS top-300 candidates  (BGE embeddings, no CodeBERT)
-    # ────────────────────────────────────────────────────────────────────────
-    src_train_cands, tgt_train_cands = {}, {}
+    # TF-IDF space: the first training snapshot's ruleset files
+    first = (split["train"] or split["test"])[0]
+    _, f0 = R.files_of(first)
+    f0 = f0[f0["in_ruleset"]]
+    R.store.fit_vectorizer([p + "\n" + read_text(repo, s) for p, s in zip(f0["path"], f0["blob_sha"])])
+    R.history = History(project_history(repo), R.store.vec)
 
-    if source_train_ids:
-        print(f"[FLIM]   FAISS: {len(source_train_ids)} source train bugs …")
-        src_train_cands = _faiss_candidates(
-            source_train_ids, src_bug_db, src_blob_db, src_repo, is_training=True,
-        )
+    # encoder training pairs (independent of the LR)
+    tr_pairs = _pairs(repo, split["train"], R.kk, R.store, rng)
+    va_pairs = _pairs(repo, split["val"], R.kk, R.store, rng)
 
-    if target_train_ids:
-        print(f"[FLIM]   FAISS: {len(target_train_ids)} target train bugs …")
-        tgt_train_cands = _faiss_candidates(
-            target_train_ids, tgt_bug_db, tgt_blob_db, tgt_repo, is_training=True,
-        )
+    # every file needed later, then one TF-IDF pass. Train snapshots: all
+    # parseable files (LTR candidates are R & parseable; the import graph needs
+    # every parseable file). Validation and test snapshots: all of T.
+    for bid in split["train"]:
+        _, files = R.files_of(bid)
+        par = files[files["parseable"]]
+        for p, s in zip(par["path"], par["blob_sha"]):
+            R.store.add(p, s, True)
+    for bid in split["val"] + split["test"]:
+        _, files = R.files_of(bid)
+        for p, s, pz in zip(files["path"], files["blob_sha"], files["parseable"]):
+            R.store.add(p, s, bool(pz))
+    R.store.finalize_tfidf()
+    log(f"[FLIM]   store: {len(R.store.rec)} files, {len(R.store.U_txt)} units "
+        f"({(time.time() - t0) / 60:.0f} min)")
+    cands = _train_candidates(R, repo, split["train"], log)
 
-    print(f"[FLIM]   FAISS: {len(target_test_ids)} target test bugs …")
-    tgt_test_cands = _faiss_candidates(
-        target_test_ids, tgt_bug_db, tgt_blob_db, tgt_repo, is_training=False,
-    )
+    # LR grid (Scripts/lr_select.py): each LR -> encoder (epochs on val MRR, as
+    # in run.py) -> embeddings -> LTR -> validation MAP; keep the best LR
+    lrs = lr_select.grid("FLIM", split["fold"], repo, FLIM_LR_GRID)
+    best = None
+    runs = []
+    for lr in lrs:
+        set_seed(seed)
+        R.encoder = CodeBERTEncoder()
+        ft = R.encoder.fine_tune(tr_pairs, va_pairs, epochs=FINETUNE_EPOCHS,
+                                 batch_size=FINETUNE_BATCH_SIZE, lr=lr,
+                                 patience=PATIENCE, seed=seed, log=log)
+        R.store.U_emb = None
+        R.store.embed_units(R.encoder, log)
+        ranker, lo, span, train_df = _fit_ltr(R, cands, seed, log)
+        vmap = lr_select.validation_map(_score(R, split["val"], ranker, lo, span), repo) \
+            if (len(lrs) > 1 and split["val"]) else float("nan")
+        log(f"[FLIM] lr={lr:g}: best encoder epoch {ft['best_epoch']}"
+            + (f", val MAP {vmap:.4f}" if np.isfinite(vmap) else ""))
+        run = {"lr": lr, "val_map": vmap, "finetune": ft, "ltr": ranker.log}
+        runs.append(run)
+        if best is None or (np.isfinite(vmap) and vmap > best["run"]["val_map"]):
+            best = {"run": run, "ranker": ranker, "lo": lo, "span": span, "train_df": train_df,
+                    "U_emb": R.store.U_emb, "state": {k: v.detach().cpu().clone()
+                                                      for k, v in R.encoder.model.state_dict().items()}}
+        del R.encoder
+        torch.cuda.empty_cache()
+    if len(lrs) > 1:
+        lr_select.record("FLIM", split["fold"], repo, best["run"]["lr"], seed, runs)
+    R.encoder = CodeBERTEncoder()
+    R.encoder.model.load_state_dict(best["state"])
+    R.encoder.model.eval()
+    R.store.U_emb = best["U_emb"]
+    log(f"[FLIM] lr={best['run']['lr']:g} "
+        f"({'selected on validation MAP' if len(lrs) > 1 else 'recorded choice'}); "
+        f"{(time.time() - t0) / 60:.0f} min")
 
-    # ────────────────────────────────────────────────────────────────────────
-    #  LAYER 2a — Build CodeBERT fine-tuning pairs
-    # ────────────────────────────────────────────────────────────────────────
-    all_bug_texts: list[str] = []
-    all_func_texts: list[str] = []
-    all_labels: list[int]    = []
+    # keep the trained model (Scripts/models.py) so more bugs can be scored later
+    from Scripts import models as M
+    md = M.model_dir("FLIM", split["fold"], seed, repo)
+    torch.save(best["state"], os.path.join(md, "encoder.pt"))
+    M.save_pickle(md, "ltr.pkl", {"ranker": best["ranker"], "lo": best["lo"], "span": best["span"],
+                                  "vectorizer": R.store.vec, "features": FEATURES})
+    M.save_meta(md, technique="FLIM", project=repo, fold=split["fold"], seed=seed,
+                lr=best["run"]["lr"], best_epoch=best["run"]["finetune"]["best_epoch"], config=CONFIG)
+    log(f"[FLIM] model saved -> {md}")
 
-    if src_train_cands:
-        print(f"[FLIM]   Building source fine-tune pairs …")
-        b, f, l = _build_finetune_pairs(
-            src_train_cands, bug_texts, src_repo, src_lang,
-        )
-        all_bug_texts.extend(b)
-        all_func_texts.extend(f)
-        all_labels.extend(l)
-
-    if tgt_train_cands:
-        print(f"[FLIM]   Building target fine-tune pairs …")
-        b, f, l = _build_finetune_pairs(
-            tgt_train_cands, bug_texts, tgt_repo, tgt_lang,
-        )
-        all_bug_texts.extend(b)
-        all_func_texts.extend(f)
-        all_labels.extend(l)
-
-    # ────────────────────────────────────────────────────────────────────────
-    #  LAYER 2b — Fine-tune CodeBERT  (the trainable component of FLIM)
-    # ────────────────────────────────────────────────────────────────────────
-    encoder = CodeBERTEncoder()
-
-    if all_bug_texts:
-        encoder.fine_tune(
-            all_bug_texts, all_func_texts, all_labels,
-            epochs              = FINETUNE_EPOCHS,
-            batch_size          = FINETUNE_BATCH_SIZE,
-            lr                  = FINETUNE_LR,
-            max_steps_per_epoch = FINETUNE_MAX_STEPS_EPOCH,
-        )
-    else:
-        print("[FLIM]   No training pairs — using pre-trained CodeBERT without fine-tuning.")
-
-    # ────────────────────────────────────────────────────────────────────────
-    #  LAYER 2c — Compute 4 FLIM features with fine-tuned CodeBERT
-    # ────────────────────────────────────────────────────────────────────────
-    train_dfs = []
-
-    if src_train_cands:
-        print(f"[FLIM]   Feature extraction: source train …")
-        df = _compute_flim_features(
-            src_train_cands, bug_texts, src_repo, src_lang, encoder,
-        )
-        if not df.empty:
-            train_dfs.append(df)
-
-    if tgt_train_cands:
-        print(f"[FLIM]   Feature extraction: target train …")
-        df = _compute_flim_features(
-            tgt_train_cands, bug_texts, tgt_repo, tgt_lang, encoder,
-        )
-        if not df.empty:
-            train_dfs.append(df)
-
-    if not train_dfs:
-        print("[FLIM]   No training features — returning zero metrics.")
-        return {'Top-1': 0.0, 'Top-5': 0.0, 'Top-10': 0.0, 'MAP': 0.0, 'MRR': 0.0}
-
-    train_df = pd.concat(train_dfs)
-    n_train  = train_df.index.get_level_values(0).nunique()
-    print(f"[FLIM]   Train set: {n_train} bugs, {len(train_df)} (bug, file) pairs")
-
-    # ────────────────────────────────────────────────────────────────────────
-    #  LAYER 2d — Train Adaptive LTR on the 4 FLIM features
-    # ────────────────────────────────────────────────────────────────────────
-    ranker = FLIMRanker(columns=FLIM_FEATURES, cv_folds=2)
-    ranker.fit(train_df)
-    print(f"[FLIM]   LTR: weight_method={ranker.weight_method_name} | "
-          f"use_regressor={ranker.use_regressor}")
-
-    # ────────────────────────────────────────────────────────────────────────
-    #  LAYER 2e — Test feature extraction + evaluation
-    # ────────────────────────────────────────────────────────────────────────
-    print(f"[FLIM]   Feature extraction: test ({len(target_test_ids)} bugs) …")
-    test_df = _compute_flim_features(
-        tgt_test_cands, bug_texts, tgt_repo, tgt_lang, encoder,
-    )
-
-    if test_df.empty:
-        print("[FLIM]   No test features — returning zero metrics.")
-        return {'Top-1': 0.0, 'Top-5': 0.0, 'Top-10': 0.0, 'MAP': 0.0, 'MRR': 0.0}
-
-    test_df          = test_df.copy()
-    test_df['result'] = ranker.predict_scores(test_df)
-    metrics          = _compute_metrics(test_df)
-
-    # obj2: dump per-(bug, file) scores for class-sliced diagnostics
-    _diag = os.environ.get("FLIM_DIAG_CSV")
-    if _diag:
-        _dd = test_df.reset_index()[['bug_id', 'blob_sha', 'used_in_fix', 'result']].copy()
-        _dd.to_csv(_diag, index=False)
-        print(f"[FLIM]   wrote diagnostics -> {_diag}  ({len(_dd)} rows)")
-
-    print(f"[FLIM]   Top-1={metrics['Top-1']:.3f}  Top-5={metrics['Top-5']:.3f}  "
-          f"Top-10={metrics['Top-10']:.3f}  MAP={metrics['MAP']:.3f}  "
-          f"MRR={metrics['MRR']:.3f}")
-    return metrics
+    # test: every file of universe T
+    scores = _score(R, split["test"], best["ranker"], best["lo"], best["span"], log, t0)
+    td = best["train_df"]
+    info = {"selected_lr": best["run"]["lr"], "lr_grid_trained": list(lrs), "lr_runs": runs,
+            "finetune": best["run"]["finetune"], "n_train_pairs": len(tr_pairs),
+            "n_val_pairs": len(va_pairs), "n_files": len(R.store.rec), "n_units": len(R.store.U_txt),
+            "ltr_rows": len(td), "ltr_bugs": int(td.bug_id.nunique()), "ltr": best["run"]["ltr"],
+            "config": CONFIG}
+    return scores, info

@@ -1,356 +1,161 @@
 """
-CodeBERT Chunked Bi-Encoder for FLIM.
+CodeBERT bi-encoder for FLIM, following the original FLIM fine-tuning code
+(Resources/flim-main/CodeBERT-finetune/run.py and cal_vec.py):
 
-No-truncation policy (user requirement):
-  Every text is tokenised in full, then split into overlapping chunks of
-  ≤ CHUNK_SIZE tokens.  Each chunk is encoded independently via CodeBERT's
-  [CLS] representation; chunk embeddings are mean-pooled to produce one
-  768-dim vector per text.
+  * microsoft/codebert-base, embedding = pooler output (encoder(...)[1])
+  * NL truncated to 128 tokens, code to 256 tokens (README: --nl_length 128
+    --code_length 256)
+  * loss: in-batch softmax cross-entropy over the NL x code dot-product matrix
+    (each report's positive function vs the other functions in the batch)
+  * AdamW(lr 2e-5, eps 1e-8), linear schedule without warm-up, batch 32,
+    10 epochs (README: --num_train_epochs 10 --learning_rate 2e-5)
+  * model selection: the epoch with the best validation MRR is kept (run.py
+    saves checkpoint-best-mrr). We add early stopping with patience 3 on that
+    same criterion -- the same patience BLAZE uses -- which only saves time.
 
-Fine-tuning strategy (bi-encoder with random chunk sampling):
-  • Pre-tokenise all texts into chunk lists (done once).
-  • Each training step randomly samples ONE chunk per text — the model
-    therefore sees every part of long documents across epochs (data
-    augmentation, no information discarded).
-  • Bug and function texts are encoded separately (bi-encoder).
-  • Loss: BCEWithLogitsLoss on cosine_similarity(bug_emb, func_emb).
+One deviation, stated in the method: when one report contributes several
+positive functions, the other positives of the same report are masked out of
+its row of the logit matrix, so they are not treated as negatives.
+
+The earlier implementation used BCEWithLogitsLoss(cosine, label): a cosine in
+[-1, 1] used as a logit can only reach sigmoid values in [0.27, 0.73], the loss
+has a floor near 0.5, and the embeddings collapsed (top elasticsearch scores
+all ~0.996). It is replaced entirely.
 """
 
-import os
-import random
+import copy
+import math
 
 import numpy as np
 import torch
 import torch.nn as nn
-import torch.optim as optim
-from torch.utils.data import Dataset, DataLoader
-from transformers import AutoTokenizer, AutoModel
 from tqdm import tqdm
+from transformers import AutoModel, AutoTokenizer, get_linear_schedule_with_warmup
 
-CODEBERT_MODEL_NAME = 'microsoft/codebert-base'
-CODEBERT_DIM        = 768
-CHUNK_SIZE          = 450   # tokens per chunk  (512 − [CLS] − [SEP] = 510; use 450 for safety)
-CHUNK_OVERLAP       = 50    # overlapping tokens between consecutive chunks
-MIN_CHUNK_LEN       = 5     # discard chunks shorter than this (unless it's the only one)
+CODEBERT_MODEL_NAME = "microsoft/codebert-base"
+NL_LENGTH = 128
+CODE_LENGTH = 256
 
-
-# ─────────────────────────────────────────────────────────────────────────────
-#  Encoder class
-# ─────────────────────────────────────────────────────────────────────────────
 
 class CodeBERTEncoder:
-    """
-    CodeBERT bi-encoder with sliding-window chunking.
-
-    Encoding (inference, no truncation):
-        text → tokenise → sliding-window chunks (CHUNK_SIZE, overlap CHUNK_OVERLAP)
-             → [CLS] chunk [SEP] → forward → [CLS] embedding per chunk
-             → mean-pool all chunk embeddings → 768-dim vector
-
-    Fine-tuning:
-        (bug_text, func_text, label) pairs
-        → pre-tokenise to chunk lists (one-time)
-        → each training step: randomly sample 1 chunk per text (augmentation)
-        → forward independently → cosine_similarity → BCE loss
-    """
-
     def __init__(self, model_name: str = CODEBERT_MODEL_NAME, device: str | None = None):
-        self.device = device or ('cuda' if torch.cuda.is_available() else 'cpu')
-        print(f"[CodeBERTEncoder] Loading {model_name} on {self.device} …")
+        self.device = device or ("cuda" if torch.cuda.is_available() else "cpu")
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
-        self.model     = AutoModel.from_pretrained(model_name)
-        self.model.to(self.device)
+        self.model = AutoModel.from_pretrained(model_name).to(self.device)
         self.model.eval()
+        self.history: list = []        # per-epoch {epoch, train_loss, val_mrr}
+        self.best_epoch: int | None = None
 
     # ------------------------------------------------------------------ #
-    #  Tokenisation helpers
-    # ------------------------------------------------------------------ #
+    def _batch_ids(self, texts: list, max_len: int):
+        enc = self.tokenizer(texts, padding=True, truncation=True, max_length=max_len,
+                             return_tensors="pt")
+        return enc["input_ids"].to(self.device), enc["attention_mask"].to(self.device)
 
-    def _tokenise(self, text: str) -> list[int]:
-        """Tokenise text → list of token IDs (no special tokens added)."""
-        return self.tokenizer.encode(text, add_special_tokens=False)
+    def _embed(self, ids, mask):
+        return self.model(input_ids=ids, attention_mask=mask)[1]   # pooler output
 
-    def _chunk_ids(self, ids: list[int]) -> list[list[int]]:
-        """
-        Split a token-ID list into overlapping windows of ≤ CHUNK_SIZE tokens.
-
-        Examples
-        --------
-        len(ids)=900, CHUNK_SIZE=450, CHUNK_OVERLAP=50
-          chunk 0: ids[   0 : 450]
-          chunk 1: ids[ 400 : 850]
-          chunk 2: ids[ 800 : 900]   ← shorter last chunk (kept if ≥ MIN_CHUNK_LEN)
-        """
-        if not ids:
-            return [[self.tokenizer.unk_token_id]]
-
-        step   = CHUNK_SIZE - CHUNK_OVERLAP
-        chunks = []
-        start  = 0
-        while start < len(ids):
-            end   = min(start + CHUNK_SIZE, len(ids))
-            chunk = ids[start:end]
-            if len(chunk) >= MIN_CHUNK_LEN or not chunks:
-                chunks.append(chunk)
-            start += step
-
-        return chunks or [[ids[0]]]
+    @torch.no_grad()
+    def encode(self, texts: list, kind: str, batch_size: int = 256) -> np.ndarray:
+        """kind: 'nl' (128 tokens) or 'code' (256 tokens). Returns float16 (n, 768)."""
+        self.model.eval()
+        max_len = NL_LENGTH if kind == "nl" else CODE_LENGTH
+        out = []
+        order = np.argsort([len(t) for t in texts])           # length-bucketing
+        for i in range(0, len(texts), batch_size):
+            idx = order[i:i + batch_size]
+            ids, mask = self._batch_ids([texts[j] or " " for j in idx], max_len)
+            with torch.autocast(device_type="cuda", dtype=torch.float16,
+                                enabled=self.device == "cuda"):
+                e = self._embed(ids, mask)
+            out.append((idx, e.float().cpu().numpy().astype(np.float16)))
+        res = np.zeros((len(texts), self.model.config.hidden_size), np.float16)
+        for idx, e in out:
+            res[idx] = e
+        return res
 
     # ------------------------------------------------------------------ #
-    #  Low-level forward pass (shared by inference and fine-tuning)
-    # ------------------------------------------------------------------ #
+    def _val_mrr(self, val_pairs: list) -> float:
+        """run.py-style: each validation report ranks its positive among all
+        validation functions (dot product of pooler embeddings)."""
+        if not val_pairs:
+            return float("nan")
+        nl = self.encode([p[1] for p in val_pairs], "nl").astype(np.float32)
+        code = self.encode([p[2] for p in val_pairs], "code").astype(np.float32)
+        group = np.array([p[0] for p in val_pairs])
+        s = nl @ code.T
+        rr = []
+        for i in range(len(val_pairs)):
+            row = s[i].copy()
+            same = group == group[i]
+            same[i] = False
+            row[same] = -np.inf            # other positives of the same report are not negatives
+            rr.append(1.0 / (1 + int((row > row[i]).sum())))
+        return float(np.mean(rr))
 
-    def _encode_chunk_ids(
-        self,
-        chunk_ids_batch: list[list[int]],
-        no_grad: bool = True,
-    ) -> torch.Tensor:
+    def fine_tune(self, train_pairs: list, val_pairs: list, epochs: int = 10,
+                  batch_size: int = 32, lr: float = 2e-5, patience: int = 3,
+                  seed: int = 0, log=print) -> dict:
         """
-        Forward one batch of chunk token-ID lists through CodeBERT.
-
-        Returns
-        -------
-        Tensor of shape (len(chunk_ids_batch), 768) — [CLS] embeddings.
-        Always on CPU when no_grad=True (inference); on self.device when
-        no_grad=False (fine-tuning, gradient needed).
+        train_pairs / val_pairs: [(group_id, report_text, function_text)], one
+        row per positive (report, function) pair; group_id identifies the bug.
         """
-        cls_id = self.tokenizer.cls_token_id
-        sep_id = self.tokenizer.sep_token_id
-        pad_id = self.tokenizer.pad_token_id
+        g = torch.Generator().manual_seed(seed)
+        n = len(train_pairs)
+        steps_per_epoch = math.ceil(n / batch_size)
+        opt = torch.optim.AdamW(self.model.parameters(), lr=lr, eps=1e-8)
+        sch = get_linear_schedule_with_warmup(opt, 0, steps_per_epoch * epochs)
+        ce = nn.CrossEntropyLoss()
+        scaler = torch.amp.GradScaler("cuda", enabled=self.device == "cuda")
+        best_mrr, best_state, bad = -1.0, None, 0
+        log(f"[FLIM-enc] fine-tuning on {n} positive pairs, val {len(val_pairs)}; "
+            f"{steps_per_epoch} steps/epoch, max {epochs} epochs")
 
-        # Prepend [CLS] and append [SEP] to each chunk
-        full_seqs = [[cls_id] + ids + [sep_id] for ids in chunk_ids_batch]
-        max_len   = max(len(s) for s in full_seqs)
-
-        input_ids = torch.tensor(
-            [s + [pad_id] * (max_len - len(s)) for s in full_seqs],
-            dtype=torch.long, device=self.device,
-        )
-        attn_mask = torch.tensor(
-            [[1] * len(s) + [0] * (max_len - len(s)) for s in full_seqs],
-            dtype=torch.long, device=self.device,
-        )
-
-        if no_grad:
-            with torch.no_grad():
-                out = self.model(input_ids=input_ids, attention_mask=attn_mask)
-            return out.last_hidden_state[:, 0, :].float().cpu()
-        else:
-            out = self.model(input_ids=input_ids, attention_mask=attn_mask)
-            return out.last_hidden_state[:, 0, :].float()  # stays on device
-
-    # ------------------------------------------------------------------ #
-    #  Public inference API
-    # ------------------------------------------------------------------ #
-
-    def encode(self, text: str, batch_size: int = 64) -> np.ndarray:
-        """
-        Encode one text → 768-dim float32 numpy array.
-        Long texts are chunked; all chunk embeddings are mean-pooled.
-        """
-        ids    = self._tokenise(text)
-        chunks = self._chunk_ids(ids)
-
-        all_embs = []
-        for i in range(0, len(chunks), batch_size):
-            embs = self._encode_chunk_ids(chunks[i : i + batch_size], no_grad=True)
-            all_embs.append(embs.numpy())
-
-        return np.vstack(all_embs).mean(axis=0).astype('float32')
-
-    def encode_batch(self, texts: list[str], batch_size: int = 64) -> np.ndarray:
-        """
-        Encode a list of texts → (N, 768) float32 array.
-
-        All chunks from all texts are batched together for GPU efficiency.
-        Each text's chunks are mean-pooled individually → one row per text.
-        """
-        if not texts:
-            return np.zeros((0, CODEBERT_DIM), dtype='float32')
-
-        # Build flat list: (text_idx, chunk_ids)
-        flat: list[tuple[int, list[int]]] = []
-        for t_idx, text in enumerate(texts):
-            ids = self._tokenise(text)
-            for chunk in self._chunk_ids(ids):
-                flat.append((t_idx, chunk))
-
-        # Accumulators per text
-        emb_acc   = np.zeros((len(texts), CODEBERT_DIM), dtype='float32')
-        count_acc = np.zeros(len(texts), dtype='int32')
-
-        for i in range(0, len(flat), batch_size):
-            batch      = flat[i : i + batch_size]
-            t_idxs     = [item[0] for item in batch]
-            chunk_ids  = [item[1] for item in batch]
-            embs       = self._encode_chunk_ids(chunk_ids, no_grad=True).numpy()
-            for j, t_idx in enumerate(t_idxs):
-                emb_acc[t_idx]   += embs[j]
-                count_acc[t_idx] += 1
-
-        # Mean pool (avoid divide-by-zero for texts that somehow got no chunks)
-        counts = np.maximum(count_acc, 1).reshape(-1, 1)
-        return (emb_acc / counts).astype('float32')
-
-    # ------------------------------------------------------------------ #
-    #  Fine-tuning
-    # ------------------------------------------------------------------ #
-
-    def fine_tune(
-        self,
-        bug_texts:  list[str],
-        func_texts: list[str],
-        labels:     list[int],
-        epochs:              int   = 3,
-        batch_size:          int   = 32,
-        lr:                  float = 2e-5,
-        max_steps_per_epoch: int   = 5000,
-    ) -> None:
-        """
-        Fine-tune CodeBERT as a bi-encoder on (bug_text, func_text, label) triples.
-
-        No truncation: texts are pre-tokenised into chunk lists.  Each training
-        step randomly draws ONE chunk per text — the model sees all parts of
-        long documents across epochs (random-crop augmentation).
-
-        Loss
-        ----
-        BCEWithLogitsLoss(cosine_similarity(bug_emb, func_emb), label)
-        """
-        n_pos = sum(labels)
-        print(f"[CodeBERTEncoder] Fine-tuning on {len(labels)} pairs "
-              f"({n_pos} pos / {len(labels)-n_pos} neg).")
-
-        # ── Pre-tokenise (one-time cost) ──────────────────────────────────
-        print("[CodeBERTEncoder]   Pre-tokenising bug texts …")
-        bug_chunk_lists  = [self._chunk_ids(self._tokenise(t))
-                             for t in tqdm(bug_texts,  leave=False)]
-        print("[CodeBERTEncoder]   Pre-tokenising function texts …")
-        func_chunk_lists = [self._chunk_ids(self._tokenise(t))
-                             for t in tqdm(func_texts, leave=False)]
-
-        dataset = _ChunkPairDataset(bug_chunk_lists, func_chunk_lists, labels)
-        loader  = DataLoader(
-            dataset, batch_size=batch_size, shuffle=True,
-            collate_fn=_chunk_pair_collate, drop_last=False,
-        )
-
-        # ── Optimiser & loss ──────────────────────────────────────────────
-        self.model.train()
-        optimizer = optim.AdamW(self.model.parameters(), lr=lr, weight_decay=0.01)
-        criterion = nn.BCEWithLogitsLoss()
-
-        cls_id = self.tokenizer.cls_token_id
-        sep_id = self.tokenizer.sep_token_id
-        pad_id = self.tokenizer.pad_token_id
-
-        # ── Training loop ─────────────────────────────────────────────────
-        for epoch in range(epochs):
-            total_loss = 0.0
-            n_steps    = 0
-
-            for step, (bug_chunks_b, func_chunks_b, labels_b) in enumerate(
-                tqdm(loader, desc=f"  Epoch {epoch+1}/{epochs}", leave=False)
-            ):
-                if step >= max_steps_per_epoch:
+        for ep in range(1, epochs + 1):
+            self.model.train()
+            perm = torch.randperm(n, generator=g).tolist()
+            tot, k = 0.0, 0
+            for i in tqdm(range(0, n, batch_size), desc=f"  FLIM epoch {ep}", leave=False):
+                b = [train_pairs[j] for j in perm[i:i + batch_size]]
+                if len(b) < 2:
+                    continue
+                nl_ids, nl_m = self._batch_ids([x[1] for x in b], NL_LENGTH)
+                cd_ids, cd_m = self._batch_ids([x[2] for x in b], CODE_LENGTH)
+                with torch.autocast(device_type="cuda", dtype=torch.float16,
+                                    enabled=self.device == "cuda"):
+                    nl_v = self._embed(nl_ids, nl_m)
+                    cd_v = self._embed(cd_ids, cd_m)
+                    scores = (nl_v.float() @ cd_v.float().t())
+                grp = torch.tensor([x[0] for x in b], device=self.device)
+                same = (grp[:, None] == grp[None, :]) & ~torch.eye(len(b), dtype=torch.bool,
+                                                                   device=self.device)
+                scores = scores.masked_fill(same, float("-inf"))
+                loss = ce(scores, torch.arange(len(b), device=self.device))
+                opt.zero_grad(set_to_none=True)
+                scaler.scale(loss).backward()
+                scaler.unscale_(opt)
+                torch.nn.utils.clip_grad_norm_(self.model.parameters(), 1.0)
+                scaler.step(opt)
+                scaler.update()
+                sch.step()
+                tot += loss.item(); k += 1
+            mrr = self._val_mrr(val_pairs)
+            self.history.append({"epoch": ep, "train_loss": tot / max(k, 1), "val_mrr": mrr})
+            log(f"[FLIM-enc]   epoch {ep}: train_loss={tot / max(k, 1):.4f}  val_mrr={mrr:.4f}")
+            if np.isnan(mrr):                      # no validation pairs: keep the last epoch
+                self.best_epoch = ep
+                best_state = None
+                continue
+            if mrr > best_mrr:
+                best_mrr, bad, self.best_epoch = mrr, 0, ep
+                best_state = copy.deepcopy({k_: v.detach().cpu() for k_, v in self.model.state_dict().items()})
+            else:
+                bad += 1
+                if bad >= patience:
+                    log(f"[FLIM-enc]   early stop after epoch {ep} (best epoch {self.best_epoch})")
                     break
-
-                # bug_chunks_b / func_chunks_b: list of B randomly-sampled chunk-id lists
-                # (one chunk per sample, chosen inside _ChunkPairDataset.__getitem__)
-
-                def _pad_and_wrap(chunks: list[list[int]]) -> tuple[torch.Tensor, torch.Tensor]:
-                    full    = [[cls_id] + c + [sep_id] for c in chunks]
-                    max_len = max(len(f) for f in full)
-                    ids  = torch.tensor(
-                        [f + [pad_id] * (max_len - len(f)) for f in full],
-                        dtype=torch.long, device=self.device,
-                    )
-                    mask = torch.tensor(
-                        [[1]*len(f) + [0]*(max_len - len(f)) for f in full],
-                        dtype=torch.long, device=self.device,
-                    )
-                    return ids, mask
-
-                bug_ids,  bug_mask  = _pad_and_wrap(bug_chunks_b)
-                func_ids, func_mask = _pad_and_wrap(func_chunks_b)
-
-                # Separate forward passes (bi-encoder)
-                bug_out  = self.model(input_ids=bug_ids,  attention_mask=bug_mask)
-                func_out = self.model(input_ids=func_ids, attention_mask=func_mask)
-
-                bug_emb  = bug_out.last_hidden_state[:, 0, :].float()   # (B, 768)
-                func_emb = func_out.last_hidden_state[:, 0, :].float()  # (B, 768)
-
-                cos_sim = nn.functional.cosine_similarity(bug_emb, func_emb, dim=1)  # (B,)
-                lbl     = labels_b.float().to(self.device)
-
-                loss = criterion(cos_sim, lbl)
-
-                optimizer.zero_grad()
-                loss.backward()
-                nn.utils.clip_grad_norm_(self.model.parameters(), 1.0)
-                optimizer.step()
-
-                total_loss += loss.item()
-                n_steps    += 1
-
-            avg_loss = total_loss / max(n_steps, 1)
-            print(f"[CodeBERTEncoder]   Epoch {epoch+1}: avg_loss={avg_loss:.4f}  steps={n_steps}")
-
+        if best_state is not None:
+            self.model.load_state_dict(best_state)
         self.model.eval()
-
-    # ------------------------------------------------------------------ #
-    #  Persistence
-    # ------------------------------------------------------------------ #
-
-    def save(self, path: str) -> None:
-        """Save fine-tuned model weights to disk."""
-        os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
-        torch.save(self.model.state_dict(), path)
-        print(f"[CodeBERTEncoder] Weights saved → {path}")
-
-    def load(self, path: str) -> None:
-        """Restore fine-tuned model weights from disk."""
-        self.model.load_state_dict(
-            torch.load(path, map_location=self.device, weights_only=True)
-        )
-        self.model.eval()
-        print(f"[CodeBERTEncoder] Weights loaded ← {path}")
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-#  Dataset & collate helpers for fine-tuning
-# ─────────────────────────────────────────────────────────────────────────────
-
-class _ChunkPairDataset(Dataset):
-    """
-    Each item is one (bug_chunk, func_chunk, label) triple.
-    The chunk is drawn randomly from the pre-tokenised chunk list for that
-    text, so the model sees different parts of long texts across epochs.
-    """
-
-    def __init__(
-        self,
-        bug_chunk_lists:  list[list[list[int]]],
-        func_chunk_lists: list[list[list[int]]],
-        labels:           list[int],
-    ):
-        self.bug_chunk_lists  = bug_chunk_lists
-        self.func_chunk_lists = func_chunk_lists
-        self.labels           = labels
-
-    def __len__(self) -> int:
-        return len(self.labels)
-
-    def __getitem__(self, idx: int):
-        bug_chunk  = random.choice(self.bug_chunk_lists[idx])
-        func_chunk = random.choice(self.func_chunk_lists[idx])
-        return bug_chunk, func_chunk, self.labels[idx]
-
-
-def _chunk_pair_collate(batch):
-    """Collate variable-length chunk-id lists into Python lists + a label tensor."""
-    bug_chunks  = [item[0] for item in batch]
-    func_chunks = [item[1] for item in batch]
-    labels      = torch.tensor([item[2] for item in batch], dtype=torch.long)
-    return bug_chunks, func_chunks, labels
+        return {"epochs_run": len(self.history), "best_epoch": self.best_epoch,
+                "best_val_mrr": best_mrr, "history": self.history}
