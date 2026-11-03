@@ -87,36 +87,47 @@ class BlazeEmbedding(nn.Module):
         residual_layers: int = 2,
         report_prefix: str = "search_query: ",
         source_prefix: str = "search_document: ",
+        report_max_length: int | None = None,
+        trust_remote_code: bool = False,
+        revision: str | None = None,
+        tokenizer_kwargs: dict | None = None,
     ):
         super().__init__()
-        self.transformer = AutoModel.from_pretrained(model_name)
-        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+        self.transformer = AutoModel.from_pretrained(
+            model_name, trust_remote_code=trust_remote_code, revision=revision)
+        self.tokenizer = AutoTokenizer.from_pretrained(
+            model_name, trust_remote_code=trust_remote_code, revision=revision,
+            **(tokenizer_kwargs or {}))
+        if self.tokenizer.pad_token is None:
+            self.tokenizer.pad_token = self.tokenizer.eos_token
         self.dimension = dimension
-        self.max_length = max_length
+        self.max_length = max_length                         # code chunks
+        self.report_max_length = report_max_length or max_length
         self.report_prefix = report_prefix
         self.source_prefix = source_prefix
-        # Mean pooling is the standard for bge-code-v1 (Qwen2 decoder-only)
+
+        # Mean pooling (original BLAZE config main-sage.yaml: pooler.type = mean)
         self.pooler = CustomPooling(
             word_embedding_dimension=dimension, pooling_mode="mean"
         )
         self.report_adapter = ResidualAdapter(layers=residual_layers, dimension=dimension)
         self.source_adapter = ResidualAdapter(layers=residual_layers, dimension=dimension)
 
-    def _tokenize(self, texts: List[str], prefix: str, device: str) -> dict:
+    def _tokenize(self, texts: List[str], prefix: str, device: str, max_length: int) -> dict:
         prefixed = [prefix + t for t in texts]
         encoded = self.tokenizer(
             prefixed,
             padding=True,
             truncation=True,
-            max_length=self.max_length,
+            max_length=max_length,
             return_tensors="pt",
         )
-        return {k: v.to(device) for k, v in encoded.items()}
+        return {k: v.to(device) for k, v in encoded.items() if k in ("input_ids", "attention_mask")}
 
     def get_report_embedding(self, texts: List[str]) -> torch.Tensor:
         """Encode bug report texts → L2-unnormalized embeddings."""
         device = next(self.transformer.parameters()).device
-        encoded = self._tokenize(texts, self.report_prefix, device)
+        encoded = self._tokenize(texts, self.report_prefix, device, self.report_max_length)
         out = self.transformer(**encoded)
         pooled = self.pooler(out, encoded["attention_mask"])["sentence_embedding"]
         # Detach from the frozen transformer's computation graph so PyTorch
@@ -128,7 +139,7 @@ class BlazeEmbedding(nn.Module):
     def get_source_embedding(self, texts: List[str]) -> torch.Tensor:
         """Encode source code chunk texts → L2-unnormalized embeddings."""
         device = next(self.transformer.parameters()).device
-        encoded = self._tokenize(texts, self.source_prefix, device)
+        encoded = self._tokenize(texts, self.source_prefix, device, self.max_length)
         out = self.transformer(**encoded)
         pooled = self.pooler(out, encoded["attention_mask"])["sentence_embedding"]
         if not self.transformer.training:

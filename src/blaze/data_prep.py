@@ -35,8 +35,8 @@ BUG_REPORTS_PATH = os.path.join(_OBJ2_ROOT, "data/processed/bug_reports_clean.pa
 BLAZE_CACHE_DIR = os.path.join(_OBJ2_ROOT, "data/processed/blaze_cache")
 
 # Chunker settings (mirrors BLAZE paper defaults)
-CHUNK_MAX_WINDOW_SIZE = 20   # max lines per chunk (~512 tokens at ~25 chars/line)
-CHUNK_GENERAL_COST = 10      # cost for splitting at non-AST boundary
+CHUNK_MAX_WINDOW_SIZE = 30   # max lines per chunk -- original convert_to_chunks.py: max_window_size=30
+CHUNK_GENERAL_COST = 50      # cost for splitting at a non-AST boundary -- original: general_cost=50
 CHUNK_FALLBACK_LINES = 60    # lines per chunk when tree-sitter is unavailable
 
 # AST node types and their split costs (lower cost = preferred split point)
@@ -142,15 +142,17 @@ class DynamicCodeSplitter:
     # ---- public API ----------------------------------------------------------
 
     def split_text(self, text: str) -> List[str]:
-        """Split source code into chunks. Returns non-empty chunks."""
-        try:
-            import tree_sitter_languages  # optional dependency
-        except ImportError:
-            return _fallback_chunk(text, CHUNK_FALLBACK_LINES)
+        """Split source code into chunks. Returns non-empty chunks.
 
-        try:
-            parser = tree_sitter_languages.get_parser(self.language)
-        except Exception:
+        Uses src/parsing.ts_parser (tree-sitter-java / tree-sitter-python
+        wheels). The earlier `tree_sitter_languages.get_parser` call raised a
+        TypeError under tree_sitter 0.25, which this method swallowed -- so
+        every file silently got fixed 60-line chunks and BLAZE's dynamic
+        chunking never ran (in Objective 1 as well).
+        """
+        from src.parsing import ts_parser
+        parser = ts_parser(self.language)
+        if parser is None:
             return _fallback_chunk(text, CHUNK_FALLBACK_LINES)
 
         tree = parser.parse(bytes(text, "utf-8"))
