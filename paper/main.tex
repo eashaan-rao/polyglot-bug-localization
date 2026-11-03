@@ -1,0 +1,936 @@
+%%
+%% Objective 2 — polyglot bug localization.
+%% Drafted in the Elsevier CAS double-column format (JSS) reused from
+%% Objective 1; to be converted to ACM acmart (TOSEM) later.
+%%
+%% Markers used while drafting (all render in colour; remove before submission):
+%%   \pending{...}     a result that needs the full runs
+%%   \missingcite{...} a citation still to be found / verified
+%%   \gap{...}         something the draft shows is missing in the study itself
+%%
+
+\documentclass[a4paper,fleqn]{cas-dc}
+
+\usepackage[authoryear]{natbib}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{xspace}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,fit,backgrounds}
+
+\newcommand{\pending}[1]{\textcolor{red!70!black}{[PENDING: #1]}}
+\newcommand{\missingcite}[1]{\textcolor{orange!80!black}{[CITE: #1]}}
+\newcommand{\gap}[1]{\textcolor{blue!70!black}{[GAP: #1]}}
+\newcommand{\mono}{Mono-fix\xspace}
+\newcommand{\poly}{Poly-fix\xspace}
+
+\begin{document}
+\let\WriteBookmarks\relax
+\def\floatpagepagefraction{1}
+\def\textpagefraction{.001}
+
+\shorttitle{Mono-fix or Poly-fix? Multi-language bug fixes and bug localization}
+\shortauthors{Rao and Chimalakonda}
+
+\title[]{Mono-fix or Poly-fix? On the Prevalence and Localizability of Multi-Language Bug Fixes}
+
+\author[1]{A Eashaan Rao}[orcid=https://orcid.org/0000-0001-8499-7538]
+\cormark[1]
+\ead{cs21d002@iittp.ac.in}
+
+\author[1]{Sridhar Chimalakonda}[orcid=https://orcid.org/0000-0003-0818-8178]
+\ead{ch@iittp.ac.in}
+
+\affiliation[1]{organization={Indian Institute of Technology Tirupati},
+            city={Tirupati},
+            postcode={517619},
+            state={Andhra Pradesh},
+            country={India}}
+
+\cortext[1]{Corresponding author}
+
+%% ===================================================================
+%% ABSTRACT
+%% ===================================================================
+\begin{abstract}
+Information-retrieval-based bug localization ranks the files of a project by
+their relevance to a bug report. Its benchmarks and techniques assume that the
+files a fix changes are source files of the project's main language. We
+classify each fix by the languages of the files it changes: a fix is
+\emph{Mono-fix} if all its counted files belong to one language and
+\emph{Poly-fix} otherwise. On 3{,}594 bugs from six Java and Python projects in
+the BeetleBox dataset, 27.4\% of fixes are Poly-fix (range 8.2--41.3\% across
+the stated boundary rules); the additional files are mostly YAML, JSON and XML.
+In the newest 20\% of each project's bugs, 37.2\% of the files a Poly-fix fix
+changes cannot be read by the project-language parser, against 0.1\% for
+Mono-fix fixes. We then compare four techniques that differ in what they can
+ingest---BM25 (classical retrieval), BLAZE (language-agnostic neural
+retrieval), FLIM (function-level, parser-dependent) and LocAgent (an LLM agent
+over a parsed code graph)---on a chronological within-project split, ranking
+every file of the pre-fix snapshot.
+\pending{RQ3/RQ4 results: Mono vs Poly difference per technique with effect
+sizes; whether BM25 matches or exceeds the parser-dependent techniques on
+Poly-fix bugs while trailing them on Mono-fix bugs.}
+We release the per-bug classification, the per-file parse status and the
+evaluation scripts.
+\end{abstract}
+
+\begin{keywords}
+Bug Localization \sep Polyglot Software \sep Multi-Language Systems \sep
+Empirical Study \sep Mining Software Repositories
+\end{keywords}
+
+\maketitle
+
+%% ===================================================================
+%% 1 INTRODUCTION
+%% ===================================================================
+\section{Introduction}\label{sec:intro}
+
+Bug localization takes a bug report and returns a ranked list of the files of a
+project, ordered by how likely each file is to need a change
+\citep{zhou2012should,lee2018bench4bl}. Information-retrieval-based (IR-based)
+techniques compute this ranking from the text of the report and the content of
+the files. They range from classical lexical retrieval
+\citep{robertson2009probabilistic,zhou2012should} to learned rankers that use
+pre-trained code models \citep{liang2022modeling,chakraborty2025blaze} and,
+most recently, to agents built on large language models (LLMs) that search a
+repository with tools \citep{yang2024sweagent,xia2024agentless,chen2025locagent}.
+
+The evaluation of these techniques rests on an assumption that is rarely
+stated: that the files a fix changes are source files of the project's main
+language. Standard benchmarks are built this way. Bench4BL indexes and scores
+Java files only \citep{lee2018bench4bl}, and the dataset-quality literature
+treats non-source files in the ground truth as noise to be removed
+\citep{kochhar2014potential}. Real fixes are not always contained in that set.
+In localstack, the fix for issue~8030 (``CreateMultipartUpload should return
+InitiateMultipartUploadResult element'') changes three Python files and
+\texttt{localstack/aws/spec-patches.json}, a JSON patch to the AWS API
+specification that the serializer reads. In elasticsearch, the fix for
+issue~99183 (``Error when loading \texttt{text} fields from indexes with
+synthetic source'') changes one Java class and one YAML REST test.
+
+When a fix crosses file types, two different things can go wrong for a
+localization technique. A technique that parses source code into a structured
+representation---functions, abstract syntax trees, code graphs---may have no
+parser for the file and therefore cannot represent it at all. Or the technique
+can read the file but ranks it poorly, because its vocabulary and structure
+differ from the source files the technique was trained on. We call the first
+an \emph{architectural} limit and the second a \emph{semantic} one. Ranking
+metrics reported over a whole benchmark do not separate them.
+
+The distinction matters for how the field reads its own progress. Classical
+retrieval treats every file as a bag of tokens and can therefore process any
+text file. The techniques that cannot are the ones that parse structure, which
+is what distinguishes them from classical baselines. If parser-dependent
+techniques lose ground on fixes that cross file types, part of their reported
+advantage over classical retrieval may hold only on the portion of the task
+they can ingest.
+
+This paper reports an exploratory study of that question. The unit of analysis
+is the fix, classified from the files of the fix commit
+(Section~\ref{sec:definitions}). We ask four research questions:
+
+\begin{description}[leftmargin=0pt,itemsep=2pt]
+\item[RQ1 (Prevalence).] What proportion of fixes are Poly-fix, and to which
+  file types do the additional files belong?
+\item[RQ2 (Architectural feasibility).] For each technique, which file types
+  occurring in Poly-fix fixes can it ingest at all, and is a failure due to the
+  technique or to the available implementation?
+\item[RQ3 (Localization performance).] For the files a technique can ingest,
+  how does its performance differ between Mono-fix and Poly-fix bugs of the
+  same project?
+\item[RQ4 (Classical baseline).] On Poly-fix bugs, does classical retrieval
+  match or exceed the parser-dependent techniques where they fail or degrade?
+\end{description}
+
+\noindent The contributions are:
+\begin{itemize}[itemsep=1pt]
+\item A classification of fixes by composition (Mono-fix / Poly-fix) with
+  explicit boundary rules, applied to 3{,}594 bugs, and the prevalence it
+  yields with its sensitivity to each rule (RQ1).
+\item A per-file measurement of which fix files each technique can represent,
+  separating architectural from semantic failure (RQ2).
+\item A within-project comparison of four techniques from four paradigms on a
+  chronological split, with every file of the pre-fix snapshot ranked and a
+  single evaluator for all techniques (RQ3, RQ4).
+\item The labelled classification, per-file parse status, score files and
+  scripts \pending{replication package DOI}.
+\end{itemize}
+
+Section~\ref{sec:background} positions the study. Section~\ref{sec:design}
+describes the study design, Section~\ref{sec:results} the results,
+Section~\ref{sec:discussion} their implications and
+Section~\ref{sec:threats} the threats to validity.
+
+%% ===================================================================
+%% 2 BACKGROUND AND RELATED WORK
+%% ===================================================================
+\section{Background and Related Work}\label{sec:background}
+
+\subsection{IR-based bug localization techniques}
+
+We group techniques by what their architecture can ingest, because that is the
+property this study varies.
+
+\emph{Classical retrieval} represents the report and each file as bags of
+terms and scores them with a lexical model such as VSM or BM25
+\citep{robertson2009probabilistic}. BugLocator added similar-report history to
+a revised VSM \citep{zhou2012should}. Any text file can be indexed.
+
+\emph{Learned and pre-trained rankers} learn a relevance function from past
+fixes. Ye et al.\ combined lexical, history and structure features with
+learning to rank \citep{ye2014learning}; the adaptive variant of Fejzer et
+al.\ selects feature weights and a regressor per project
+\citep{fejzer2022tracking}. FLIM splits each file into functions with a
+language parser, fine-tunes CodeBERT \citep{feng2020codebert} on
+(report, function) pairs, and fuses the function-level similarities with 19 IR
+features in that learning-to-rank model \citep{liang2022modeling}. BL-GAN
+encodes files as AST graphs \citep{zhu2022bl}. BLAZE fine-tunes a
+language-agnostic code embedding model on report--chunk pairs, where a
+tree-sitter parser only chooses chunk boundaries and any text can still be
+embedded \citep{chakraborty2025blaze}.
+
+\emph{LLM agents} localize by letting an LLM call search tools over a
+repository. SWE-agent exposes shell-like commands \citep{yang2024sweagent};
+Agentless prompts over a repository skeleton \citep{xia2024agentless};
+AutoCodeRover \citep{zhang2024autocoderover}, LocAgent \citep{chen2025locagent}
+and SweRank \citep{reddy2025swerank} search code entities. LocAgent builds a
+directed heterogeneous graph of directories, files, classes and functions by
+parsing Python source, and its tools navigate that graph. An agent's tools
+therefore inherit the same distinction: a tool over a parsed graph can only
+reach what the parser produced.
+
+\subsection{Characterising bug fixes}
+
+Prior characterisations of fixes count how many files and hunks a fix touches
+and how far apart they are. Work on multi-hunk patches classifies hunks by
+spatial proximity and reports that the median fix changes no more than two
+files \missingcite{multi-hunk characterisation study}. An agent-based
+localization study at ICPC 2026 reports performance by the number of
+ground-truth documents \citep{samir2026cognigent}\gap{confirm this is the
+paper the brief refers to}. Both measure quantity and distance. This study
+classifies fixes by \emph{composition}---the file types they contain---which
+is the typological counterpart of the spatial classification.
+
+\subsection{Cross-language bug localization}
+
+BLAZE localizes bugs across projects written in different languages and
+introduced BeetleBox, a dataset spanning five languages, for that purpose
+\citep{chakraborty2025blaze}. The unit is still a fix within a project of one
+language. xLoc detects and localizes bugs caused by interactions between
+languages \missingcite{xLoc}, a different phenomenon: a bug caused by a
+language boundary, rather than a fix that crosses one. Neither addresses
+fixes that span file types within a project.
+
+\subsection{Dataset quality in bug localization}
+
+A line of work examines whether localization ground truth is correct:
+misclassified reports \citep{herzig2013its}, reports that already name the
+buggy file, and tangled fix commits \citep{herzig2013impact}. Kochhar et al.\
+report that these biases change measured performance \citep{kochhar2014potential}.
+This work concerns files that should \emph{not} be in the ground truth. Our
+study concerns the opposite direction: files that fixes contain and that an
+evaluation may not reach.
+
+\subsection{Polyglot software engineering}
+
+Most open-source projects use several languages
+\citep{mayer2015empirical}, and multi-language use has been associated with
+defect-proneness \citep{kochhar2016large}. In testing, regression test
+selection tools have been shown to be unsafe on polyglot projects because
+they miss inter-language dependencies \missingcite{polyglot regression test
+selection}. That result is the closest precedent by analogy: a monolingual
+tool applied to a polyglot artefact.
+
+\begin{table*}[t]
+\caption{Positioning: what each line of work provides and what this study adds.}
+\label{tab:positioning}
+\small
+\begin{tabular}{p{3.3cm}p{6.2cm}p{6.6cm}}
+\toprule
+Line of work & Strength we use & Gap this study addresses \\
+\midrule
+Fix characterisation & Method for classifying fixes; multi-hunk taxonomy & Classifies by size and distance, not by file type \\
+Cross-language BL (BLAZE, BeetleBox) & Multi-language ground truth; language-agnostic technique & Unit is a single-language fix within a project \\
+Language-interaction bugs (xLoc) & Bugs at language boundaries & Bugs \emph{caused} by a boundary, not fixes that \emph{cross} one \\
+Dataset quality & Ground truth affects measured performance & Concerns files wrongly included, not files fixes contain \\
+Polyglot SE / RTS & Monolingual tools can be unsafe on polyglot code & Different task (testing, not localization) \\
+LLM-agent localization & Current techniques; graph-based tools & Evaluated on source-only targets (SWE-bench) \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+%% ===================================================================
+%% 3 STUDY DESIGN
+%% ===================================================================
+\section{Study Design}\label{sec:design}
+
+The study is exploratory. The research questions are descriptive; where we
+state an expectation it is labelled a prediction, and a statistical test is
+run only where a specific comparison calls for one. The four questions are
+answered independently, so a null result at any step is reported as a result.
+Figure~\ref{fig:design} summarises the pipeline.
+
+\begin{figure*}[t]
+\centering
+\pending{Study-design figure: BeetleBox $\rightarrow$ fix-commit extraction
+$\rightarrow$ classification (ruleset 0.2.0) $\rightarrow$ chronological split
+$\rightarrow$ file universe per snapshot $\rightarrow$ four techniques score
+every file $\rightarrow$ single evaluator (universe R/T $\times$ view
+all/parseable) $\rightarrow$ RQ1--RQ4.}
+\caption{Study design.}
+\label{fig:design}
+\end{figure*}
+
+\subsection{Definitions}\label{sec:definitions}
+
+\paragraph{Fix and fix files.} The \emph{fix} of a bug is the commit that the
+dataset links to it. Its \emph{fix files} are the files the commit adds,
+modifies, deletes or renames relative to its first parent.
+
+\paragraph{Language attribution.} A file's language is decided from its
+extension, or from its basename for extension-less files such as
+\texttt{Dockerfile}. Each language is assigned a category: source, schema,
+data-config, build, style, test-data, docs or other.
+
+\paragraph{Counted files.} A fix file is \emph{counted} if its category
+contributes to the language set and no boundary rule excludes it. The boundary
+rules (Section~\ref{sec:classification}) exclude documentation, changelog
+fragments, lock files, generated and vendored files, CI and developer-tooling
+configuration, binaries and deletions.
+
+\paragraph{Mono-fix and Poly-fix.} A bug is \emph{Mono-fix} if all its counted
+fix files belong to one language, and \emph{Poly-fix} if they belong to two or
+more. The \emph{primary language} of a project is Java or Python; a
+\emph{secondary language} is any other language among a fix's counted files.
+
+\paragraph{Grains.} A secondary language must have a formal grammar and carry
+behaviour (criteria C1--C3; Section~\ref{sec:classification}). Three grains
+follow. \emph{Headline}: a secondary language is YAML, JSON, XML or SQL.
+\emph{Broad}: any secondary language passing C1--C3. \emph{Strict}: the fix
+spans two or more programming languages. The experiments use the broad grain;
+the other two are reported as sensitivity.
+
+\paragraph{Behaviour-bearing and test-asset Poly-fix.} A secondary-language fix
+file is a \emph{test asset} if it lies under a test path of the ruleset
+(\texttt{test/}, \texttt{tests/}, \texttt{src/test/}, \texttt{yamlRestTest/},
+\ldots): recorded snapshots, expected outputs, test playbooks and REST test
+specifications. Changing it changes what the tests expect, not what the
+software does. Any other secondary file---configuration, schema, build script,
+API specification, source in another language---is \emph{behaviour-bearing}: the
+running or built software reads it. A Poly-fix bug is \emph{behaviour-bearing}
+if at least one of its secondary-language fix files is behaviour-bearing, and
+\emph{test-asset only} otherwise. Every result for Poly-fix bugs is also
+reported for the two sub-types.
+
+\paragraph{Parseable.} A file is \emph{parseable} by a technique if that
+technique's parser for the project language accepts it: CPython's \texttt{ast}
+for Python projects and tree-sitter-java for Java projects. A file of another
+language has no parser (status \texttt{no\_parser}); a file of the project
+language that the parser rejects has status \texttt{parse\_error}.
+
+\paragraph{Technique paradigms.} \emph{Classical retrieval} scores lexical
+overlap and can index any text file. A \emph{language-agnostic} technique
+embeds any text, using a parser at most to choose chunk boundaries. A
+\emph{parser-dependent} technique can represent a file only through the output
+of a parser.
+
+\subsection{Dataset and project selection}\label{sec:dataset}
+
+We use BeetleBox \citep{chakraborty2025blaze}, the only public bug-localization
+dataset we know of whose ground truth includes files of several languages and
+file types. We selected six projects that meet four criteria: the primary
+language is Java or Python, the project has at least 100 bug reports, its
+repository history is available, and both classes are populated after
+classification (Table~\ref{tab:dataset}). The selection is purposive, not
+random.
+
+\paragraph{Why Java and Python.} The restriction is a design choice with three
+reasons. First, these are the languages in which bug localization is
+evaluated: the standard IR-based benchmarks are Java (Bench4BL
+\citealp{lee2018bench4bl}; the dataset of Ye et al.\ \citealp{ye2014learning}),
+and the benchmarks on which LLM-agent localizers are evaluated are Python
+(SWE-bench \citealp{jimenez2023swe}). A gap found in these two languages
+concerns the results the field reports. Second, the parser-dependent
+techniques were built for them: FLIM's function extraction and IR features
+were developed on Java \citep{liang2022modeling}, and LocAgent's graph and
+index on Python \citep{chen2025locagent}. Studying another language would
+require porting their parsers, and a failure would then reflect our port
+rather than the technique. Third, the pair covers one statically and one
+dynamically typed ecosystem. BeetleBox also contains C++ (5{,}268 bugs),
+JavaScript (3{,}783) and Go (862); in our copy these are not fewer bugs than
+Java (3{,}707) or Python (3{,}759), so they are excluded by design, not for
+lack of data. Extending the study to them requires parser-dependent
+techniques that support those languages, and is left to future work.
+
+For all 4{,}995 bugs of the six projects the fix commit was recovered. A bug is
+\emph{kept} if its fix touches at least one counted file in the project's
+primary language, so that every kept bug has a target a parser-dependent
+technique can represent; 3{,}594 bugs (72.0\%) are kept. Of the others, 417
+change no counted file (documentation or changelog only), and 984---21.5\% of
+the 4{,}578 bugs with counted fix files---change counted files but none in the
+primary language: 520 single-language fixes in another language (mostly the
+TypeScript and Vue front-end of dolphinscheduler), 374 fixes of configuration,
+schema or build files only, and 90 multi-language fixes without the primary
+language. These \emph{no-primary} fixes cannot enter the Mono-fix/Poly-fix
+comparison, but they are the case in which a parser-dependent technique can
+reach no ground-truth file at all, so we keep them as a third stratum
+(Section~\ref{sec:removed}).
+
+\paragraph{The dataset's own filter.} When BeetleBox was built, reports whose
+title or body name a fixed file were removed; the BLAZE artifact releases them
+separately. For our six projects these are 1{,}226 reports (elasticsearch 363,
+airflow 383, ansible 295, dolphinscheduler 83, localstack 63, liquibase 39).
+Because naming the file is the case where lexical retrieval is strongest, we
+analyse these bugs as a separate stratum (Section~\ref{sec:removed}).
+
+\subsection{Classification procedure}\label{sec:classification}
+
+The ruleset was written before any bug was classified and frozen as version
+0.2.0. Path rules are applied before the extension map: changelog fragments,
+lock files, vendored and generated paths, CI configuration and developer
+tooling are excluded; files under documentation paths with a documentation
+extension are excluded; test files and test assets are kept and tagged.
+Secondary languages are admitted by five criteria: a formal grammar exists
+(C1); the file is not parseable by the evaluated parsers (C2); it carries
+behaviour rather than documentation (C3); it occurs in the ground truth (C4);
+and, for a language to receive its own statistics row, it occurs in at least
+15 Poly-fix bugs across at least two projects (C5).
+\pending{Two-person agreement on a 50-bug sample: Cohen's $\kappa$ and the rule
+amendments it triggered.}\gap{The 50-bug check needs a second annotator.}
+
+%% -------------------------------------------------------------------
+\subsection{Techniques}\label{sec:techniques}
+
+We evaluate one technique per paradigm, plus an LLM agent
+(Table~\ref{tab:techniques}). Each neural technique is re-implemented against
+its authors' released code, and every departure is listed in
+Table~\ref{tab:deviations}.
+
+\begin{table*}[t]
+\caption{Techniques. ``Ingests'' is what the architecture can represent.}
+\label{tab:techniques}
+\small
+\begin{tabular}{p{2.0cm}p{3.2cm}p{4.6cm}p{6.2cm}}
+\toprule
+Technique & Paradigm & Ingests & Configuration \\
+\midrule
+BM25 & Classical retrieval & any text file, as tokens & bm25s 0.3.11, Lucene BM25, $k_1{=}1.2$, $b{=}0.75$; each compound identifier indexed whole and split at camel-case boundaries, English stop words, no stemming; document = path + content \\
+BLAZE \citep{chakraborty2025blaze} & Language-agnostic neural & any text file, as chunks & CodeSage-small \citep{zhang2024codesage}, full fine-tuning, residual adapters; dynamic chunking (tree-sitter); report $\le$1{,}024 / chunk $\le$512 tokens; NT-Xent loss; $\le$15 epochs; selected on validation loss \\
+FLIM \citep{liang2022modeling} & Parser-dependent & files the project-language parser accepts (functions; AST fields; import graph) & CodeBERT fine-tuned on (report, function) pairs, in-batch cross-entropy, $\le$10 epochs, selected on validation MRR; 4 semantic + 18 IR features; adaptive pointwise LTR \citep{fejzer2022tracking} \\
+LocAgent \citep{chen2025locagent} & LLM agent over a parsed graph & Python files (graph from \texttt{ast}; BM25 index restricted to non-test \texttt{.py} files) & Released code (commit \texttt{4935b55}), unmodified; the LocAgent paper's fine-tuned Qwen2.5-Coder-7B served with vLLM in bf16 with a 128k-token context, as in the paper; LocAgent's default sampling (temperature 1.0, top-$p$ 0.8, two samples merged by MRR) \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\paragraph{Techniques as published.} We do not adapt any technique to
+secondary languages. The object of study is how existing techniques behave on
+fixes that span languages; an adapted technique would be a new technique.
+FLIM-fallback and BLAZE-all are diagnostic variants, labelled as ours, used
+only to separate what the architecture prevents from what training could
+change.
+
+\paragraph{Why these four.} FLIM is parser-dependent by architecture: it
+cannot form its semantic features without the function list, and 13 of its
+18 IR features use parser output. Of the other parser-based candidates,
+BL-GAN \citep{zhu2022bl} represents an unparseable file by its path only and
+is recorded in the feasibility analysis, but not run; TRANP-CNN
+\citep{huo2019deep} treats text lines as statements without parsing and is
+therefore language-agnostic in our sense. \gap{State why BL-GAN is not run
+end-to-end (scope), or run it.}
+
+\paragraph{BLAZE and its dataset.} BeetleBox was constructed alongside BLAZE.
+To avoid an advantage from that relationship we train BLAZE from the public
+CodeSage-small checkpoint, not from the released BeetleBox-trained weights,
+and report BLAZE in separate tables that are never aggregated with the other
+techniques.
+
+\paragraph{LocAgent and Java.} LocAgent's graph builder uses Python's
+\texttt{ast}, its directory tree keeps only directories that contain Python
+files, and its BM25 index is restricted to \texttt{.py} files and excludes
+test directories and test files. Its four tools (code-snippet search, entity
+contents, tree and graph exploration) all operate on these two indexes. It
+therefore cannot index the three Java projects, and in the Python projects it
+cannot reach any non-Python fix file; Python test files are reachable through
+the graph but not through its keyword search. CodeNib, the index backend the
+LocAgent repository points to, is also Python-only. We report both as feasibility results and run
+LocAgent on the Python projects only. We do not port its graph builder to
+Java: the port would be our technique rather than LocAgent, and the
+fine-tuned model was trained on Python trajectories only, so a Java result
+could not be separated from that mismatch.
+
+\begin{table*}[t]
+\caption{Departures from the original implementations.}
+\label{tab:deviations}
+\small
+\begin{tabular}{p{1.8cm}p{14.3cm}}
+\toprule
+Technique & Departure and reason \\
+\midrule
+BLAZE & Hard examples are weighted inside the batch by the loss; the paper's GPT-mined hard-example set is BeetleBox-specific. Comments are not stripped before chunking. The learning rate is selected by validation MAP from $\{2{\times}10^{-7}, 2{\times}10^{-6}, 2{\times}10^{-5}\}$ (the paper's value and two larger ones), because the paper's value was set for $\sim$11{,}000 training bugs and our projects have 100--600 \pending{selected values per project}. \\
+FLIM & Positive pairs are the functions the fix changed (diff overlap), not every function of the fixed file. Its TF-IDF features split identifiers at camel-case boundaries without keeping the whole identifier. The CodeSearchNet pairs of the paper's MIX set are not added. IR feature f2 (API-enriched similarity) needs JDK documentation and has no Python counterpart, so it is dropped. Other positives of the same report are masked out of the in-batch loss. The learning rate is selected by validation MAP between the two published values ($2{\times}10^{-5}$ in the released code, $5{\times}10^{-5}$ in the paper) \pending{selected values per project}. \\
+LocAgent & No change to code, prompts or tools. An adapter exports our test bugs as LocAgent instances (pre-fix commit, report text; the patch field is left empty) and builds LocAgent's graph and BM25 indexes from our local clones with LocAgent's own builders, materialising the full commit tree (not \texttt{git archive}, which drops paths marked \texttt{export-ignore}), so LocAgent sees the same pre-fix snapshot as the other techniques. We use the paper's fine-tuned 7B model rather than its 32B model: the 32B bf16 weights (65.5\,GB) exceed our 48\,GB GPU, and loading them with on-the-fly FP8 quantization ran out of memory. The paper reports both; its ablations use the 7B model (file-level Acc@5 on SWE-bench Lite 88.3 for 7B, 92.7 for 32B). \texttt{litellm} 1.52.1, pinned by LocAgent, is no longer on PyPI; 1.53.1 is used. \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+%% -------------------------------------------------------------------
+\subsection{Evaluation setup}\label{sec:evaluation}
+
+\paragraph{Split.} Within each project, bugs are ordered by report creation
+date. The oldest 80\% form the training pool and the newest 20\% the test set
+(fold~1). The newest 10\% of the pool (at least 20 bugs) is used for model
+selection only. A training bug whose fix landed after the validation period
+started, and a validation bug whose fix landed after the test period started,
+are removed (\emph{purging}), so no technique learns from a fix that did not
+exist when the bugs it is evaluated on were reported. A second, rolling-origin
+fold trains on the oldest 60\% and tests on the next 20\%. Fold~1 has 719 test
+bugs (483 Mono-fix, 213 Poly-fix, 23 outside the broad grain); fold~2 has 718
+(505, 206, 7).
+
+\paragraph{File universe.} For each test bug, every technique scores every
+file of the pre-fix snapshot that is text (at most 1\,MB and no NUL byte in
+its first 8\,KB). The \emph{primary universe} R keeps the files that the
+classification ruleset counts; the \emph{text universe} T keeps all text files
+and is used for sensitivity. There is no retrieval stage that pre-selects
+candidates. The median R is 1{,}890 (localstack) to 21{,}658 (elasticsearch)
+files per snapshot.
+
+\paragraph{Ground truth and reachability.} The ground truth of a bug is its
+counted fix files, located at their pre-fix path. This is the same file set
+that defines the bug's class, so the class and the localization target agree.
+A file the fix adds does not exist in the pre-fix snapshot and cannot be
+ranked by any technique; we call it \emph{unreachable}, report it per class,
+and exclude it from rank metrics.
+
+\paragraph{Views.} Each technique's scores are evaluated twice. In the
+\emph{all-files} view every file of the universe is a candidate. In the
+\emph{parseable} view only files the project-language parser accepts are
+candidates, and a ground-truth file the parser cannot read counts as a miss.
+For FLIM the parseable view is the paper-faithful condition (FLIM-strict); the
+all-files view represents unparseable files by line windows of their text
+(FLIM-fallback), an extension we add to measure what the restriction costs.
+Both views come from one trained model.
+
+\paragraph{Metrics.} Per bug we compute the rank of each reachable
+ground-truth file, Top-$k$ (whether a ground-truth file is ranked in the first
+$k$, $k \in \{1,5,10\}$), the reciprocal rank of the first ground-truth file
+(RR; its mean over bugs is MRR), average precision (AP; its mean is MAP) and
+complete-fix recall@10 (the share of a bug's reachable ground-truth files in
+the first 10). Ties are resolved by expected rank under random tie-breaking.
+For each bug we also compute the RR and Top-10 that random ranking would reach
+given the number of candidates and ground-truth files.
+
+\emph{Primary outcome.} AP, and its mean MAP, is the primary outcome;
+complete-fix recall@10, RR and Top-$k$ are secondary. We fixed this before
+any full run: every kept Poly-fix bug has a fix file in the primary language,
+so a metric that rewards only the first ground-truth file (RR, Top-$k$) cannot
+show whether a technique reaches the rest of the fix, whereas AP counts every
+reachable ground-truth file. In the LocAgent trial, for example, a Poly-fix
+bug had RR 1.0 and AP 0.25: the Python file was ranked first, and the YAML and
+INI files of the fix were never returned. LocAgent returns a ranked list of
+at most ten files, so comparisons that include it use AP@10 (ranks beyond 10
+count as misses) for every technique, with complete-fix recall@10, Top-$k$
+and RR@10 secondary. LocAgent is run on the 395 fold-1 and 395 fold-2 test bugs of
+the three Python projects, plus the removed bugs in those test windows (121
+and 136).
+
+\paragraph{Strata outside the main comparison.} Two groups of bugs are
+scored but analysed separately and never pooled with the kept bugs: the bugs
+BeetleBox removed because their report names a fixed file, scored by every
+technique, and the no-primary fixes, scored by BM25 (for the parser-dependent
+techniques their ground truth is unreachable by construction). Both are taken
+from the test periods of each fold and scored with models trained on the kept
+bugs only. Every trained model is stored, so further strata can be scored
+without retraining.
+
+\paragraph{Ablation and repeated runs.} To test whether a language-agnostic
+technique's ranking of secondary files is limited by its training data, we
+train BLAZE once more on chunks of \emph{all} fix files rather than only
+project-language files (BLAZE-all; fold~1, seed 13, the learning rate selected
+for BLAZE). LocAgent samples at temperature 1.0; we repeat it twice on a fixed
+random subset of 100 fold-1 bugs to report run-to-run variation.
+
+\paragraph{Training budget and hyper-parameters.} Every hyper-parameter comes
+from the authors' released code except the learning rate. The neural
+techniques are trained up to their papers' epoch counts (BLAZE 15, FLIM 10),
+and the epoch is selected on the validation split by each technique's own
+original criterion (BLAZE: validation loss; FLIM: validation MRR) with the same
+early-stopping patience (3 epochs). The learning rate is chosen, for both
+techniques under one rule, from a small grid around the published values by
+validation MAP---the primary outcome---on the same chronological validation
+split: $\{2{\times}10^{-7}, 2{\times}10^{-6}, 2{\times}10^{-5}\}$ for BLAZE,
+whose $2{\times}10^{-7}$ was set for fine-tuning on about 11{,}000 bugs pooled
+across projects, and $\{2{\times}10^{-5}, 5{\times}10^{-5}\}$ for FLIM, whose
+released code and paper give these two values. We select on MAP rather than on
+the training loss because the loss measures how a report separates its own
+chunks from about twenty in-batch chunks, not how a file ranks among thousands;
+in our pilot the two criteria preferred different learning rates. The choice
+is made once per project and fold with the first seed and reused for the
+others; the test set is never used.
+
+Each neural technique is run with three seeds (13, 42, 2027). Bootstrap
+intervals and paired tests over bugs account for which bugs are in the test
+set, but not for the randomness of training itself (initialisation, sampled
+negatives, batch order, non-deterministic GPU kernels), which repeated runs
+measure \citep{arcuri2011practical}. Per-bug metrics are averaged over seeds
+and the spread across seeds is reported. BM25 is deterministic and run once. \pending{Epochs run, best epoch and GPU hours per technique and
+project; convergence curves in the appendix.}
+
+%% -------------------------------------------------------------------
+\subsection{Analysis}\label{sec:analysis}
+
+\paragraph{RQ1.} Prevalence is the share of kept bugs that are Poly-fix, per
+grain and project, with the distribution of secondary languages. Each boundary
+rule is toggled in turn and the prevalence recomputed.
+
+\paragraph{RQ2.} For each technique and file type we record whether the
+technique can represent the file, from the parse status recorded for every
+file it was given, and attribute each failure to the technique
+(\texttt{no\_parser}) or to the implementation (\texttt{parse\_error}). We
+also report, per class, the share of bugs whose reachable ground truth
+contains at least one parseable file and the share of ground-truth files that
+are parseable.
+
+\paragraph{RQ3.} Within each project and technique we compare per-bug AP
+(primary) and RR between Mono-fix and Poly-fix bugs with the Mann--Whitney U test
+\citep{mann1947test} and Cliff's $\delta$ \citep{cliff1993dominance}, with
+bootstrap 95\% confidence intervals. Across projects we fit a linear mixed
+model
+$\mathrm{AP} \sim \mathrm{class} + n_{\mathrm{gt}} + \log n_{\mathrm{cand}} +
+\ell_{\mathrm{report}} + (1 \mid \mathrm{project})$, where $n_{\mathrm{gt}}$
+is the number of reachable ground-truth files, $n_{\mathrm{cand}}$ the number
+of candidates and $\ell_{\mathrm{report}}$ the report length;
+$n_{\mathrm{gt}}$ is included because Poly-fix bugs have more ground-truth
+files and Top-$k$ is easier with more targets. If the random-intercept model
+cannot be fitted, we fall back to project fixed effects with HC3 standard
+errors; with six projects, cluster-robust errors are not used. A logistic
+model on Top-10 with project fixed effects is the robustness check. Per-bug
+metrics of the seeded techniques are averaged over seeds, and the two folds
+are pooled with fold as a fixed effect. We also report RR and AP
+computed on primary-language and on secondary-language ground-truth files
+separately. All models are fitted for the primary outcome (AP) and repeated
+for the secondary outcomes.
+
+\paragraph{RQ4.} Every test bug is ranked by every technique, so the
+comparison is paired. Per class we compare BM25 with FLIM-strict using the
+Wilcoxon signed-rank test \citep{wilcoxon1945} and Cliff's $\delta$, with
+Holm's correction across projects \citep{holm1979simple}. The \emph{inversion}
+we test is BM25 $\ge$ FLIM-strict on Poly-fix bugs together with BM25 $<$
+FLIM-strict on Mono-fix bugs. We compute for every bug the difference
+$d = \mathrm{AP}_{\mathrm{BM25}} - \mathrm{AP}_{\mathrm{FLIM}}$ and fit
+$d \sim \mathrm{class} + n_{\mathrm{gt}} + \log n_{\mathrm{cand}} +
+\ell_{\mathrm{report}} + (1 \mid \mathrm{project})$; because both techniques
+rank the same bugs, the class coefficient equals the technique $\times$ class
+interaction of the corresponding long-format model. The same analysis compares
+BM25 with FLIM-fallback, and BM25 restricted to parseable files with
+FLIM-strict as a control for the smaller candidate set. LocAgent
+is compared with BM25 on the Python projects with the same paired tests on
+AP@10 (secondary: complete-fix recall@10, Top-10, RR@10). BLAZE is reported separately. Models are fitted with
+statsmodels \citep{seabold2010statsmodels}.
+
+\paragraph{Predictions.} We expected Poly-fix prevalence above 10\% at the
+broad grain, parser-dependent techniques to lose the secondary-language files
+of Poly-fix fixes by construction, and BM25 to rank those files without a
+class-dependent loss. These are predictions, not hypotheses tested for
+confirmation.
+
+\subsection{Sensitivity analyses}\label{sec:sensitivity}
+
+\begin{enumerate}[label=S\arabic*,itemsep=1pt]
+\item Ground truth without test files, answering the objection that a
+  localization technique is not expected to find tests.
+\item Headline and strict grains instead of the broad grain.
+\item Text universe T instead of R.
+\item Bugs whose fix commit is tangled removed.
+\item Seed variance and the rolling-origin fold.
+\item The bugs BeetleBox removed because their report names a fixed file
+  (Section~\ref{sec:removed}).
+\end{enumerate}
+\noindent In addition, every Poly-fix result is split into behaviour-bearing
+and test-asset-only bugs (Section~\ref{sec:definitions}); this split and S1
+address the same objection from two sides, the class definition and the
+ground truth.
+
+%% ===================================================================
+%% 4 RESULTS
+%% ===================================================================
+\section{Results}\label{sec:results}
+
+\subsection{RQ1: Prevalence of Poly-fix fixes}\label{sec:rq1}
+
+Of the 3{,}594 kept bugs, 985 (27.4\%) are Poly-fix at the broad grain, 754
+(21.0\%) at the headline grain and 294 (8.2\%) at the strict grain
+(Table~\ref{tab:dataset}). The broad-grain share ranges from 17.8\%
+(elasticsearch) to 49.7\% (liquibase).
+
+\begin{table}[t]
+\caption{Kept bugs and Poly-fix prevalence by grain (ruleset 0.2.0).}
+\label{tab:dataset}
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lrrrrrr}
+\toprule
+Project & Kept & Mono & Poly$_b$ & broad & headl. & strict \\
+\midrule
+elasticsearch (J) & 721 & 564 & 128 & 17.8 & 15.1 & 0.3 \\
+liquibase (J) & 199 & 99 & 99 & 49.7 & 20.1 & 35.7 \\
+dolphinscheduler (J) & 698 & 523 & 165 & 23.6 & 14.6 & 10.7 \\
+ansible (P) & 626 & 352 & 272 & 43.5 & 39.1 & 13.4 \\
+airflow (P) & 917 & 739 & 172 & 18.8 & 14.2 & 5.5 \\
+localstack (P) & 433 & 284 & 149 & 34.4 & 29.6 & 2.8 \\
+\midrule
+Total & 3{,}594 & 2{,}561 & 985 & 27.4 & 21.0 & 8.2 \\
+\bottomrule
+\end{tabular}
+\\[2pt]{\footnotesize Poly$_b$: Poly-fix at the broad grain. Percentages of kept bugs. 48 bugs are Poly-fix only through languages that fail C1--C3 and are excluded from the class comparisons.}
+\end{table}
+
+The additional files are mostly structured data and configuration: YAML occurs
+in 497 Poly-fix bugs, JSON in 163, XML in 117, Shell in 101 and Groovy in 72
+(Table~\ref{tab:secondary}). Every counted secondary file in these bugs is also
+in the dataset's ground truth.
+
+Of the 985 Poly-fix bugs, 551 (55.9\%) are Poly-fix only through test assets
+and 434 are behaviour-bearing, 12.1\% of the kept bugs. The split differs by
+project: test-asset-only bugs make up 91.9\% of the Poly-fix bugs of ansible,
+85.9\% of liquibase, 83.2\% of localstack and 70.3\% of elasticsearch, but 0.6\%
+of airflow and of dolphinscheduler, whose Poly-fix fixes change configuration
+and schema files. The behaviour-bearing secondary files are mostly YAML (147
+bugs), XML (88), JSON (51), TypeScript (47), JavaScript (41), INI (30), Shell
+(25) and Gradle (21).
+
+\begin{table}[t]
+\caption{Secondary languages in Poly-fix bugs (kept set, bugs containing at least one such file).}
+\label{tab:secondary}
+\small
+\begin{tabular}{lrr}
+\toprule
+Secondary language & Poly-fix bugs & Projects \\
+\midrule
+YAML & 497 & 6 \\
+JSON & 163 & 6 \\
+XML & 117 & 4 \\
+Shell & 101 & 5 \\
+Groovy & 72 & 2 \\
+TypeScript & 47 & 2 \\
+JavaScript & 43 & 3 \\
+Gradle & 33 & 1 \\
+SQL & 19 & 2 \\
+17 further languages & 1--19 each & 1--3 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:sensitivity} reports how the broad-grain prevalence changes
+when one boundary rule is changed at a time. Excluding test files reduces it
+to 11.0\% and counting changelog fragments raises it to 41.3\%; counting
+documentation or deletions changes it by at most 0.1 percentage points.
+Restricting to programming languages gives the strict grain, 8.2\%.
+
+\begin{table}[t]
+\caption{Sensitivity of Poly-fix prevalence (broad grain, share of kept bugs) to the boundary rules, one rule changed at a time.}
+\label{tab:sensitivity}
+\small
+\begin{tabular}{lrr}
+\toprule
+Rule change & Poly-fix & \% \\
+\midrule
+None (default rules) & 985 & 27.4 \\
+Only programming languages count & 294 & 8.2 \\
+Exclude test files$^{a}$ & 365 & 11.0 \\
+Count changelog fragments & 1{,}484 & 41.3 \\
+Count documentation & 985 & 27.4 \\
+Count deletions$^{b}$ & 989 & 27.5 \\
+\bottomrule
+\end{tabular}
+\\[2pt]{\footnotesize $^{a}$3{,}324 kept bugs under this rule. $^{b}$3{,}595 kept bugs. Merging data-configuration languages into one pseudo-language is a label-level check only (label-level prevalence unchanged at 28.7\%); it is not defined for the grains.}
+\end{table}
+
+Among the 1{,}226 bugs BeetleBox removed because their report names a fixed
+file, 1{,}055 pass the keep filter, and 15.9\% of those are Poly-fix at the
+broad grain, against 27.4\% of the kept bugs; the share is lower in five of
+the six projects (liquibase: 50.0\% against 49.7\%). Counting the removed bugs
+as well gives 24.8\% (1{,}153 of 4{,}649). The dataset's filter therefore
+raised the Poly-fix share of the kept set by 2.6 percentage points.
+
+\subsection{RQ2: Architectural feasibility}\label{sec:rq2}
+
+BM25 and BLAZE represent every text file. FLIM can represent a file only if
+the project-language parser accepts it, and LocAgent only if it is a Python
+file in a Python project.
+
+Table~\ref{tab:reach} reports what this means for the test bugs. Poly-fix
+fixes change more files than Mono-fix fixes (4.4 against 2.3 on average) and
+more often add a new file (34.7\% against 8.7\% of bugs). Of the reachable
+ground-truth files of Poly-fix bugs, 62.8\% are parseable; for Mono-fix bugs
+the share is 99.9\%. Because every kept bug has a primary-language fix file,
+98.1\% of Poly-fix bugs still have at least one parseable ground-truth file,
+but only 10.8\% have \emph{only} parseable ones. A parser-dependent technique
+can therefore reach a Poly-fix bug, but on average not about 37\% of the
+files its fix changes.
+
+\begin{table}[t]
+\caption{Reachability of ground-truth files in the test sets, before any technique is run (fold~1; fold~2 in parentheses).}
+\label{tab:reach}
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lrr}
+\toprule
+ & Mono-fix & Poly-fix \\
+\midrule
+Test bugs & 483 (505) & 213 (206) \\
+Ground-truth files per bug, mean & 2.3 (2.5) & 4.4 (4.2) \\
+Bugs with an added (unreachable) file & 8.7\% (7.7\%) & 34.7\% (33.0\%) \\
+GT files parseable & 99.9\% (100\%) & 62.8\% (65.8\%) \\
+Bugs with $\ge$1 parseable GT file & 100\% (100\%) & 98.1\% (98.5\%) \\
+Bugs with only parseable GT files & 99.8\% (100\%) & 10.8\% (10.2\%) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+For the 984 no-primary fixes the parser-dependent techniques can reach no
+ground-truth file; 138 of them fall into the fold-1 test periods and 149 into
+the fold-2 test periods.
+
+All 291 unparseable ground-truth files of the fold-1 Poly-fix bugs have status
+\texttt{no\_parser}: they are YAML (108), JSON (70), TypeScript (35), Shell
+(22), XML (17), Groovy (9), SQL (7) and other files for which no parser of the
+technique exists. None has status \texttt{parse\_error}. Every failure is
+therefore attributable to the technique, not to the implementation.
+
+\pending{Table: technique $\times$ file type feasibility matrix (BM25, BLAZE,
+FLIM, LocAgent; BL-GAN recorded), including LocAgent's coverage of the Python
+projects' snapshots and its infeasibility on the Java projects.}
+
+\subsection{RQ3: Mono-fix vs Poly-fix performance}\label{sec:rq3}
+
+\pending{Table: per project and technique, MRR / MAP / Top-10 for Mono-fix and
+Poly-fix, Cliff's $\delta$ with 95\% CI (all-files and parseable views;
+BLAZE separate).}
+
+\pending{Mixed-model estimate of the class effect with $n_{\mathrm{gt}}$,
+candidate count and report length as covariates.}
+
+\pending{Primary-only vs secondary-only RR/AP: does a Poly-fix bug look
+harder because of its secondary files or also on its primary files?}
+
+\pending{Figure: rank distribution of secondary-language ground-truth files by
+file type and technique.}
+
+\subsection{RQ4: Classical retrieval against the parser-dependent techniques}\label{sec:rq4}
+
+\pending{Table: BM25 vs FLIM-strict per class and project; paired Wilcoxon,
+Cliff's $\delta$, Holm-adjusted $p$.}
+
+\pending{Interaction estimate (technique $\times$ class) and whether the
+inversion pattern holds.}
+
+\pending{FLIM-fallback vs FLIM-strict: what representing unparseable files by
+text windows recovers.}
+
+\pending{LocAgent vs BM25 on the Python projects (Top-10, MRR@10), and the
+closed-book contamination probe hit rate per class.}
+
+\subsection{The bugs the dataset removed}\label{sec:removed}
+
+The removed bugs were classified with the same frozen ruleset (RQ1). In
+97.5\% of the kept-filter removed reports our matcher finds a counted fix file
+named in the title or body; for the Poly-fix ones the named file is a
+primary-language file in 77.4\% and a secondary-language file in 20.8\% of
+reports. 202 removed bugs fall into the fold-1 test periods (34 Poly-fix) and
+235 into the fold-2 test periods (34 Poly-fix). They are scored by every
+technique with the model trained on the kept bugs; none is used for training.
+They are analysed as a separate stratum and never pooled with the kept bugs in
+the main results, because their selection---reports that name a fixed
+file---favours lexical retrieval by construction.
+\pending{RQ3/RQ4 recomputed on this stratum, split by whether the named file is
+primary- or secondary-language.}
+
+\subsection{Sensitivity}
+
+\pending{S1--S5 summary table: direction and size of the RQ3/RQ4 estimates
+under each sensitivity condition.}
+
+%% ===================================================================
+%% 5 DISCUSSION
+%% ===================================================================
+\section{Discussion}\label{sec:discussion}
+
+\subsection{For the evaluation of bug localization}
+\pending{Depends on RQ3/RQ4. Planned content: report results by fix class;
+report reachability and parseability of the ground truth as a property of the
+benchmark; prefer AP / complete-fix recall when fixes have several files.}
+
+\subsection{For technique design}
+\pending{What FLIM-fallback recovers; whether hybrid features (FLIM's IR
+features) cushion the loss; what this implies for parser-dependent agents.}
+
+\subsection{For benchmark construction}
+\pending{The removed-report filter and the source-only ground truth of other
+benchmarks as design choices that shape what is measured.}
+
+%% ===================================================================
+%% 6 THREATS TO VALIDITY
+%% ===================================================================
+\section{Threats to Validity}\label{sec:threats}
+
+\paragraph{Construct validity.} Language is attributed from file extensions;
+the attribution table is released. The class and the evaluation ground truth
+come from the same fix files, so they agree by construction, but the fix
+commit may contain changes unrelated to the bug (tangling;
+\citealt{herzig2013impact}); sensitivity S4 removes tangled commits.
+Parseability is measured with one parser per language; a file another parser
+could read counts as unparseable. The prevalence depends on the boundary
+rules, and is reported as a range.
+
+\paragraph{Internal validity.} BeetleBox was built alongside BLAZE; BLAZE is
+trained from a public checkpoint and reported separately. Temporal leakage is
+prevented by the chronological, purged split; history features use only fixes
+earlier than the report. All techniques rank the same files, and one
+evaluator computes all metrics. The re-implementations follow the authors'
+code and list their departures (Table~\ref{tab:deviations}). The parseable
+view combines two effects---fewer distracting candidates and unreachable
+ground-truth files---which we separate with primary-only and secondary-only
+metrics. The pre-trained encoders and the LLM may have seen these public
+repositories during pre-training; for LocAgent this is measured with a
+closed-book probe. The removed-report filter of BeetleBox changes the
+population; it is analysed as a separate stratum.
+
+\paragraph{External validity.} One dataset, two languages and six purposively
+selected projects. Per-project Poly-fix test sets contain 17--63 bugs in
+fold~1, so per-project results are descriptive and pooled mixed models carry
+the inference; the second fold adds 206 Poly-fix test bugs.
+
+%% ===================================================================
+%% 7 CONCLUSION
+%% ===================================================================
+\section{Conclusion}\label{sec:conclusion}
+
+\pending{Write after the results.}
+
+%% ===================================================================
+%% DECLARATIONS
+%% ===================================================================
+\section*{CRediT authorship contribution statement}
+\pending{as in Objective 1.}
+
+\section*{Declaration of competing interest}
+The authors declare that they have no known competing financial interests or
+personal relationships that could have appeared to influence the work reported
+in this paper.
+
+\section*{Declaration of generative AI and AI-assisted technologies in the writing process}
+\pending{Statement as required by the venue.}
+
+\section*{Data Availability}
+\pending{Replication package: classification, per-file parse status,
+universe tables, score files, run manifests, evaluator and analysis scripts.}
+
+\bibliographystyle{cas-model2-names}
+\bibliography{refs}
+
+\end{document}
