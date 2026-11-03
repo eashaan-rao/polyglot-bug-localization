@@ -5,9 +5,19 @@ data/processed/*.parquet
 data/processed/*_cache/
 data/glove/
 data/obj2/*.parquet
+# per-snapshot file tables (1.8 GB, rebuilt by Scripts/universe.py)
+data/obj2/universe/
 
 # Results — keep small CSVs and markdown, ignore heavy outputs
 results/obj2/diagnostics/
+results/obj2/diagnostics_smoke/
+# score files are large; the JSON manifests next to them are kept
+results/obj2/scores/**/*.parquet
+results/obj2/scores_smoke/
+results/obj2/eval/*.parquet
+results/obj2/eval_smoke/
+results/obj2/logs_smoke/
+results/obj2/*.log
 results/obj2/**/*.pkl
 results/obj2/**/*.pt
 results/obj2/prevalence/*.png
@@ -27,3 +37,33 @@ obj2/venv/
 
 # Source PDFs are large but small enough to keep for provenance
 !obj2/*.pdf
+
+# third-party code we run but do not vendor (cloned at a pinned commit)
+third_party/
+data/obj2/beetlebox_removed/
+
+# trained BLAZE / FLIM models (~0.5-1 GB per run), kept so new strata can be scored without retraining
+data/obj2/models/
+
+# --- added 2026-11-03 before the full run ---
+# smoke-test models and LocAgent working data (rebuildable, GBs)
+data/obj2/models_smoke/
+data/obj2/locagent/index/
+data/obj2/locagent/tmp/
+data/obj2/locagent/instances*/
+# archived score files (manifests next to them are kept)
+results/obj2/scores_archive/**/*.parquet
+# LocAgent run byproducts: keep outputs, probe and args; drop trajectories and logs
+results/obj2/locagent/**/loc_trajs.jsonl
+results/obj2/locagent/**/*.log
+results/obj2/stats_smoke/
+results/obj2/logs/
+# LaTeX build files
+paper/*.aux
+paper/*.log
+paper/*.out
+paper/*.bbl
+paper/*.blg
+paper/*.spl
+paper/*.pdf
+paper/main.abs
