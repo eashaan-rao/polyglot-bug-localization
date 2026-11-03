@@ -1,0 +1,3 @@
+pair,level,repo_name,bug_id,path,field,A,ruleset,impact,B
+A vs ruleset,files,apache/dolphinscheduler,13945,dolphinscheduler-api-test/dolphinscheduler-api-test-core/src/main/java/org/apache/dolphinscheduler/api/test/core/Constants.java,is_test,no,yes,evaluation,
+B vs ruleset,files,apache/dolphinscheduler,13945,dolphinscheduler-api-test/dolphinscheduler-api-test-core/src/main/java/org/apache/dolphinscheduler/api/test/core/Constants.java,is_test,,yes,evaluation,no

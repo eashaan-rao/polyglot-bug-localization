@@ -1,0 +1,27 @@
+{
+ "kept_bugs": 3593,
+ "kept_broad_poly": 984,
+ "amendments": {
+  "any ci/ directory is CI config": {
+   "keep_changes": 3,
+   "poly_label_changes": 7,
+   "primary_gt_changes": 10
+  },
+  "*-generated.* / *_generated.* is generated": {
+   "keep_changes": 0,
+   "poly_label_changes": 0,
+   "primary_gt_changes": 0
+  },
+  "everything under docs/ is documentation": {
+   "keep_changes": 7,
+   "poly_label_changes": 5,
+   "primary_gt_changes": 11
+  },
+  "checkstyle / forbidden-apis / spotless config is dev tooling": {
+   "keep_changes": 0,
+   "poly_label_changes": 2,
+   "primary_gt_changes": 0
+  }
+ },
+ "primary_gt_files_test_via_src_main_package_dir": 96
+}
