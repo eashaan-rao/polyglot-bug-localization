@@ -30,3 +30,20 @@ reports, broken FLIM) and must not be used.
 Saved models reproduce stored scores (verified 2026-11-03 with
 `Scripts/rescore.py --verify`): FLIM rank correlation 0.99997, BLAZE 0.99998,
 BLAZE_ALL 0.99998 (differences from float16 batching only).
+
+## Audit after step 3 of the full run (2026-11-04)
+
+- No code change since the launch commit 37b8853 (later commits b3fa907,
+  0e24325 touch docs and paper only), so the three git heads recorded by
+  full-run manifests denote identical code.
+- All 30 score files of steps 1–3 (BM25 folds 1–2; FLIM, BLAZE, BLAZE_ALL
+  fold 1 seed 13): every manifest test bug scored, no non-finite, duplicate or
+  per-bug constant scores, file counts equal universe T on sampled bugs.
+- BLAZE_ALL reused BLAZE's selected LR in all six projects and trained on
+  11–33 % more chunks (secondary-language fix files included).
+- localstack pilot FLIM/BLAZE configs are identical to the full-run configs.
+- Gaps: (1) localstack fold-1 seed-13 FLIM and BLAZE models are not stored
+  (see table above) — only matters if a stratum is added later; (2) LocAgent
+  score files have no JSON manifest (provenance in
+  `results/obj2/locagent/<run>/args.json`); (3) `tree_sitter` version is
+  recorded as `?` (pinned 0.25.2 in requirements.txt).
