@@ -470,8 +470,8 @@ could not be separated from that mismatch.
 \toprule
 Technique & Departure and reason \\
 \midrule
-BLAZE & Hard examples are weighted inside the batch by the loss; the paper's GPT-mined hard-example set is BeetleBox-specific. Comments are not stripped before chunking. The learning rate is selected by validation MAP from $\{2{\times}10^{-7}, 2{\times}10^{-6}, 2{\times}10^{-5}\}$ (the paper's value and two larger ones), because the paper's value was set for $\sim$11{,}000 training bugs and our projects have 100--600 \pending{selected values per project}. \\
-FLIM & Positive pairs are the functions the fix changed (diff overlap), not every function of the fixed file. Its TF-IDF features split identifiers at camel-case boundaries without keeping the whole identifier. The CodeSearchNet pairs of the paper's MIX set are not added. IR feature f2 (API-enriched similarity) needs JDK documentation and has no Python counterpart, so it is dropped. Other positives of the same report are masked out of the in-batch loss. The learning rate is selected by validation MAP between the two published values ($2{\times}10^{-5}$ in the released code, $5{\times}10^{-5}$ in the paper) \pending{selected values per project}. \\
+BLAZE & Hard examples are weighted inside the batch by the loss; the paper's GPT-mined hard-example set is BeetleBox-specific. Comments are not stripped before chunking. The learning rate is selected by validation MAP from $\{2{\times}10^{-7}, 2{\times}10^{-6}, 2{\times}10^{-5}\}$ (the paper's value and two larger ones), because the paper's value was set for $\sim$11{,}000 training bugs and our projects have 100--600. Selected in fold~1: $2{\times}10^{-7}$ for liquibase and localstack, $2{\times}10^{-6}$ for dolphinscheduler, $2{\times}10^{-5}$ for elasticsearch, ansible and airflow \pending{fold~2 values}. \\
+FLIM & Positive pairs are the functions the fix changed (diff overlap), not every function of the fixed file. Its TF-IDF features split identifiers at camel-case boundaries without keeping the whole identifier. The CodeSearchNet pairs of the paper's MIX set are not added. IR feature f2 (API-enriched similarity) needs JDK documentation and has no Python counterpart, so it is dropped. Other positives of the same report are masked out of the in-batch loss. The learning rate is selected by validation MAP between the two published values ($2{\times}10^{-5}$ in the released code, $5{\times}10^{-5}$ in the paper). Selected in fold~1: $2{\times}10^{-5}$ for elasticsearch and airflow, $5{\times}10^{-5}$ for the other four projects \pending{fold~2 values}. \\
 LocAgent & No change to code, prompts or tools. An adapter exports our test bugs as LocAgent instances (pre-fix commit, report text; the patch field is left empty) and builds LocAgent's graph and BM25 indexes from our local clones with LocAgent's own builders, materialising the full commit tree (not \texttt{git archive}, which drops paths marked \texttt{export-ignore}), so LocAgent sees the same pre-fix snapshot as the other techniques. We use the paper's fine-tuned 7B model rather than its 32B model: the 32B bf16 weights (65.5\,GB) exceed our 48\,GB GPU, and loading them with on-the-fly FP8 quantization ran out of memory. The paper reports both; its ablations use the 7B model (file-level Acc@5 on SWE-bench Lite 88.3 for 7B, 92.7 for 32B). \texttt{litellm} 1.52.1, pinned by LocAgent, is no longer on PyPI; 1.53.1 is used. \\
 \bottomrule
 \end{tabular}
@@ -570,13 +570,18 @@ the training loss because the loss measures how a report separates its own
 chunks from about twenty in-batch chunks, not how a file ranks among thousands;
 in our pilot the two criteria preferred different learning rates. The choice
 is made once per project and fold with the first seed and reused for the
-others; the test set is never used.
+others; the test set is never used. In fold~1 BLAZE selected the published
+rate for two projects and the largest rate for three; at the largest rate the
+validation loss was lowest after the first epoch and rose afterwards, so a
+still larger rate would only over-fit sooner.
 
-Each neural technique is run with three seeds (13, 42, 2027). Bootstrap
+Each neural technique is run with seed 13 on every project and fold, and
+with two further seeds (42, 2027) on fold~1 of three projects (localstack,
+dolphinscheduler, liquibase: both languages, small to large). Bootstrap
 intervals and paired tests over bugs account for which bugs are in the test
 set, but not for the randomness of training itself (initialisation, sampled
 negatives, batch order, non-deterministic GPU kernels), which repeated runs
-measure \citep{arcuri2011practical}. Per-bug metrics are averaged over seeds
+measure \citep{arcuri2011practical}. Where several seeds exist, per-bug metrics are averaged over them
 and the spread across seeds is reported. BM25 is deterministic and run once. \pending{Epochs run, best epoch and GPU hours per technique and
 project; convergence curves in the appendix.}
 
