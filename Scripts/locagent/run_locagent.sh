@@ -70,10 +70,12 @@ export PYTHONPATH="$(pwd)"
 # the run for 7 h. LocAgent therefore runs in its own process group; if its log
 # does not change for LOCAGENT_STALL_MIN minutes the group is killed and
 # LocAgent is restarted -- it skips instances already in loc_outputs.jsonl, so
-# only unfinished ones are retried. After LOCAGENT_MAX_RESTARTS restarts the
-# remaining instances are left without output (scored as misses, and listed).
+# only unfinished ones are retried (each hang costs ~LOCAGENT_STALL_MIN; the
+# 2026-11-04 fold-1 run hung at start, so the budget is 20, not 2). After
+# LOCAGENT_MAX_RESTARTS restarts the remaining instances are left without
+# output (scored as misses, and listed; resume them before evaluating).
 STALL_S=$(( ${LOCAGENT_STALL_MIN:-30} * 60 ))
-MAX_RESTARTS="${LOCAGENT_MAX_RESTARTS:-2}"
+MAX_RESTARTS="${LOCAGENT_MAX_RESTARTS:-20}"
 PYLOC="$ROOT/third_party/venv_locagent/bin/python"
 COMMON=(--dataset "$INST_DIR" --split test --model "openai/$NAME" --output_folder "$OUT"
         --num_processes "$NPROC" --use_function_calling --simple_desc)

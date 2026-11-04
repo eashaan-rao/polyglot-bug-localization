@@ -47,3 +47,10 @@ BLAZE_ALL 0.99998 (differences from float16 batching only).
   score files have no JSON manifest (provenance in
   `results/obj2/locagent/<run>/args.json`); (3) `tree_sitter` version is
   recorded as `?` (pinned 0.25.2 in requirements.txt).
+- LocAgent fold-1 (ansible, airflow) hung at start (both workers, 22:22) and
+  was restarted by the watchdog at 22:53. The restart budget of that running
+  step is 2; `run_locagent.sh` now defaults to 20 for later steps (6, 8).
+  **Before the final evaluation**, check each LocAgent run's
+  "instances with output" line: instances never attempted must be resumed
+  (re-run `run_locagent.sh` on the same folders -- it skips finished ones --
+  then `to_scores.py`), not scored as misses.
