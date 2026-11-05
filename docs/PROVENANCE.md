@@ -54,3 +54,18 @@ BLAZE_ALL 0.99998 (differences from float16 batching only).
   "instances with output" line: instances never attempted must be resumed
   (re-run `run_locagent.sh` on the same folders -- it skips finished ones --
   then `to_scores.py`), not scored as misses.
+- **2026-11-05: step 4 (LocAgent fold 1, ansible + airflow) failed** with
+  5/424 instances. Cause: a LocAgent bug -- `auto_search_main.py` passes each
+  tool output to `eval()` and fell back to the raw text only on
+  `SyntaxError`; outputs starting with a path (`lib/ansible/...`) raise
+  `NameError`, the worker dies, and the parent blocks on
+  `result_queue.get()` forever (no LocAgent timeout fires). The same instances
+  re-hung on every restart. Fix: `Scripts/locagent/locagent_obj2.patch`
+  (fallback on any exception; 60 s wait for a dead worker's result, then
+  retry), applied and checked by `run_locagent.sh`. Behaviour on every output
+  that did not crash is unchanged, so the localstack pilot (unpatched; its one
+  hang was resolved by a restart with a fresh sample) stays valid. The 419
+  placeholder rows were archived (`scores_archive/locagent_fold1_rest_incomplete_2026-11-05/`);
+  `Scripts/run_followup.sh` (tmux `obj2_followup`) resumes the run after
+  `run_full.sh` ends and re-runs evaluation + statistics. Steps 6 and 8 use the
+  patched LocAgent.

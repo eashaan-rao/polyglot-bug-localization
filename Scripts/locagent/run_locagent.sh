@@ -64,6 +64,12 @@ export OPENAI_API_KEY="none"
 export GRAPH_INDEX_DIR="$ROOT/data/obj2/locagent/index/graph_index"
 export BM25_INDEX_DIR="$ROOT/data/obj2/locagent/index/BM25_index"
 cd "$ROOT/third_party/LocAgent"
+# Local fix to LocAgent (Scripts/locagent/locagent_obj2.patch, 2026-11-05): its tool-output
+# eval() fell back only on SyntaxError, so outputs like "lib/ansible/..." raised NameError,
+# killed the worker and blocked the parent forever. Applied if not yet applied.
+PATCH="$ROOT/Scripts/locagent/locagent_obj2.patch"
+git apply --reverse --check "$PATCH" 2>/dev/null || git apply "$PATCH" \
+    || { echo "LocAgent patch does not apply"; exit 1; }
 export PYTHONPATH="$(pwd)"
 # Watchdog. In the 2026-10-31 pilot one LocAgent worker blocked forever after a
 # normal LLM reply (futex wait; LocAgent's own --timeout never fired) and held

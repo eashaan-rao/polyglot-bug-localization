@@ -1,0 +1,30 @@
+diff --git a/auto_search_main.py b/auto_search_main.py
+index b49e87c..2b9a877 100644
+--- a/auto_search_main.py
++++ b/auto_search_main.py
+@@ -248,7 +248,9 @@ def auto_search_process(result_queue,
+                 function_response = execute_ipython(ipython_code)
+                 try:
+                     function_response = eval(function_response)
+-                except SyntaxError:
++                except Exception:  # obj2 patch: was SyntaxError only; a tool output such as
++                    # "lib/ansible/x.py ..." parses as an expression and raised NameError, which
++                    # killed the worker and left the parent blocked on result_queue.get()
+                     function_response = function_response
+                 if not isinstance(function_response, str):
+                     function_response = str(function_response)
+@@ -389,7 +391,13 @@ def run_localize(rank, args, bug_queue, log_queue, output_file_lock, traj_file_l
+                         raise TimeoutError
+                     
+                     # loc_result, messages, traj_data = result_queue.get()
+-                    result = result_queue.get()
++                    try:
++                        result = result_queue.get(timeout=60)
++                    except Empty:  # obj2 patch: worker exited without a result (was a silent hang)
++                        logger.warning(f"{instance_id} worker exited (code {process.exitcode}) "
++                                       f"without a result. Try again.")
++                        max_attempt_num = max_attempt_num - 1
++                        continue
+                     if isinstance(result, dict) and 'error' in result and result['type'] == 'BadRequestError':
+                         raise litellm.BadRequestError(result['error'], args.model, args.model.split('/')[0])
+                         # print(f"Error occurred in subprocess: {result['error']}")
