@@ -30,6 +30,13 @@ Updated 2026-10-17 for the journal design (docs/JOURNAL_PLAN.md v2).
   test directory names anywhere in the path, so test-harness code under
   `src/main/` in a `test` package is test-scoped (96 primary-language GT files,
   e.g. elasticsearch `test/framework/`). It never affects training.
+- **LocAgent is Python-only.** Its graph builder and keyword index read
+  Python files only, and the fine-tuned model was trained on Python
+  trajectories; it is compared with BM25 on the three Python projects only and
+  reported as infeasible on Java (no port: a port would be our technique).
+- **Epoch cap.** BLAZE's selected run reached its 15-epoch limit in 2 of 12
+  project-folds (liquibase fold 1, localstack fold 2); the limit is the
+  paper's, not raised.
 - **Agreement check by AI annotators.** Two isolated AI annotators agreed with
   each other and the ruleset (κ 1.0 on label, keep and counts); same-model
   agreement is not human agreement. Mitigation: the human two-person round
@@ -74,8 +81,12 @@ Updated 2026-10-17 for the journal design (docs/JOURNAL_PLAN.md v2).
   chronological validation split by its own original criterion (BLAZE: validation
   loss; FLIM: validation MRR), with the same patience (3). Epochs run, best epoch
   and the per-epoch curves are in every run manifest.
-- **Seed variance.** Three seeds per neural technique; per-bug metrics averaged
-  over seeds; across-seed SD reported.
+- **Seed variance.** Seed 13 for every project and fold; seeds 42 and 2027 on
+  fold 1 of localstack, dolphinscheduler and liquibase (both languages; GPU
+  budget). Per-bug metrics averaged over seeds where several exist. Measured
+  MAP SD 0.012-0.030, a fifth or less of the RQ3/RQ4 effects; not measured on
+  the other three projects. LocAgent: one run per bug, two repeats on 100
+  fold-1 bugs.
 - **The parseable-only view mixes two effects** (fewer distractors, unreachable
   ground truth). Mitigation: reach@parse, primary-only and secondary-only metrics
   reported separately.

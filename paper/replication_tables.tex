@@ -1,0 +1,55 @@
+%% Additional tables of the replication package for "Mono-fix or Poly-fix? On
+%% the Prevalence and Localizability of Multi-Language Bug Fixes". Tables R1-R11,
+%% referred to from main.tex by number; the PDF ships in the GitHub repository
+%% and the archived replication package. The generated tables come from
+%% Scripts/analysis/paper_tables.py; the hand-written ones (hand_*.tex) were
+%% moved here from main.tex. Keep the \input order: it fixes the numbering.
+\documentclass[a4paper,10pt]{article}
+\usepackage[margin=2cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{xcolor}
+\usepackage{adjustbox}
+\usepackage{caption}
+\usepackage{amsmath}
+\usepackage{url}
+\renewcommand{\thetable}{R\arabic{table}}
+\captionsetup{font=small,labelfont=bf}
+\setlength{\parindent}{0pt}
+
+\begin{document}
+\begin{center}
+{\Large\bfseries Replication package: additional tables}\\[4pt]
+Mono-fix or Poly-fix? On the Prevalence and Localizability of Multi-Language Bug Fixes\\[2pt]
+A Eashaan Rao and Sridhar Chimalakonda
+\end{center}
+
+\noindent This document is part of the replication package
+(\url{https://github.com/eashaan-rao/polyglot-bug-localization}). It holds the
+tables that the paper refers to as Tables R1--R11: the departures of each technique from its original implementation,
+training details and run-to-run variation, the per-project results, and the
+complete statistical results behind Figures 2--4 of the paper. All tables are
+generated from the stored statistics in the replication package.
+
+\section*{Techniques and runs}
+\input{tables/hand_deviations}   % R1
+\input{tables/tab_lr}            % R2
+\input{tables/tab_seeds}         % R3
+
+\section*{RQ3: Mono-fix vs Poly-fix performance}
+\input{tables/tab_rq3_python}    % R4
+\input{tables/tab_rq3_models}    % R5
+\input{tables/tab_decomp}        % R6
+
+\section*{RQ4: classical retrieval against the parser-dependent techniques}
+\input{tables/tab_rq4}           % R7
+\input{tables/tab_rq4_project}   % R8
+\input{tables/tab_sensitivity}   % R9
+
+\section*{RQ1: prevalence}
+\input{tables/hand_secondary}                % R10
+\input{tables/hand_prevalence_sensitivity}   % R11
+
+\end{document}

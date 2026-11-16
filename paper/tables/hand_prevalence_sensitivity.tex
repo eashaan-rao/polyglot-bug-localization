@@ -1,0 +1,19 @@
+% moved from main.tex to the supplementary material (2026-11-09)
+\begin{table}[t]
+\caption{Sensitivity of Poly-fix prevalence (broad grain, share of primary-anchored bugs) to the boundary rules, one rule changed at a time.}
+\label{tab:sensitivity}
+\small
+\begin{adjustbox}{max width=\linewidth}\begin{tabular}{lrr}
+\toprule
+Rule change & Poly-fix & \% \\
+\midrule
+None (default rules) & 985 & 27.4 \\
+Only programming languages count & 294 & 8.2 \\
+Exclude test files$^{a}$ & 365 & 11.0 \\
+Count changelog fragments & 1{,}484 & 41.3 \\
+Count documentation & 985 & 27.4 \\
+Count deletions$^{b}$ & 989 & 27.5 \\
+\bottomrule
+\end{tabular}\end{adjustbox}
+\\[2pt]{\footnotesize $^{a}$3{,}324 primary-anchored bugs under this rule. $^{b}$3{,}595 primary-anchored bugs. Merging data-configuration languages into one pseudo-language is a label-level check only (label-level prevalence unchanged at 28.7\%); it is not defined for the grains.}
+\end{table}
