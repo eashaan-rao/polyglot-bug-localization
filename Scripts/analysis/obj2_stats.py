@@ -76,6 +76,13 @@ PAIRS = [
     ("BM25 vs FLIM-fallback", "BM25", "all", "FLIM", "all", OUTCOMES),
     ("BM25-parse vs FLIM-strict (control)", "BM25", "parse", "FLIM", "parse", OUTCOMES),
     ("BM25 vs LocAgent", "BM25", "all", "LocAgent", "all", TOPK_OUTCOMES),
+    # SweRank (added 2026-11-08): full ranking of the files it can see (non-test
+    # .py files with a function); every other file unscored, i.e. tied last.
+    # Python projects only -- the pairing on (fold, project, bug) restricts BM25
+    # to the same bugs. AP@10 version for a like-for-like line next to LocAgent.
+    ("BM25 vs SweRank", "BM25", "all", "SweRank", "all", OUTCOMES),
+    ("BM25 vs SweRank (top-10)", "BM25", "all", "SweRank", "all", TOPK_OUTCOMES),
+    ("SweRankEmbed vs SweRank (reranker effect)", "SweRankEmbed", "all", "SweRank", "all", OUTCOMES),
     # ablation (fold 1, seed 13): does training BLAZE on all fix files help?
     ("BLAZE_ALL vs BLAZE (ablation)", "BLAZE_ALL", "all", "BLAZE", "all", OUTCOMES),
 ]
@@ -191,7 +198,8 @@ def condition(b, name):
 def rq3(x, cond):
     rows, models = [], []
     for (tech, view), g in x.groupby(["tech", "view"]):
-        outs = TOPK_OUTCOMES if tech == "LocAgent" else OUTCOMES
+        outs = (TOPK_OUTCOMES if tech == "LocAgent" else
+                OUTCOMES + ["ap10", "rr10"] if tech.startswith("SweRank") else OUTCOMES)
         for y in outs:
             groups = list(g.groupby("project")) + ([("POOLED", g)] if g.project.nunique() > 1 else [])
             for proj, h in groups:
