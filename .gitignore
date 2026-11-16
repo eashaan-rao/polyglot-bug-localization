@@ -67,3 +67,9 @@ paper/*.blg
 paper/*.spl
 paper/*.pdf
 paper/main.abs
+
+# SweRank per-bug outputs (81 MB, archived in the Zenodo package, not on GitHub)
+data/obj2/swerank/retrieval/
+data/obj2/swerank/rerank/
+data/obj2/swerank/rerun/
+data/obj2/swerank/tmp/
