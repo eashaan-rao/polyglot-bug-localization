@@ -1,0 +1,101 @@
+{
+  "technique": "FLIM",
+  "fold": 1,
+  "project": "apache/dolphinscheduler",
+  "selected_lr": 5e-05,
+  "selected_with_seed": 13,
+  "criterion": "validation MAP (universe R)",
+  "runs": [
+    {
+      "lr": 2e-05,
+      "val_map": 0.2583693958480384,
+      "finetune": {
+        "epochs_run": 6,
+        "best_epoch": 3,
+        "best_val_mrr": 0.26058452124437664,
+        "history": [
+          {
+            "epoch": 1,
+            "train_loss": 4.598030821917808,
+            "val_mrr": 0.02967032173839112
+          },
+          {
+            "epoch": 2,
+            "train_loss": 3.2932764340753424,
+            "val_mrr": 0.16861665391630568
+          },
+          {
+            "epoch": 3,
+            "train_loss": 2.2150711686643834,
+            "val_mrr": 0.26058452124437664
+          },
+          {
+            "epoch": 4,
+            "train_loss": 1.6162510702054795,
+            "val_mrr": 0.23419514397651361
+          },
+          {
+            "epoch": 5,
+            "train_loss": 1.294574058219178,
+            "val_mrr": 0.24247818457541553
+          },
+          {
+            "epoch": 6,
+            "train_loss": 1.0796232876712328,
+            "val_mrr": 0.24706193426421585
+          }
+        ]
+      },
+      "ltr": {
+        "weights_method": "w_ttest",
+        "weights_cv_map": 0.3550855555303603,
+        "regressor": "SGDRegressor(loss='huber', penalty=None, random_state=13, shuffle=False)",
+        "cut_perc": 0.05,
+        "reg_cv_map": 0.36214282839868656
+      }
+    },
+    {
+      "lr": 5e-05,
+      "val_map": 0.3140965553496053,
+      "finetune": {
+        "epochs_run": 5,
+        "best_epoch": 2,
+        "best_val_mrr": 0.2633611814265246,
+        "history": [
+          {
+            "epoch": 1,
+            "train_loss": 4.357930222602739,
+            "val_mrr": 0.12197387229500714
+          },
+          {
+            "epoch": 2,
+            "train_loss": 2.3665988869863015,
+            "val_mrr": 0.2633611814265246
+          },
+          {
+            "epoch": 3,
+            "train_loss": 1.42210910744863,
+            "val_mrr": 0.25257161959896907
+          },
+          {
+            "epoch": 4,
+            "train_loss": 1.0395842251712328,
+            "val_mrr": 0.23189325715443254
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.7628282520869006,
+            "val_mrr": 0.24110632063902596
+          }
+        ]
+      },
+      "ltr": {
+        "weights_method": "w_adaboost",
+        "weights_cv_map": 0.4358774015939123,
+        "regressor": "SGDRegressor(random_state=13, shuffle=False)",
+        "cut_perc": 0.3,
+        "reg_cv_map": 0.43401602283160945
+      }
+    }
+  ]
+}

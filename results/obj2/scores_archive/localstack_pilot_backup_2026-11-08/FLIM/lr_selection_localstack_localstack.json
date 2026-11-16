@@ -1,0 +1,101 @@
+{
+  "technique": "FLIM",
+  "fold": 1,
+  "project": "localstack/localstack",
+  "selected_lr": 5e-05,
+  "selected_with_seed": 13,
+  "criterion": "validation MAP (universe R)",
+  "runs": [
+    {
+      "lr": 2e-05,
+      "val_map": 0.5192590529432753,
+      "finetune": {
+        "epochs_run": 6,
+        "best_epoch": 3,
+        "best_val_mrr": 0.29143261283428945,
+        "history": [
+          {
+            "epoch": 1,
+            "train_loss": 5.004557291666667,
+            "val_mrr": 0.03190494966859456
+          },
+          {
+            "epoch": 2,
+            "train_loss": 3.4918811274509802,
+            "val_mrr": 0.16737818329095497
+          },
+          {
+            "epoch": 3,
+            "train_loss": 2.7510723039215685,
+            "val_mrr": 0.29143261283428945
+          },
+          {
+            "epoch": 4,
+            "train_loss": 2.2217179840686274,
+            "val_mrr": 0.2891029049101252
+          },
+          {
+            "epoch": 5,
+            "train_loss": 1.8775467218137254,
+            "val_mrr": 0.24899895144001316
+          },
+          {
+            "epoch": 6,
+            "train_loss": 1.5821078431372548,
+            "val_mrr": 0.25856066344543194
+          }
+        ]
+      },
+      "ltr": {
+        "weights_method": "w_ttest",
+        "weights_cv_map": 0.49798975891603703,
+        "regressor": "SGDRegressor(loss='epsilon_insensitive', penalty='l1', random_state=13,\n             shuffle=False)",
+        "cut_perc": 0.2,
+        "reg_cv_map": 0.5025849197784071
+      }
+    },
+    {
+      "lr": 5e-05,
+      "val_map": 0.5322549515417873,
+      "finetune": {
+        "epochs_run": 5,
+        "best_epoch": 2,
+        "best_val_mrr": 0.2684801512386638,
+        "history": [
+          {
+            "epoch": 1,
+            "train_loss": 4.603860294117647,
+            "val_mrr": 0.12794564816439807
+          },
+          {
+            "epoch": 2,
+            "train_loss": 2.8433670343137254,
+            "val_mrr": 0.2684801512386638
+          },
+          {
+            "epoch": 3,
+            "train_loss": 2.015203737745098,
+            "val_mrr": 0.23057518623859385
+          },
+          {
+            "epoch": 4,
+            "train_loss": 1.4614066329656863,
+            "val_mrr": 0.26023403302273024
+          },
+          {
+            "epoch": 5,
+            "train_loss": 1.1532820159313726,
+            "val_mrr": 0.24713607507189791
+          }
+        ]
+      },
+      "ltr": {
+        "weights_method": "w_ttest",
+        "weights_cv_map": 0.5141405362773355,
+        "regressor": "SGDRegressor(loss='epsilon_insensitive', penalty=None, random_state=13,\n             shuffle=False)",
+        "cut_perc": 0.15,
+        "reg_cv_map": 0.5138914133029386
+      }
+    }
+  ]
+}

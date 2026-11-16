@@ -1,0 +1,480 @@
+{
+  "written_at": "2026-11-03T18:37:47",
+  "git_head": "b3fa90787ce4240d4abde1bb02977698bc89e6ff",
+  "versions": {
+    "python": "3.12.3",
+    "platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
+    "numpy": "2.3.2",
+    "pandas": "2.3.2",
+    "torch": "2.8.0+cu126",
+    "transformers": "4.55.4",
+    "bm25s": "0.3.11",
+    "sklearn": "1.7.1",
+    "tree_sitter": "?",
+    "tree_sitter_languages": "1.10.2",
+    "javalang": "0.13.0",
+    "gpu": "NVIDIA L40"
+  },
+  "technique": "FLIM",
+  "project": "ansible/ansible",
+  "fold": 1,
+  "seed": 13,
+  "smoke": false,
+  "wall_time_sec": 2127.5,
+  "gpu_peak_allocated_gib": 6.79,
+  "split": {
+    "repo": "ansible/ansible",
+    "fold": 1,
+    "train": 417,
+    "val": 40,
+    "test": 176,
+    "test_removed": 51,
+    "test_noprimary": 6,
+    "purged_train": 34,
+    "purged_val": 10,
+    "val_start": "2021-06-16 12:40:24+00:00",
+    "test_start": "2022-02-17 14:27:44+00:00",
+    "test_end": "2023-12-05 13:53:38+00:00"
+  },
+  "test_bug_ids": [
+    "77049",
+    "77077",
+    "77136",
+    "77149",
+    "77192",
+    "77241",
+    "77267",
+    "77280",
+    "77315",
+    "77349",
+    "77368",
+    "77399",
+    "77416",
+    "77443",
+    "77510",
+    "77519",
+    "77535",
+    "77537",
+    "77556",
+    "77560",
+    "77580",
+    "77582",
+    "77669",
+    "77675",
+    "77690",
+    "77849",
+    "77868",
+    "77911",
+    "77928",
+    "78042",
+    "78063",
+    "78069",
+    "78112",
+    "78131",
+    "78141",
+    "78156",
+    "78195",
+    "78283",
+    "78288",
+    "78295",
+    "78348",
+    "78438",
+    "78442",
+    "78490",
+    "78492",
+    "78509",
+    "78600",
+    "78611",
+    "78612",
+    "78675",
+    "78693",
+    "78715",
+    "78762",
+    "78786",
+    "78793",
+    "78795",
+    "78932",
+    "78988",
+    "79023",
+    "79083",
+    "79101",
+    "79368",
+    "79411",
+    "79463",
+    "79577",
+    "79661",
+    "79676",
+    "79680",
+    "79683",
+    "79684",
+    "79749",
+    "79763",
+    "79833",
+    "79836",
+    "79862",
+    "79892",
+    "79942",
+    "79956",
+    "79968",
+    "80089",
+    "80110",
+    "80128",
+    "80141",
+    "80160",
+    "80256",
+    "80303",
+    "80386",
+    "80411",
+    "80427",
+    "80478",
+    "80506",
+    "80523",
+    "80533",
+    "80561",
+    "80590",
+    "80605",
+    "80709",
+    "80794",
+    "80835",
+    "80863",
+    "80880",
+    "80884",
+    "80896",
+    "80914",
+    "81053",
+    "81163",
+    "81188",
+    "81404",
+    "81474",
+    "81532",
+    "81533",
+    "81553",
+    "81574",
+    "81656",
+    "81666",
+    "81710",
+    "81901",
+    "82142",
+    "82179",
+    "82226",
+    "82241",
+    "82244",
+    "82264",
+    "82353",
+    "82359",
+    "R77079",
+    "R77085",
+    "R77108",
+    "R77213",
+    "R77390",
+    "R77479",
+    "R77660",
+    "R77857",
+    "R78058",
+    "R78169",
+    "R78193",
+    "R78371",
+    "R78516",
+    "R78639",
+    "R78648",
+    "R78701",
+    "R79021",
+    "R79390",
+    "R79430",
+    "R79462",
+    "R79523",
+    "R79638",
+    "R79656",
+    "R79711",
+    "R79776",
+    "R79922",
+    "R80121",
+    "R80126",
+    "R80170",
+    "R80252",
+    "R80267",
+    "R80376",
+    "R80459",
+    "R80488",
+    "R80490",
+    "R80710",
+    "R80852",
+    "R80917",
+    "R80943",
+    "R80992",
+    "R81332",
+    "R81376",
+    "R81455",
+    "R81608",
+    "R81613",
+    "R81618",
+    "R81659",
+    "R81716",
+    "R81722",
+    "R81782",
+    "R82175"
+  ],
+  "config": {
+    "encoder": "microsoft/codebert-base",
+    "epochs_max": 10,
+    "batch": 32,
+    "lr_grid": [
+      2e-05,
+      5e-05
+    ],
+    "patience": 3,
+    "selection": "epochs: val MRR (run.py); LR: val MAP (Scripts/lr_select.py)",
+    "nl_len": 128,
+    "code_len": 256,
+    "max_funcs_pos": 5,
+    "ltr_neg_top": 300,
+    "window_lines": 30,
+    "max_windows": 50,
+    "features": [
+      "s_sum_max",
+      "s_sum_mean",
+      "s_desc_max",
+      "s_desc_mean",
+      "f1",
+      "f3",
+      "f4",
+      "f5",
+      "f6",
+      "f7",
+      "f8",
+      "f9",
+      "f10",
+      "f11",
+      "f12",
+      "f13",
+      "f14",
+      "f15",
+      "f16",
+      "f17",
+      "f18",
+      "f19"
+    ],
+    "dropped_features": [
+      "f2 (API-enriched; JDK-only)"
+    ]
+  },
+  "run_info": {
+    "selected_lr": 5e-05,
+    "lr_grid_trained": [
+      2e-05,
+      5e-05
+    ],
+    "lr_runs": [
+      {
+        "lr": 2e-05,
+        "val_map": 0.30354807532046324,
+        "finetune": {
+          "epochs_run": 10,
+          "best_epoch": 7,
+          "best_val_mrr": 0.37127498709259976,
+          "history": [
+            {
+              "epoch": 1,
+              "train_loss": 5.233273237179487,
+              "val_mrr": 0.08080856710450472
+            },
+            {
+              "epoch": 2,
+              "train_loss": 3.7172475961538463,
+              "val_mrr": 0.11323625913571261
+            },
+            {
+              "epoch": 3,
+              "train_loss": 2.910657051282051,
+              "val_mrr": 0.2768589193326244
+            },
+            {
+              "epoch": 4,
+              "train_loss": 1.8756635616987178,
+              "val_mrr": 0.35235617970006566
+            },
+            {
+              "epoch": 5,
+              "train_loss": 1.2966997195512822,
+              "val_mrr": 0.3280904075546617
+            },
+            {
+              "epoch": 6,
+              "train_loss": 1.0062474959935896,
+              "val_mrr": 0.35127171050500683
+            },
+            {
+              "epoch": 7,
+              "train_loss": 0.8551119290865384,
+              "val_mrr": 0.37127498709259976
+            },
+            {
+              "epoch": 8,
+              "train_loss": 0.6581264398036859,
+              "val_mrr": 0.3689252642466674
+            },
+            {
+              "epoch": 9,
+              "train_loss": 0.5713454026442307,
+              "val_mrr": 0.35466680343423457
+            },
+            {
+              "epoch": 10,
+              "train_loss": 0.5990937061798878,
+              "val_mrr": 0.3603960911361395
+            }
+          ]
+        },
+        "ltr": {
+          "weights_method": "w_gboost",
+          "weights_cv_map": 0.5779527473234389,
+          "regressor": "SGDRegressor(loss='epsilon_insensitive', penalty='elasticnet', random_state=13,\n             shuffle=False)",
+          "cut_perc": 0.05,
+          "reg_cv_map": 0.5499548033965065
+        }
+      },
+      {
+        "lr": 5e-05,
+        "val_map": 0.3357848025828033,
+        "finetune": {
+          "epochs_run": 6,
+          "best_epoch": 3,
+          "best_val_mrr": 0.37855466392329357,
+          "history": [
+            {
+              "epoch": 1,
+              "train_loss": 4.962339743589744,
+              "val_mrr": 0.10260281081720218
+            },
+            {
+              "epoch": 2,
+              "train_loss": 2.75693609775641,
+              "val_mrr": 0.3077137163263241
+            },
+            {
+              "epoch": 3,
+              "train_loss": 1.4726781600560896,
+              "val_mrr": 0.37855466392329357
+            },
+            {
+              "epoch": 4,
+              "train_loss": 0.8495064759865786,
+              "val_mrr": 0.3498026602261446
+            },
+            {
+              "epoch": 5,
+              "train_loss": 0.5497639973958334,
+              "val_mrr": 0.36573526182301036
+            },
+            {
+              "epoch": 6,
+              "train_loss": 0.37969970703125,
+              "val_mrr": 0.3688653949244545
+            }
+          ]
+        },
+        "ltr": {
+          "weights_method": "w_gboost",
+          "weights_cv_map": 0.5911246616681692,
+          "regressor": "SGDRegressor(loss='epsilon_insensitive', penalty=None, random_state=13,\n             shuffle=False)",
+          "cut_perc": 0.1,
+          "reg_cv_map": 0.5455877233596969
+        }
+      }
+    ],
+    "finetune": {
+      "epochs_run": 6,
+      "best_epoch": 3,
+      "best_val_mrr": 0.37855466392329357,
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 4.962339743589744,
+          "val_mrr": 0.10260281081720218
+        },
+        {
+          "epoch": 2,
+          "train_loss": 2.75693609775641,
+          "val_mrr": 0.3077137163263241
+        },
+        {
+          "epoch": 3,
+          "train_loss": 1.4726781600560896,
+          "val_mrr": 0.37855466392329357
+        },
+        {
+          "epoch": 4,
+          "train_loss": 0.8495064759865786,
+          "val_mrr": 0.3498026602261446
+        },
+        {
+          "epoch": 5,
+          "train_loss": 0.5497639973958334,
+          "val_mrr": 0.36573526182301036
+        },
+        {
+          "epoch": 6,
+          "train_loss": 0.37969970703125,
+          "val_mrr": 0.3688653949244545
+        }
+      ]
+    },
+    "n_train_pairs": 1226,
+    "n_val_pairs": 108,
+    "n_files": 32600,
+    "n_units": 334147,
+    "ltr_rows": 124536,
+    "ltr_bugs": 413,
+    "ltr": {
+      "weights_method": "w_gboost",
+      "weights_cv_map": 0.5911246616681692,
+      "regressor": "SGDRegressor(loss='epsilon_insensitive', penalty=None, random_state=13,\n             shuffle=False)",
+      "cut_perc": 0.1,
+      "reg_cv_map": 0.5455877233596969
+    },
+    "config": {
+      "encoder": "microsoft/codebert-base",
+      "epochs_max": 10,
+      "batch": 32,
+      "lr_grid": [
+        2e-05,
+        5e-05
+      ],
+      "patience": 3,
+      "selection": "epochs: val MRR (run.py); LR: val MAP (Scripts/lr_select.py)",
+      "nl_len": 128,
+      "code_len": 256,
+      "max_funcs_pos": 5,
+      "ltr_neg_top": 300,
+      "window_lines": 30,
+      "max_windows": 50,
+      "features": [
+        "s_sum_max",
+        "s_sum_mean",
+        "s_desc_max",
+        "s_desc_mean",
+        "f1",
+        "f3",
+        "f4",
+        "f5",
+        "f6",
+        "f7",
+        "f8",
+        "f9",
+        "f10",
+        "f11",
+        "f12",
+        "f13",
+        "f14",
+        "f15",
+        "f16",
+        "f17",
+        "f18",
+        "f19"
+      ],
+      "dropped_features": [
+        "f2 (API-enriched; JDK-only)"
+      ]
+    }
+  }
+}

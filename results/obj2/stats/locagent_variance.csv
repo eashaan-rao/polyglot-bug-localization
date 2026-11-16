@@ -1,1 +1,4 @@
-
+project,n_bugs,n_runs,MAP10_mean,MAP10_sd,top10_mean,top10_sd,top10_agreement_all_runs
+ansible/ansible,25,3,0.6764,0.009,0.96,0.0,0.9278
+apache/airflow,55,3,0.4221,0.0159,0.8364,0.0182,0.9278
+localstack/localstack,17,3,0.2657,0.0223,0.7843,0.034,0.9278

@@ -1,0 +1,937 @@
+{
+ "equivalence_margin_0.05": {
+  "class_effect BM25-all": {
+   "est": -0.026,
+   "ci90": [
+    -0.06133392857142857,
+    0.009333928571428573
+   ],
+   "equivalent": false,
+   "smallest_margin_shown": 0.06133392857142857
+  },
+  "class_effect BLAZE-all": {
+   "est": -0.0213,
+   "ci90": [
+    -0.053192857142857146,
+    0.010592857142857147
+   ],
+   "equivalent": false,
+   "smallest_margin_shown": 0.053192857142857146
+  },
+  "class_effect BM25-parse": {
+   "est": -0.1293,
+   "ci90": [
+    -0.16455,
+    -0.09405
+   ],
+   "equivalent": false,
+   "smallest_margin_shown": 0.16455
+  },
+  "poly_diff BM25 vs FLIM-strict": {
+   "est": 0.0289,
+   "ci95": [
+    0.0035,
+    0.0531
+   ],
+   "ci90": [
+    0.008085714285714286,
+    0.04971428571428571
+   ],
+   "equivalent": true
+  },
+  "poly_diff BM25 vs FLIM-fallback": {
+   "est": 0.0024,
+   "ci95": [
+    -0.0214,
+    0.027
+   ],
+   "ci90": [
+    -0.017910714285714287,
+    0.022710714285714285
+   ],
+   "equivalent": true
+  },
+  "poly_diff BM25 vs LocAgent": {
+   "est": 0.0365,
+   "ci95": [
+    -0.0063,
+    0.0766
+   ],
+   "ci90": [
+    0.0017116071428571397,
+    0.07128839285714286
+   ],
+   "equivalent": false
+  },
+  "poly_diff BM25 vs SweRank": {
+   "est": 0.0418,
+   "ci95": [
+    0.0016,
+    0.0824
+   ],
+   "ci90": [
+    0.007892857142857139,
+    0.07570714285714286
+   ],
+   "equivalent": false
+  }
+ },
+ "decomposition": {
+  "BM25-all-ap": {
+   "mono": 0.3109725666490215,
+   "poly_prim_removed": 0.2913010501117581,
+   "poly_prim_removed_minus_mono_ci": [
+    -0.05621246502052837,
+    0.017939309169619066
+   ],
+   "poly_prim_nonrel": 0.2765321601010943,
+   "poly_prim_nonrel_minus_mono_ci": [
+    -0.07067707570798443,
+    0.0019185790184653283
+   ],
+   "poly_sec_removed": 0.20327392104219624,
+   "poly_sec_nonrel": 0.16693764771922984
+  },
+  "BLAZE-all-ap": {
+   "mono": 0.2548422454077776,
+   "poly_prim_removed": 0.28552747031572534,
+   "poly_prim_removed_minus_mono_ci": [
+    -0.0065902313698491186,
+    0.06803807926006436
+   ],
+   "poly_prim_nonrel": 0.2793924051557761,
+   "poly_prim_nonrel_minus_mono_ci": [
+    -0.013132686918751258,
+    0.06291595007938584
+   ],
+   "poly_sec_removed": 0.1416345676616077,
+   "poly_sec_nonrel": 0.10853790604846889
+  },
+  "FLIM-all-ap": {
+   "mono": 0.36499364808875173,
+   "poly_prim_removed": 0.38253007628112873,
+   "poly_prim_removed_minus_mono_ci": [
+    -0.022185052824664174,
+    0.057506644533940825
+   ],
+   "poly_prim_nonrel": 0.38112348223864645,
+   "poly_prim_nonrel_minus_mono_ci": [
+    -0.02448680578694112,
+    0.058675533396993156
+   ],
+   "poly_sec_removed": 0.055067887906092856,
+   "poly_sec_nonrel": 0.04214215119114541
+  },
+  "FLIM-parse-ap": {
+   "mono": 0.3695700664602695,
+   "poly_prim_removed": 0.39465139756153694,
+   "poly_prim_removed_minus_mono_ci": [
+    -0.017111135490516276,
+    0.06501193399928862
+   ],
+   "poly_prim_nonrel": 0.39465139756153694,
+   "poly_prim_nonrel_minus_mono_ci": [
+    -0.01448385357691534,
+    0.06569061898262835
+   ],
+   "poly_sec_removed": 0.0,
+   "poly_sec_nonrel": 0.0
+  },
+  "LocAgent-all-ap10": {
+   "mono": 0.45625588754020124,
+   "poly_prim_removed": 0.4321532608049462,
+   "poly_prim_removed_minus_mono_ci": [
+    -0.07554593422262788,
+    0.02759931475711382
+   ],
+   "poly_prim_nonrel": 0.4321532608049462,
+   "poly_prim_nonrel_minus_mono_ci": [
+    -0.07396505257637803,
+    0.029051162886086623
+   ],
+   "poly_sec_removed": 0.0,
+   "poly_sec_nonrel": 0.0
+  },
+  "SweRank-all-ap": {
+   "mono": 0.47753555866963837,
+   "poly_prim_removed": 0.46848495035302995,
+   "poly_prim_removed_minus_mono_ci": [
+    -0.05772146072998799,
+    0.0401963738799121
+   ],
+   "poly_prim_nonrel": 0.46848495035302995,
+   "poly_prim_nonrel_minus_mono_ci": [
+    -0.05617436961660158,
+    0.04147244300744301
+   ],
+   "poly_sec_removed": 0.0007559161625294047,
+   "poly_sec_nonrel": 0.0007549507723685829
+  }
+ },
+ "fdr": {
+  "n_class_tests": 832,
+  "n_interaction_tests": 380,
+  "n_pooled_paired_tests": 760,
+  "class_effects": [
+   {
+    "tech": "BLAZE",
+    "view": "all",
+    "outcome": "ap",
+    "class_effect_poly": -0.0213,
+    "p": 0.2711,
+    "q": 0.3639
+   },
+   {
+    "tech": "BLAZE",
+    "view": "parse",
+    "outcome": "ap",
+    "class_effect_poly": -0.1029,
+    "p": 0.0,
+    "q": 0.0
+   },
+   {
+    "tech": "BLAZE_ALL",
+    "view": "all",
+    "outcome": "ap",
+    "class_effect_poly": -0.0307,
+    "p": 0.2692,
+    "q": 0.3636
+   },
+   {
+    "tech": "BLAZE_ALL",
+    "view": "parse",
+    "outcome": "ap",
+    "class_effect_poly": -0.1081,
+    "p": 0.0001,
+    "q": 0.0003
+   },
+   {
+    "tech": "BM25",
+    "view": "all",
+    "outcome": "ap",
+    "class_effect_poly": -0.026,
+    "p": 0.2254,
+    "q": 0.3196
+   },
+   {
+    "tech": "BM25",
+    "view": "parse",
+    "outcome": "ap",
+    "class_effect_poly": -0.1293,
+    "p": 0.0,
+    "q": 0.0
+   },
+   {
+    "tech": "FLIM",
+    "view": "all",
+    "outcome": "ap",
+    "class_effect_poly": -0.1033,
+    "p": 0.0,
+    "q": 0.0
+   },
+   {
+    "tech": "FLIM",
+    "view": "parse",
+    "outcome": "ap",
+    "class_effect_poly": -0.1335,
+    "p": 0.0,
+    "q": 0.0
+   },
+   {
+    "tech": "LocAgent",
+    "view": "all",
+    "outcome": "ap10",
+    "class_effect_poly": -0.1629,
+    "p": 0.0,
+    "q": 0.0
+   },
+   {
+    "tech": "LocAgent",
+    "view": "parse",
+    "outcome": "ap10",
+    "class_effect_poly": -0.1628,
+    "p": 0.0,
+    "q": 0.0
+   },
+   {
+    "tech": "LocAgentRep",
+    "view": "all",
+    "outcome": "ap",
+    "class_effect_poly": -0.2864,
+    "p": 0.0004,
+    "q": 0.0012
+   },
+   {
+    "tech": "LocAgentRep",
+    "view": "parse",
+    "outcome": "ap",
+    "class_effect_poly": -0.2907,
+    "p": 0.0003,
+    "q": 0.0009
+   },
+   {
+    "tech": "SweRank",
+    "view": "all",
+    "outcome": "ap",
+    "class_effect_poly": -0.1719,
+    "p": 0.0,
+    "q": 0.0
+   },
+   {
+    "tech": "SweRank",
+    "view": "all",
+    "outcome": "ap10",
+    "class_effect_poly": -0.1675,
+    "p": 0.0,
+    "q": 0.0
+   },
+   {
+    "tech": "SweRank",
+    "view": "parse",
+    "outcome": "ap",
+    "class_effect_poly": -0.1717,
+    "p": 0.0,
+    "q": 0.0
+   },
+   {
+    "tech": "SweRank",
+    "view": "parse",
+    "outcome": "ap10",
+    "class_effect_poly": -0.1666,
+    "p": 0.0,
+    "q": 0.0
+   },
+   {
+    "tech": "SweRankEmbed",
+    "view": "all",
+    "outcome": "ap",
+    "class_effect_poly": -0.1723,
+    "p": 0.0,
+    "q": 0.0
+   },
+   {
+    "tech": "SweRankEmbed",
+    "view": "all",
+    "outcome": "ap10",
+    "class_effect_poly": -0.166,
+    "p": 0.0,
+    "q": 0.0
+   },
+   {
+    "tech": "SweRankEmbed",
+    "view": "parse",
+    "outcome": "ap",
+    "class_effect_poly": -0.1724,
+    "p": 0.0,
+    "q": 0.0
+   },
+   {
+    "tech": "SweRankEmbed",
+    "view": "parse",
+    "outcome": "ap10",
+    "class_effect_poly": -0.1653,
+    "p": 0.0,
+    "q": 0.0
+   }
+  ],
+  "interactions": [
+   {
+    "pair": "BM25 vs FLIM-strict",
+    "outcome": "ap",
+    "interaction_poly": 0.1075,
+    "p": 0.0,
+    "q": 0.0
+   },
+   {
+    "pair": "BM25 vs FLIM-fallback",
+    "outcome": "ap",
+    "interaction_poly": 0.0788,
+    "p": 0.0001,
+    "q": 0.0007
+   },
+   {
+    "pair": "BM25-parse vs FLIM-strict (control)",
+    "outcome": "ap",
+    "interaction_poly": 0.0043,
+    "p": 0.8294,
+    "q": 0.9013
+   },
+   {
+    "pair": "BM25 vs LocAgent",
+    "outcome": "ap10",
+    "interaction_poly": 0.137,
+    "p": 0.0,
+    "q": 0.0
+   },
+   {
+    "pair": "BM25 vs SweRank",
+    "outcome": "ap",
+    "interaction_poly": 0.1431,
+    "p": 0.0,
+    "q": 0.0
+   },
+   {
+    "pair": "BM25 vs SweRank (top-10)",
+    "outcome": "ap10",
+    "interaction_poly": 0.1404,
+    "p": 0.0,
+    "q": 0.0
+   },
+   {
+    "pair": "SweRankEmbed vs SweRank (reranker effect)",
+    "outcome": "ap",
+    "interaction_poly": 0.0012,
+    "p": 0.9269,
+    "q": 0.9571
+   },
+   {
+    "pair": "BLAZE_ALL vs BLAZE (ablation)",
+    "outcome": "ap",
+    "interaction_poly": 0.0009,
+    "p": 0.9711,
+    "q": 0.9762
+   }
+  ],
+  "pooled_paired": [
+   {
+    "pair": "BM25 vs FLIM-strict",
+    "class": "Mono-fix",
+    "outcome": "ap",
+    "mean_diff_A_minus_B": -0.0586,
+    "wilcoxon_p": 0.0,
+    "q": 0.0
+   },
+   {
+    "pair": "BM25 vs FLIM-strict",
+    "class": "Poly-fix",
+    "outcome": "ap",
+    "mean_diff_A_minus_B": 0.0289,
+    "wilcoxon_p": 0.0163,
+    "q": 0.0256
+   },
+   {
+    "pair": "BM25 vs FLIM-fallback",
+    "class": "Mono-fix",
+    "outcome": "ap",
+    "mean_diff_A_minus_B": -0.054,
+    "wilcoxon_p": 0.0,
+    "q": 0.0
+   },
+   {
+    "pair": "BM25 vs FLIM-fallback",
+    "class": "Poly-fix",
+    "outcome": "ap",
+    "mean_diff_A_minus_B": 0.0024,
+    "wilcoxon_p": 0.9766,
+    "q": 0.9831
+   },
+   {
+    "pair": "BM25-parse vs FLIM-strict (control)",
+    "class": "Mono-fix",
+    "outcome": "ap",
+    "mean_diff_A_minus_B": -0.0093,
+    "wilcoxon_p": 0.0576,
+    "q": 0.0818
+   },
+   {
+    "pair": "BM25-parse vs FLIM-strict (control)",
+    "class": "Poly-fix",
+    "outcome": "ap",
+    "mean_diff_A_minus_B": -0.0258,
+    "wilcoxon_p": 0.015,
+    "q": 0.0238
+   },
+   {
+    "pair": "BM25 vs LocAgent",
+    "class": "Mono-fix",
+    "outcome": "ap10",
+    "mean_diff_A_minus_B": -0.1141,
+    "wilcoxon_p": 0.0,
+    "q": 0.0
+   },
+   {
+    "pair": "BM25 vs LocAgent",
+    "class": "Poly-fix",
+    "outcome": "ap10",
+    "mean_diff_A_minus_B": 0.0365,
+    "wilcoxon_p": 0.1926,
+    "q": 0.2489
+   },
+   {
+    "pair": "BM25 vs SweRank",
+    "class": "Mono-fix",
+    "outcome": "ap",
+    "mean_diff_A_minus_B": -0.1131,
+    "wilcoxon_p": 0.0,
+    "q": 0.0
+   },
+   {
+    "pair": "BM25 vs SweRank",
+    "class": "Poly-fix",
+    "outcome": "ap",
+    "mean_diff_A_minus_B": 0.0418,
+    "wilcoxon_p": 0.1349,
+    "q": 0.1792
+   },
+   {
+    "pair": "BM25 vs SweRank (top-10)",
+    "class": "Mono-fix",
+    "outcome": "ap10",
+    "mean_diff_A_minus_B": -0.1301,
+    "wilcoxon_p": 0.0,
+    "q": 0.0
+   },
+   {
+    "pair": "BM25 vs SweRank (top-10)",
+    "class": "Poly-fix",
+    "outcome": "ap10",
+    "mean_diff_A_minus_B": 0.0173,
+    "wilcoxon_p": 0.9237,
+    "q": 0.9566
+   },
+   {
+    "pair": "SweRankEmbed vs SweRank (reranker effect)",
+    "class": "Mono-fix",
+    "outcome": "ap",
+    "mean_diff_A_minus_B": -0.0624,
+    "wilcoxon_p": 0.0,
+    "q": 0.0
+   },
+   {
+    "pair": "SweRankEmbed vs SweRank (reranker effect)",
+    "class": "Poly-fix",
+    "outcome": "ap",
+    "mean_diff_A_minus_B": -0.0503,
+    "wilcoxon_p": 0.0,
+    "q": 0.0
+   },
+   {
+    "pair": "BLAZE_ALL vs BLAZE (ablation)",
+    "class": "Mono-fix",
+    "outcome": "ap",
+    "mean_diff_A_minus_B": -0.0104,
+    "wilcoxon_p": 0.9458,
+    "q": 0.9597
+   },
+   {
+    "pair": "BLAZE_ALL vs BLAZE (ablation)",
+    "class": "Poly-fix",
+    "outcome": "ap",
+    "mean_diff_A_minus_B": -0.0061,
+    "wilcoxon_p": 0.3007,
+    "q": 0.371
+   }
+  ]
+ },
+ "ngt_stratified": {
+  "BM25-all-ap": {
+   "stratified_diff": -0.023872184363340543,
+   "ci": [
+    -0.061401780528468924,
+    0.011802664672097994
+   ],
+   "unadjusted": -0.03733351787064043,
+   "per_stratum": {
+    "1": {
+     "n_poly": 24,
+     "n_mono": 387,
+     "diff": -0.085
+    },
+    "2": {
+     "n_poly": 117,
+     "n_mono": 306,
+     "diff": -0.0896
+    },
+    "3": {
+     "n_poly": 95,
+     "n_mono": 125,
+     "diff": 0.0637
+    },
+    "4": {
+     "n_poly": 63,
+     "n_mono": 71,
+     "diff": 0.0
+    },
+    "5": {
+     "n_poly": 119,
+     "n_mono": 92,
+     "diff": 0.0035
+    }
+   }
+  },
+  "BLAZE-all-ap": {
+   "stratified_diff": -0.006597271964895855,
+   "ci": [
+    -0.03793889428346444,
+    0.024515248733703286
+   ],
+   "unadjusted": -0.011185494301085869,
+   "per_stratum": {
+    "1": {
+     "n_poly": 24,
+     "n_mono": 387,
+     "diff": -0.1986
+    },
+    "2": {
+     "n_poly": 117,
+     "n_mono": 306,
+     "diff": -0.06
+    },
+    "3": {
+     "n_poly": 95,
+     "n_mono": 125,
+     "diff": 0.0843
+    },
+    "4": {
+     "n_poly": 63,
+     "n_mono": 71,
+     "diff": 0.0488
+    },
+    "5": {
+     "n_poly": 119,
+     "n_mono": 92,
+     "diff": 0.0339
+    }
+   }
+  },
+  "FLIM-all-ap": {
+   "stratified_diff": -0.07348026131607548,
+   "ci": [
+    -0.10512629094988087,
+    -0.040525920047585574
+   ],
+   "unadjusted": -0.09372368895307259,
+   "per_stratum": {
+    "1": {
+     "n_poly": 24,
+     "n_mono": 387,
+     "diff": -0.1238
+    },
+    "2": {
+     "n_poly": 117,
+     "n_mono": 306,
+     "diff": -0.1674
+    },
+    "3": {
+     "n_poly": 95,
+     "n_mono": 125,
+     "diff": 0.0418
+    },
+    "4": {
+     "n_poly": 63,
+     "n_mono": 71,
+     "diff": -0.0697
+    },
+    "5": {
+     "n_poly": 119,
+     "n_mono": 92,
+     "diff": -0.0207
+    }
+   }
+  },
+  "FLIM-parse-ap": {
+   "stratified_diff": -0.10240855627090394,
+   "ci": [
+    -0.13576850764538906,
+    -0.07182481393209622
+   ],
+   "unadjusted": -0.12481545022438295,
+   "per_stratum": {
+    "1": {
+     "n_poly": 24,
+     "n_mono": 387,
+     "diff": -0.1105
+    },
+    "2": {
+     "n_poly": 117,
+     "n_mono": 306,
+     "diff": -0.1948
+    },
+    "3": {
+     "n_poly": 95,
+     "n_mono": 125,
+     "diff": -0.0005
+    },
+    "4": {
+     "n_poly": 63,
+     "n_mono": 71,
+     "diff": -0.1089
+    },
+    "5": {
+     "n_poly": 119,
+     "n_mono": 92,
+     "diff": -0.0501
+    }
+   }
+  },
+  "LocAgent-all-ap10": {
+   "stratified_diff": -0.11257417211021789,
+   "ci": [
+    -0.15014681160726165,
+    -0.07689603676367887
+   ],
+   "unadjusted": -0.20322029527951674,
+   "per_stratum": {
+    "1": {
+     "n_poly": 17,
+     "n_mono": 177,
+     "diff": -0.3098
+    },
+    "2": {
+     "n_poly": 81,
+     "n_mono": 189,
+     "diff": -0.0498
+    },
+    "3": {
+     "n_poly": 69,
+     "n_mono": 62,
+     "diff": -0.1504
+    },
+    "4": {
+     "n_poly": 39,
+     "n_mono": 41,
+     "diff": -0.1321
+    },
+    "5": {
+     "n_poly": 65,
+     "n_mono": 41,
+     "diff": -0.0679
+    }
+   }
+  },
+  "SweRank-all-ap": {
+   "stratified_diff": -0.10941886036748646,
+   "ci": [
+    -0.14593262718388522,
+    -0.07123367228160925
+   ],
+   "unadjusted": -0.20025237870002366,
+   "per_stratum": {
+    "1": {
+     "n_poly": 17,
+     "n_mono": 177,
+     "diff": -0.4336
+    },
+    "2": {
+     "n_poly": 81,
+     "n_mono": 189,
+     "diff": -0.0628
+    },
+    "3": {
+     "n_poly": 69,
+     "n_mono": 62,
+     "diff": -0.0747
+    },
+    "4": {
+     "n_poly": 39,
+     "n_mono": 41,
+     "diff": -0.1365
+    },
+    "5": {
+     "n_poly": 65,
+     "n_mono": 41,
+     "diff": -0.0381
+    }
+   }
+  }
+ },
+ "whole_benchmark": {
+  "BM25-all-ap": {
+   "kept_only": 0.29981787724950204,
+   "n_kept": 1399,
+   "n_no_primary": 283,
+   "with_no_primary": 0.2771632037221784
+  },
+  "FLIM-all-ap": {
+   "kept_only": 0.336990430088477,
+   "n_kept": 1399,
+   "n_no_primary": 283,
+   "with_no_primary": 0.28029108899749067
+  },
+  "FLIM-parse-ap": {
+   "kept_only": 0.3322771013467655,
+   "n_kept": 1399,
+   "n_no_primary": 283,
+   "with_no_primary": 0.27637078762433115
+  },
+  "LocAgent-all-ap10": {
+   "kept_only": 0.38574026651491444,
+   "n_kept": 781,
+   "n_no_primary": 62,
+   "with_no_primary": 0.35737028250076885
+  },
+  "SweRank-all-ap": {
+   "kept_only": 0.4080497780963907,
+   "n_kept": 781,
+   "n_no_primary": 62,
+   "with_no_primary": 0.37803899963615795
+  },
+  "BM25-all (Python)": {
+   "ap_kept": 0.34869374681422516,
+   "ap10_kept": 0.32390880939799455,
+   "n_no_primary": 62,
+   "ap_with": 0.3404032947666227,
+   "ap10_with": 0.3158026916117706
+  }
+ },
+ "prevalence": {
+  "poly": 985,
+  "kept": 3594,
+  "share_kept": 0.27406789092932665,
+  "share_all_4995": 0.1971971971971972,
+  "share_with_counted_files_4578": 0.21515945827872435,
+  "rq1_poly_fix_files": 4294,
+  "rq1_poly_secondary_files": 1750,
+  "rq1_secondary_share": 0.40754541220307405,
+  "parse_status_unparseable_gt_by_fold": {
+   "1": {
+    "no_parser": 291
+   },
+   "2": {
+    "no_parser": 264
+   }
+  }
+ },
+ "hc3_fallback": {
+  "class_models": 49,
+  "class_models_total": 832,
+  "interaction_models": 97,
+  "interaction_total": 380,
+  "primary_ap_class": [
+   {
+    "tech": "BLAZE",
+    "view": "all",
+    "model": "mixedlm_powell"
+   },
+   {
+    "tech": "BLAZE",
+    "view": "parse",
+    "model": "mixedlm_powell"
+   },
+   {
+    "tech": "BLAZE_ALL",
+    "view": "all",
+    "model": "mixedlm_powell"
+   },
+   {
+    "tech": "BLAZE_ALL",
+    "view": "parse",
+    "model": "mixedlm_powell"
+   },
+   {
+    "tech": "BM25",
+    "view": "all",
+    "model": "mixedlm_powell"
+   },
+   {
+    "tech": "BM25",
+    "view": "parse",
+    "model": "mixedlm_powell"
+   },
+   {
+    "tech": "FLIM",
+    "view": "all",
+    "model": "mixedlm_powell"
+   },
+   {
+    "tech": "FLIM",
+    "view": "parse",
+    "model": "mixedlm_powell"
+   },
+   {
+    "tech": "LocAgent",
+    "view": "all",
+    "model": "mixedlm_powell"
+   },
+   {
+    "tech": "LocAgent",
+    "view": "parse",
+    "model": "mixedlm_powell"
+   },
+   {
+    "tech": "LocAgentRep",
+    "view": "all",
+    "model": "mixedlm_lbfgs"
+   },
+   {
+    "tech": "LocAgentRep",
+    "view": "parse",
+    "model": "mixedlm_lbfgs"
+   },
+   {
+    "tech": "SweRank",
+    "view": "all",
+    "model": "mixedlm_lbfgs"
+   },
+   {
+    "tech": "SweRank",
+    "view": "all",
+    "model": "mixedlm_powell"
+   },
+   {
+    "tech": "SweRank",
+    "view": "parse",
+    "model": "mixedlm_powell"
+   },
+   {
+    "tech": "SweRank",
+    "view": "parse",
+    "model": "mixedlm_powell"
+   },
+   {
+    "tech": "SweRankEmbed",
+    "view": "all",
+    "model": "mixedlm_powell"
+   },
+   {
+    "tech": "SweRankEmbed",
+    "view": "all",
+    "model": "mixedlm_powell"
+   },
+   {
+    "tech": "SweRankEmbed",
+    "view": "parse",
+    "model": "mixedlm_powell"
+   },
+   {
+    "tech": "SweRankEmbed",
+    "view": "parse",
+    "model": "mixedlm_powell"
+   }
+  ],
+  "primary_ap_inter": [
+   {
+    "pair": "BM25 vs FLIM-strict",
+    "model": "mixedlm_lbfgs"
+   },
+   {
+    "pair": "BM25 vs FLIM-fallback",
+    "model": "mixedlm_powell"
+   },
+   {
+    "pair": "BM25-parse vs FLIM-strict (control)",
+    "model": "mixedlm_lbfgs"
+   },
+   {
+    "pair": "BM25 vs LocAgent",
+    "model": "mixedlm_powell"
+   },
+   {
+    "pair": "BM25 vs SweRank",
+    "model": "mixedlm_powell"
+   },
+   {
+    "pair": "BM25 vs SweRank (top-10)",
+    "model": "mixedlm_powell"
+   },
+   {
+    "pair": "SweRankEmbed vs SweRank (reranker effect)",
+    "model": "ols_project_fe_hc3"
+   },
+   {
+    "pair": "BLAZE_ALL vs BLAZE (ablation)",
+    "model": "mixedlm_powell"
+   }
+  ]
+ }
+}

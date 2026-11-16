@@ -1,0 +1,317 @@
+{
+  "written_at": "2026-11-08T12:47:30",
+  "git_head": "453b2a9aa69b2ac1f08d81bcf666f7f69d1ee21a",
+  "versions": {
+    "python": "3.12.3",
+    "platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
+    "numpy": "2.3.2",
+    "pandas": "2.3.2",
+    "torch": "2.8.0+cu126",
+    "transformers": "4.55.4",
+    "bm25s": "0.3.11",
+    "sklearn": "1.7.1",
+    "tree_sitter": "?",
+    "tree_sitter_languages": "1.10.2",
+    "javalang": "0.13.0",
+    "gpu": "NVIDIA L40"
+  },
+  "technique": "FLIM",
+  "project": "localstack/localstack",
+  "fold": 1,
+  "seed": 13,
+  "smoke": false,
+  "wall_time_sec": 1889.9,
+  "gpu_peak_allocated_gib": 6.79,
+  "split": {
+    "repo": "localstack/localstack",
+    "fold": 1,
+    "train": 290,
+    "val": 25,
+    "test": 92,
+    "test_removed": 5,
+    "test_noprimary": 1,
+    "purged_train": 21,
+    "purged_val": 10,
+    "val_start": "2022-11-18 10:25:27+00:00",
+    "test_start": "2023-03-28 18:28:07+00:00",
+    "test_end": "2024-02-26 23:32:53+00:00"
+  },
+  "test_bug_ids": [
+    "7993",
+    "8002",
+    "8030",
+    "8034",
+    "8044",
+    "8072",
+    "8073",
+    "8083",
+    "8089",
+    "8090",
+    "8092",
+    "8139",
+    "8172",
+    "8174",
+    "8178",
+    "8183",
+    "8213",
+    "8219",
+    "8261",
+    "8325",
+    "8380",
+    "8392",
+    "8397",
+    "8422",
+    "8441",
+    "8444",
+    "8459",
+    "8471",
+    "8478",
+    "8486",
+    "8512",
+    "8566",
+    "8570",
+    "8596",
+    "8642",
+    "8675",
+    "8676",
+    "8703",
+    "8732",
+    "8756",
+    "8777",
+    "8793",
+    "8805",
+    "8812",
+    "8824",
+    "8841",
+    "8895",
+    "8916",
+    "8928",
+    "9016",
+    "9030",
+    "9154",
+    "9193",
+    "9243",
+    "9261",
+    "9331",
+    "9408",
+    "9427",
+    "9428",
+    "9476",
+    "9556",
+    "9598",
+    "9666",
+    "9695",
+    "9731",
+    "9741",
+    "9742",
+    "9753",
+    "9771",
+    "9812",
+    "9826",
+    "9837",
+    "9863",
+    "9872",
+    "9881",
+    "9882",
+    "9912",
+    "9930",
+    "9989",
+    "9990",
+    "10090",
+    "10106",
+    "10107",
+    "10216",
+    "10233",
+    "10311",
+    "10328",
+    "R8173",
+    "R8304",
+    "R8680",
+    "R8869",
+    "R9628"
+  ],
+  "config": {
+    "encoder": "microsoft/codebert-base",
+    "epochs_max": 10,
+    "batch": 32,
+    "lr_grid": [
+      2e-05,
+      5e-05
+    ],
+    "patience": 3,
+    "selection": "epochs: val MRR (run.py); LR: val MAP (Scripts/lr_select.py)",
+    "nl_len": 128,
+    "code_len": 256,
+    "max_funcs_pos": 5,
+    "ltr_neg_top": 300,
+    "window_lines": 30,
+    "max_windows": 50,
+    "features": [
+      "s_sum_max",
+      "s_sum_mean",
+      "s_desc_max",
+      "s_desc_mean",
+      "f1",
+      "f3",
+      "f4",
+      "f5",
+      "f6",
+      "f7",
+      "f8",
+      "f9",
+      "f10",
+      "f11",
+      "f12",
+      "f13",
+      "f14",
+      "f15",
+      "f16",
+      "f17",
+      "f18",
+      "f19"
+    ],
+    "dropped_features": [
+      "f2 (API-enriched; JDK-only)"
+    ]
+  },
+  "run_info": {
+    "selected_lr": 5e-05,
+    "lr_grid_trained": [
+      5e-05
+    ],
+    "lr_runs": [
+      {
+        "lr": 5e-05,
+        "val_map": NaN,
+        "finetune": {
+          "epochs_run": 5,
+          "best_epoch": 2,
+          "best_val_mrr": 0.28800134217702394,
+          "history": [
+            {
+              "epoch": 1,
+              "train_loss": 4.5850566789215685,
+              "val_mrr": 0.16048156881098247
+            },
+            {
+              "epoch": 2,
+              "train_loss": 2.7936963848039214,
+              "val_mrr": 0.28800134217702394
+            },
+            {
+              "epoch": 3,
+              "train_loss": 1.9647097120098038,
+              "val_mrr": 0.24504628263770428
+            },
+            {
+              "epoch": 4,
+              "train_loss": 1.4355085784313726,
+              "val_mrr": 0.26125878289136234
+            },
+            {
+              "epoch": 5,
+              "train_loss": 1.1152726715686274,
+              "val_mrr": 0.25912930125106876
+            }
+          ]
+        },
+        "ltr": {
+          "weights_method": "w_ttest",
+          "weights_cv_map": 0.5162324819597306,
+          "regressor": "SGDRegressor(loss='epsilon_insensitive', penalty='l1', random_state=13,\n             shuffle=False)",
+          "cut_perc": 0.3,
+          "reg_cv_map": 0.5167543654068784
+        }
+      }
+    ],
+    "finetune": {
+      "epochs_run": 5,
+      "best_epoch": 2,
+      "best_val_mrr": 0.28800134217702394,
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 4.5850566789215685,
+          "val_mrr": 0.16048156881098247
+        },
+        {
+          "epoch": 2,
+          "train_loss": 2.7936963848039214,
+          "val_mrr": 0.28800134217702394
+        },
+        {
+          "epoch": 3,
+          "train_loss": 1.9647097120098038,
+          "val_mrr": 0.24504628263770428
+        },
+        {
+          "epoch": 4,
+          "train_loss": 1.4355085784313726,
+          "val_mrr": 0.26125878289136234
+        },
+        {
+          "epoch": 5,
+          "train_loss": 1.1152726715686274,
+          "val_mrr": 0.25912930125106876
+        }
+      ]
+    },
+    "n_train_pairs": 1629,
+    "n_val_pairs": 212,
+    "n_files": 14969,
+    "n_units": 435520,
+    "ltr_rows": 61169,
+    "ltr_bugs": 290,
+    "ltr": {
+      "weights_method": "w_ttest",
+      "weights_cv_map": 0.5162324819597306,
+      "regressor": "SGDRegressor(loss='epsilon_insensitive', penalty='l1', random_state=13,\n             shuffle=False)",
+      "cut_perc": 0.3,
+      "reg_cv_map": 0.5167543654068784
+    },
+    "config": {
+      "encoder": "microsoft/codebert-base",
+      "epochs_max": 10,
+      "batch": 32,
+      "lr_grid": [
+        2e-05,
+        5e-05
+      ],
+      "patience": 3,
+      "selection": "epochs: val MRR (run.py); LR: val MAP (Scripts/lr_select.py)",
+      "nl_len": 128,
+      "code_len": 256,
+      "max_funcs_pos": 5,
+      "ltr_neg_top": 300,
+      "window_lines": 30,
+      "max_windows": 50,
+      "features": [
+        "s_sum_max",
+        "s_sum_mean",
+        "s_desc_max",
+        "s_desc_mean",
+        "f1",
+        "f3",
+        "f4",
+        "f5",
+        "f6",
+        "f7",
+        "f8",
+        "f9",
+        "f10",
+        "f11",
+        "f12",
+        "f13",
+        "f14",
+        "f15",
+        "f16",
+        "f17",
+        "f18",
+        "f19"
+      ],
+      "dropped_features": [
+        "f2 (API-enriched; JDK-only)"
+      ]
+    }
+  }
+}

@@ -1,0 +1,309 @@
+{
+  "written_at": "2026-11-07T14:11:11",
+  "git_head": "453b2a9aa69b2ac1f08d81bcf666f7f69d1ee21a",
+  "versions": {
+    "python": "3.12.3",
+    "platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
+    "numpy": "2.3.2",
+    "pandas": "2.3.2",
+    "torch": "2.8.0+cu126",
+    "transformers": "4.55.4",
+    "bm25s": "0.3.11",
+    "sklearn": "1.7.1",
+    "tree_sitter": "?",
+    "tree_sitter_languages": "1.10.2",
+    "javalang": "0.13.0",
+    "gpu": "NVIDIA L40"
+  },
+  "technique": "FLIM",
+  "project": "liquibase/liquibase",
+  "fold": 1,
+  "seed": 2027,
+  "smoke": false,
+  "wall_time_sec": 237.5,
+  "gpu_peak_allocated_gib": 6.79,
+  "split": {
+    "repo": "liquibase/liquibase",
+    "fold": 1,
+    "train": 114,
+    "val": 10,
+    "test": 44,
+    "test_removed": 4,
+    "test_noprimary": 5,
+    "purged_train": 25,
+    "purged_val": 10,
+    "val_start": "2023-03-03 21:14:22+00:00",
+    "test_start": "2023-06-21 15:17:54+00:00",
+    "test_end": "2024-02-02 09:11:12+00:00"
+  },
+  "test_bug_ids": [
+    "4415",
+    "4429",
+    "4448",
+    "4456",
+    "4460",
+    "4489",
+    "4512",
+    "4514",
+    "4530",
+    "4536",
+    "4575",
+    "4588",
+    "4597",
+    "4620",
+    "4650",
+    "4662",
+    "4665",
+    "4669",
+    "4678",
+    "4682",
+    "4723",
+    "4734",
+    "4891",
+    "4987",
+    "4990",
+    "5034",
+    "5069",
+    "5098",
+    "5155",
+    "5171",
+    "5247",
+    "5263",
+    "5266",
+    "5278",
+    "5410",
+    "5442",
+    "5475",
+    "5489",
+    "5523",
+    "5550",
+    "R4576",
+    "R4794",
+    "R5225",
+    "R5246"
+  ],
+  "config": {
+    "encoder": "microsoft/codebert-base",
+    "epochs_max": 10,
+    "batch": 32,
+    "lr_grid": [
+      2e-05,
+      5e-05
+    ],
+    "patience": 3,
+    "selection": "epochs: val MRR (run.py); LR: val MAP (Scripts/lr_select.py)",
+    "nl_len": 128,
+    "code_len": 256,
+    "max_funcs_pos": 5,
+    "ltr_neg_top": 300,
+    "window_lines": 30,
+    "max_windows": 50,
+    "features": [
+      "s_sum_max",
+      "s_sum_mean",
+      "s_desc_max",
+      "s_desc_mean",
+      "f1",
+      "f3",
+      "f4",
+      "f5",
+      "f6",
+      "f7",
+      "f8",
+      "f9",
+      "f10",
+      "f11",
+      "f12",
+      "f13",
+      "f14",
+      "f15",
+      "f16",
+      "f17",
+      "f18",
+      "f19"
+    ],
+    "dropped_features": [
+      "f2 (API-enriched; JDK-only)"
+    ]
+  },
+  "run_info": {
+    "selected_lr": 5e-05,
+    "lr_grid_trained": [
+      5e-05
+    ],
+    "lr_runs": [
+      {
+        "lr": 5e-05,
+        "val_map": NaN,
+        "finetune": {
+          "epochs_run": 9,
+          "best_epoch": 6,
+          "best_val_mrr": 0.3873124271561772,
+          "history": [
+            {
+              "epoch": 1,
+              "train_loss": 8.478160511363637,
+              "val_mrr": 0.21306254509379507
+            },
+            {
+              "epoch": 2,
+              "train_loss": 3.888671875,
+              "val_mrr": 0.19767342032967034
+            },
+            {
+              "epoch": 3,
+              "train_loss": 3.743075284090909,
+              "val_mrr": 0.23765964937839937
+            },
+            {
+              "epoch": 4,
+              "train_loss": 3.571200284090909,
+              "val_mrr": 0.2934692911255411
+            },
+            {
+              "epoch": 5,
+              "train_loss": 3.4703480113636362,
+              "val_mrr": 0.22032108516483517
+            },
+            {
+              "epoch": 6,
+              "train_loss": 3.5092329545454546,
+              "val_mrr": 0.3873124271561772
+            },
+            {
+              "epoch": 7,
+              "train_loss": 3.356178977272727,
+              "val_mrr": 0.2758766407203907
+            },
+            {
+              "epoch": 8,
+              "train_loss": 3.201882102272727,
+              "val_mrr": 0.2713812229437229
+            },
+            {
+              "epoch": 9,
+              "train_loss": 2.8284801136363638,
+              "val_mrr": 0.3562980422355422
+            }
+          ]
+        },
+        "ltr": {
+          "weights_method": "w_gboost",
+          "weights_cv_map": 0.3204433259542982,
+          "regressor": "SGDRegressor(loss='epsilon_insensitive', penalty=None, random_state=2027,\n             shuffle=False)",
+          "cut_perc": 0.2,
+          "reg_cv_map": 0.3005745346647653
+        }
+      }
+    ],
+    "finetune": {
+      "epochs_run": 9,
+      "best_epoch": 6,
+      "best_val_mrr": 0.3873124271561772,
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 8.478160511363637,
+          "val_mrr": 0.21306254509379507
+        },
+        {
+          "epoch": 2,
+          "train_loss": 3.888671875,
+          "val_mrr": 0.19767342032967034
+        },
+        {
+          "epoch": 3,
+          "train_loss": 3.743075284090909,
+          "val_mrr": 0.23765964937839937
+        },
+        {
+          "epoch": 4,
+          "train_loss": 3.571200284090909,
+          "val_mrr": 0.2934692911255411
+        },
+        {
+          "epoch": 5,
+          "train_loss": 3.4703480113636362,
+          "val_mrr": 0.22032108516483517
+        },
+        {
+          "epoch": 6,
+          "train_loss": 3.5092329545454546,
+          "val_mrr": 0.3873124271561772
+        },
+        {
+          "epoch": 7,
+          "train_loss": 3.356178977272727,
+          "val_mrr": 0.2758766407203907
+        },
+        {
+          "epoch": 8,
+          "train_loss": 3.201882102272727,
+          "val_mrr": 0.2713812229437229
+        },
+        {
+          "epoch": 9,
+          "train_loss": 2.8284801136363638,
+          "val_mrr": 0.3562980422355422
+        }
+      ]
+    },
+    "n_train_pairs": 330,
+    "n_val_pairs": 16,
+    "n_files": 8176,
+    "n_units": 98123,
+    "ltr_rows": 34105,
+    "ltr_bugs": 113,
+    "ltr": {
+      "weights_method": "w_gboost",
+      "weights_cv_map": 0.3204433259542982,
+      "regressor": "SGDRegressor(loss='epsilon_insensitive', penalty=None, random_state=2027,\n             shuffle=False)",
+      "cut_perc": 0.2,
+      "reg_cv_map": 0.3005745346647653
+    },
+    "config": {
+      "encoder": "microsoft/codebert-base",
+      "epochs_max": 10,
+      "batch": 32,
+      "lr_grid": [
+        2e-05,
+        5e-05
+      ],
+      "patience": 3,
+      "selection": "epochs: val MRR (run.py); LR: val MAP (Scripts/lr_select.py)",
+      "nl_len": 128,
+      "code_len": 256,
+      "max_funcs_pos": 5,
+      "ltr_neg_top": 300,
+      "window_lines": 30,
+      "max_windows": 50,
+      "features": [
+        "s_sum_max",
+        "s_sum_mean",
+        "s_desc_max",
+        "s_desc_mean",
+        "f1",
+        "f3",
+        "f4",
+        "f5",
+        "f6",
+        "f7",
+        "f8",
+        "f9",
+        "f10",
+        "f11",
+        "f12",
+        "f13",
+        "f14",
+        "f15",
+        "f16",
+        "f17",
+        "f18",
+        "f19"
+      ],
+      "dropped_features": [
+        "f2 (API-enriched; JDK-only)"
+      ]
+    }
+  }
+}

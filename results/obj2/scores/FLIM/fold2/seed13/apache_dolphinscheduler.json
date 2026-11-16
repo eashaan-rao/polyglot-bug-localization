@@ -1,0 +1,478 @@
+{
+  "written_at": "2026-11-05T12:03:42",
+  "git_head": "453b2a9aa69b2ac1f08d81bcf666f7f69d1ee21a",
+  "versions": {
+    "python": "3.12.3",
+    "platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
+    "numpy": "2.3.2",
+    "pandas": "2.3.2",
+    "torch": "2.8.0+cu126",
+    "transformers": "4.55.4",
+    "bm25s": "0.3.11",
+    "sklearn": "1.7.1",
+    "tree_sitter": "?",
+    "tree_sitter_languages": "1.10.2",
+    "javalang": "0.13.0",
+    "gpu": "NVIDIA L40"
+  },
+  "technique": "FLIM",
+  "project": "apache/dolphinscheduler",
+  "fold": 2,
+  "seed": 13,
+  "smoke": false,
+  "wall_time_sec": 1406.1,
+  "gpu_peak_allocated_gib": 6.79,
+  "split": {
+    "repo": "apache/dolphinscheduler",
+    "fold": 2,
+    "train": 370,
+    "val": 29,
+    "test": 144,
+    "test_removed": 5,
+    "test_noprimary": 85,
+    "purged_train": 7,
+    "purged_val": 13,
+    "val_start": "2022-05-29 10:46:13+00:00",
+    "test_start": "2022-07-07 02:25:03+00:00",
+    "test_end": "2022-12-05 15:27:59+00:00"
+  },
+  "test_bug_ids": [
+    "10820",
+    "10822",
+    "10833",
+    "10837",
+    "10849",
+    "10861",
+    "10863",
+    "10902",
+    "10909",
+    "10914",
+    "10916",
+    "10918",
+    "10938",
+    "10949",
+    "10954",
+    "10961",
+    "10976",
+    "10986",
+    "11003",
+    "11007",
+    "11013",
+    "11026",
+    "11031",
+    "11034",
+    "11067",
+    "11072",
+    "11101",
+    "11118",
+    "11131",
+    "11181",
+    "11214",
+    "11225",
+    "11236",
+    "11238",
+    "11253",
+    "11291",
+    "11293",
+    "11295",
+    "11376",
+    "11378",
+    "11394",
+    "11408",
+    "11413",
+    "11432",
+    "11452",
+    "11455",
+    "11457",
+    "11468",
+    "11521",
+    "11523",
+    "11538",
+    "11547",
+    "11583",
+    "11608",
+    "11616",
+    "11669",
+    "11678",
+    "11689",
+    "11713",
+    "11720",
+    "11726",
+    "11732",
+    "11736",
+    "11753",
+    "11758",
+    "11768",
+    "11815",
+    "11821",
+    "11838",
+    "11854",
+    "11869",
+    "11913",
+    "11928",
+    "12000",
+    "12055",
+    "12057",
+    "12061",
+    "12078",
+    "12081",
+    "12111",
+    "12124",
+    "12154",
+    "12231",
+    "12252",
+    "12274",
+    "12279",
+    "12301",
+    "12325",
+    "12333",
+    "12355",
+    "12372",
+    "12383",
+    "12391",
+    "12408",
+    "12410",
+    "12425",
+    "12429",
+    "12446",
+    "12451",
+    "12466",
+    "12470",
+    "12490",
+    "12604",
+    "12621",
+    "12650",
+    "12658",
+    "12671",
+    "12687",
+    "12697",
+    "12706",
+    "12763",
+    "12804",
+    "12812",
+    "12828",
+    "12832",
+    "12838",
+    "12850",
+    "12853",
+    "12856",
+    "12865",
+    "12866",
+    "12896",
+    "12907",
+    "12916",
+    "12927",
+    "12932",
+    "12954",
+    "12958",
+    "12963",
+    "12994",
+    "12997",
+    "13010",
+    "13018",
+    "13043",
+    "13045",
+    "13052",
+    "13066",
+    "13089",
+    "13105",
+    "R11040",
+    "R11051",
+    "R12356",
+    "R12439",
+    "R13024"
+  ],
+  "config": {
+    "encoder": "microsoft/codebert-base",
+    "epochs_max": 10,
+    "batch": 32,
+    "lr_grid": [
+      2e-05,
+      5e-05
+    ],
+    "patience": 3,
+    "selection": "epochs: val MRR (run.py); LR: val MAP (Scripts/lr_select.py)",
+    "nl_len": 128,
+    "code_len": 256,
+    "max_funcs_pos": 5,
+    "ltr_neg_top": 300,
+    "window_lines": 30,
+    "max_windows": 50,
+    "features": [
+      "s_sum_max",
+      "s_sum_mean",
+      "s_desc_max",
+      "s_desc_mean",
+      "f1",
+      "f3",
+      "f4",
+      "f5",
+      "f6",
+      "f7",
+      "f8",
+      "f9",
+      "f10",
+      "f11",
+      "f12",
+      "f13",
+      "f14",
+      "f15",
+      "f16",
+      "f17",
+      "f18",
+      "f19"
+    ],
+    "dropped_features": [
+      "f2 (API-enriched; JDK-only)"
+    ]
+  },
+  "run_info": {
+    "selected_lr": 2e-05,
+    "lr_grid_trained": [
+      2e-05,
+      5e-05
+    ],
+    "lr_runs": [
+      {
+        "lr": 2e-05,
+        "val_map": 0.2455663382534876,
+        "finetune": {
+          "epochs_run": 10,
+          "best_epoch": 9,
+          "best_val_mrr": 0.23881263991017257,
+          "history": [
+            {
+              "epoch": 1,
+              "train_loss": 4.756257233796297,
+              "val_mrr": 0.03934752326672292
+            },
+            {
+              "epoch": 2,
+              "train_loss": 3.510082103587963,
+              "val_mrr": 0.11322589747687549
+            },
+            {
+              "epoch": 3,
+              "train_loss": 2.6570954499421298,
+              "val_mrr": 0.189393903807067
+            },
+            {
+              "epoch": 4,
+              "train_loss": 1.9424913194444444,
+              "val_mrr": 0.19697119794480644
+            },
+            {
+              "epoch": 5,
+              "train_loss": 1.5500996907552083,
+              "val_mrr": 0.2141517123444911
+            },
+            {
+              "epoch": 6,
+              "train_loss": 1.3108893500434027,
+              "val_mrr": 0.2161404170673154
+            },
+            {
+              "epoch": 7,
+              "train_loss": 1.1215585426047996,
+              "val_mrr": 0.22252152658734736
+            },
+            {
+              "epoch": 8,
+              "train_loss": 0.9943717673972801,
+              "val_mrr": 0.22854562045611462
+            },
+            {
+              "epoch": 9,
+              "train_loss": 0.9055831344039352,
+              "val_mrr": 0.23881263991017257
+            },
+            {
+              "epoch": 10,
+              "train_loss": 0.8135534215856481,
+              "val_mrr": 0.2292249437685717
+            }
+          ]
+        },
+        "ltr": {
+          "weights_method": "w_adaboost",
+          "weights_cv_map": 0.42440624197255195,
+          "regressor": "SGDRegressor(loss='huber', penalty=None, random_state=13, shuffle=False)",
+          "cut_perc": 0.1,
+          "reg_cv_map": 0.4116786062880051
+        }
+      },
+      {
+        "lr": 5e-05,
+        "val_map": 0.1906060776692503,
+        "finetune": {
+          "epochs_run": 8,
+          "best_epoch": 5,
+          "best_val_mrr": 0.26452263870292897,
+          "history": [
+            {
+              "epoch": 1,
+              "train_loss": 4.527036313657407,
+              "val_mrr": 0.047558554660448414
+            },
+            {
+              "epoch": 2,
+              "train_loss": 2.976512767650463,
+              "val_mrr": 0.18033414020217062
+            },
+            {
+              "epoch": 3,
+              "train_loss": 1.8322075737847223,
+              "val_mrr": 0.2511557512968802
+            },
+            {
+              "epoch": 4,
+              "train_loss": 1.2564923321759258,
+              "val_mrr": 0.2378528801678588
+            },
+            {
+              "epoch": 5,
+              "train_loss": 0.9321421870478878,
+              "val_mrr": 0.26452263870292897
+            },
+            {
+              "epoch": 6,
+              "train_loss": 0.7169568273756239,
+              "val_mrr": 0.2505156201186071
+            },
+            {
+              "epoch": 7,
+              "train_loss": 0.5348721786781594,
+              "val_mrr": 0.24039683137712267
+            },
+            {
+              "epoch": 8,
+              "train_loss": 0.46524884965684676,
+              "val_mrr": 0.2599476054095439
+            }
+          ]
+        },
+        "ltr": {
+          "weights_method": "w_adaboost",
+          "weights_cv_map": 0.5094620539796122,
+          "regressor": "SGDRegressor(loss='epsilon_insensitive', penalty='elasticnet', random_state=13,\n             shuffle=False)",
+          "cut_perc": 0.1,
+          "reg_cv_map": 0.5101357280152741
+        }
+      }
+    ],
+    "finetune": {
+      "epochs_run": 10,
+      "best_epoch": 9,
+      "best_val_mrr": 0.23881263991017257,
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 4.756257233796297,
+          "val_mrr": 0.03934752326672292
+        },
+        {
+          "epoch": 2,
+          "train_loss": 3.510082103587963,
+          "val_mrr": 0.11322589747687549
+        },
+        {
+          "epoch": 3,
+          "train_loss": 2.6570954499421298,
+          "val_mrr": 0.189393903807067
+        },
+        {
+          "epoch": 4,
+          "train_loss": 1.9424913194444444,
+          "val_mrr": 0.19697119794480644
+        },
+        {
+          "epoch": 5,
+          "train_loss": 1.5500996907552083,
+          "val_mrr": 0.2141517123444911
+        },
+        {
+          "epoch": 6,
+          "train_loss": 1.3108893500434027,
+          "val_mrr": 0.2161404170673154
+        },
+        {
+          "epoch": 7,
+          "train_loss": 1.1215585426047996,
+          "val_mrr": 0.22252152658734736
+        },
+        {
+          "epoch": 8,
+          "train_loss": 0.9943717673972801,
+          "val_mrr": 0.22854562045611462
+        },
+        {
+          "epoch": 9,
+          "train_loss": 0.9055831344039352,
+          "val_mrr": 0.23881263991017257
+        },
+        {
+          "epoch": 10,
+          "train_loss": 0.8135534215856481,
+          "val_mrr": 0.2292249437685717
+        }
+      ]
+    },
+    "n_train_pairs": 1701,
+    "n_val_pairs": 158,
+    "n_files": 22908,
+    "n_units": 213918,
+    "ltr_rows": 111023,
+    "ltr_bugs": 367,
+    "ltr": {
+      "weights_method": "w_adaboost",
+      "weights_cv_map": 0.42440624197255195,
+      "regressor": "SGDRegressor(loss='huber', penalty=None, random_state=13, shuffle=False)",
+      "cut_perc": 0.1,
+      "reg_cv_map": 0.4116786062880051
+    },
+    "config": {
+      "encoder": "microsoft/codebert-base",
+      "epochs_max": 10,
+      "batch": 32,
+      "lr_grid": [
+        2e-05,
+        5e-05
+      ],
+      "patience": 3,
+      "selection": "epochs: val MRR (run.py); LR: val MAP (Scripts/lr_select.py)",
+      "nl_len": 128,
+      "code_len": 256,
+      "max_funcs_pos": 5,
+      "ltr_neg_top": 300,
+      "window_lines": 30,
+      "max_windows": 50,
+      "features": [
+        "s_sum_max",
+        "s_sum_mean",
+        "s_desc_max",
+        "s_desc_mean",
+        "f1",
+        "f3",
+        "f4",
+        "f5",
+        "f6",
+        "f7",
+        "f8",
+        "f9",
+        "f10",
+        "f11",
+        "f12",
+        "f13",
+        "f14",
+        "f15",
+        "f16",
+        "f17",
+        "f18",
+        "f19"
+      ],
+      "dropped_features": [
+        "f2 (API-enriched; JDK-only)"
+      ]
+    }
+  }
+}

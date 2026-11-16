@@ -1,0 +1,355 @@
+{
+  "written_at": "2026-11-05T11:09:28",
+  "git_head": "453b2a9aa69b2ac1f08d81bcf666f7f69d1ee21a",
+  "versions": {
+    "python": "3.12.3",
+    "platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
+    "numpy": "2.3.2",
+    "pandas": "2.3.2",
+    "torch": "2.8.0+cu126",
+    "transformers": "4.55.4",
+    "bm25s": "0.3.11",
+    "sklearn": "1.7.1",
+    "tree_sitter": "?",
+    "tree_sitter_languages": "1.10.2",
+    "javalang": "0.13.0",
+    "gpu": "NVIDIA L40"
+  },
+  "technique": "FLIM",
+  "project": "liquibase/liquibase",
+  "fold": 2,
+  "seed": 13,
+  "smoke": false,
+  "wall_time_sec": 295.1,
+  "gpu_peak_allocated_gib": 6.79,
+  "split": {
+    "repo": "liquibase/liquibase",
+    "fold": 2,
+    "train": 68,
+    "val": 8,
+    "test": 51,
+    "test_removed": 11,
+    "test_noprimary": 5,
+    "purged_train": 31,
+    "purged_val": 12,
+    "val_start": "2022-05-26 15:15:13+00:00",
+    "test_start": "2022-11-07 17:20:00+00:00",
+    "test_end": "2023-06-21 13:34:37+00:00"
+  },
+  "test_bug_ids": [
+    "3446",
+    "3469",
+    "3478",
+    "3516",
+    "3545",
+    "3562",
+    "3630",
+    "3643",
+    "3661",
+    "3690",
+    "3694",
+    "3708",
+    "3722",
+    "3734",
+    "3745",
+    "3767",
+    "3791",
+    "3814",
+    "3816",
+    "3881",
+    "3896",
+    "3898",
+    "3919",
+    "3971",
+    "3984",
+    "4014",
+    "4053",
+    "4067",
+    "4095",
+    "4098",
+    "4125",
+    "4225",
+    "4227",
+    "4312",
+    "4322",
+    "4325",
+    "4330",
+    "4377",
+    "4388",
+    "4412",
+    "R3487",
+    "R3538",
+    "R3542",
+    "R3777",
+    "R3902",
+    "R3915",
+    "R3958",
+    "R4031",
+    "R4096",
+    "R4399",
+    "R4406"
+  ],
+  "config": {
+    "encoder": "microsoft/codebert-base",
+    "epochs_max": 10,
+    "batch": 32,
+    "lr_grid": [
+      2e-05,
+      5e-05
+    ],
+    "patience": 3,
+    "selection": "epochs: val MRR (run.py); LR: val MAP (Scripts/lr_select.py)",
+    "nl_len": 128,
+    "code_len": 256,
+    "max_funcs_pos": 5,
+    "ltr_neg_top": 300,
+    "window_lines": 30,
+    "max_windows": 50,
+    "features": [
+      "s_sum_max",
+      "s_sum_mean",
+      "s_desc_max",
+      "s_desc_mean",
+      "f1",
+      "f3",
+      "f4",
+      "f5",
+      "f6",
+      "f7",
+      "f8",
+      "f9",
+      "f10",
+      "f11",
+      "f12",
+      "f13",
+      "f14",
+      "f15",
+      "f16",
+      "f17",
+      "f18",
+      "f19"
+    ],
+    "dropped_features": [
+      "f2 (API-enriched; JDK-only)"
+    ]
+  },
+  "run_info": {
+    "selected_lr": 2e-05,
+    "lr_grid_trained": [
+      2e-05,
+      5e-05
+    ],
+    "lr_runs": [
+      {
+        "lr": 2e-05,
+        "val_map": 0.03169205169842858,
+        "finetune": {
+          "epochs_run": 6,
+          "best_epoch": 3,
+          "best_val_mrr": 0.16808582332008054,
+          "history": [
+            {
+              "epoch": 1,
+              "train_loss": 10.094401041666666,
+              "val_mrr": 0.13407591222755333
+            },
+            {
+              "epoch": 2,
+              "train_loss": 7.2216796875,
+              "val_mrr": 0.14621917448165653
+            },
+            {
+              "epoch": 3,
+              "train_loss": 4.510416666666667,
+              "val_mrr": 0.16808582332008054
+            },
+            {
+              "epoch": 4,
+              "train_loss": 4.0380859375,
+              "val_mrr": 0.16029567821685636
+            },
+            {
+              "epoch": 5,
+              "train_loss": 3.8984375,
+              "val_mrr": 0.1348881118521804
+            },
+            {
+              "epoch": 6,
+              "train_loss": 3.8997395833333335,
+              "val_mrr": 0.1359762735372495
+            }
+          ]
+        },
+        "ltr": {
+          "weights_method": "w_ttest",
+          "weights_cv_map": 0.35417651125436017,
+          "regressor": "SGDRegressor(loss='squared_epsilon_insensitive', penalty=None, random_state=13,\n             shuffle=False)",
+          "cut_perc": 0.3,
+          "reg_cv_map": 0.3320707802890431
+        }
+      },
+      {
+        "lr": 5e-05,
+        "val_map": 0.02797083032564425,
+        "finetune": {
+          "epochs_run": 10,
+          "best_epoch": 8,
+          "best_val_mrr": 0.2114705444121474,
+          "history": [
+            {
+              "epoch": 1,
+              "train_loss": 10.094401041666666,
+              "val_mrr": 0.13407591222755333
+            },
+            {
+              "epoch": 2,
+              "train_loss": 6.387044270833333,
+              "val_mrr": 0.15074985170551902
+            },
+            {
+              "epoch": 3,
+              "train_loss": 4.16796875,
+              "val_mrr": 0.15226387892331508
+            },
+            {
+              "epoch": 4,
+              "train_loss": 3.818359375,
+              "val_mrr": 0.13413681731668442
+            },
+            {
+              "epoch": 5,
+              "train_loss": 3.6643880208333335,
+              "val_mrr": 0.1547213829088565
+            },
+            {
+              "epoch": 6,
+              "train_loss": 3.7200520833333335,
+              "val_mrr": 0.12077150372304264
+            },
+            {
+              "epoch": 7,
+              "train_loss": 3.5042317708333335,
+              "val_mrr": 0.11817474263187923
+            },
+            {
+              "epoch": 8,
+              "train_loss": 3.5240885416666665,
+              "val_mrr": 0.2114705444121474
+            },
+            {
+              "epoch": 9,
+              "train_loss": 3.4345703125,
+              "val_mrr": 0.18590205599783774
+            },
+            {
+              "epoch": 10,
+              "train_loss": 3.4332682291666665,
+              "val_mrr": 0.14534602706401348
+            }
+          ]
+        },
+        "ltr": {
+          "weights_method": "w_gboost",
+          "weights_cv_map": 0.3641338129920293,
+          "regressor": "SGDRegressor(loss='squared_epsilon_insensitive', penalty=None, random_state=13,\n             shuffle=False)",
+          "cut_perc": 0.2,
+          "reg_cv_map": 0.3223781189042976
+        }
+      }
+    ],
+    "finetune": {
+      "epochs_run": 6,
+      "best_epoch": 3,
+      "best_val_mrr": 0.16808582332008054,
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 10.094401041666666,
+          "val_mrr": 0.13407591222755333
+        },
+        {
+          "epoch": 2,
+          "train_loss": 7.2216796875,
+          "val_mrr": 0.14621917448165653
+        },
+        {
+          "epoch": 3,
+          "train_loss": 4.510416666666667,
+          "val_mrr": 0.16808582332008054
+        },
+        {
+          "epoch": 4,
+          "train_loss": 4.0380859375,
+          "val_mrr": 0.16029567821685636
+        },
+        {
+          "epoch": 5,
+          "train_loss": 3.8984375,
+          "val_mrr": 0.1348881118521804
+        },
+        {
+          "epoch": 6,
+          "train_loss": 3.8997395833333335,
+          "val_mrr": 0.1359762735372495
+        }
+      ]
+    },
+    "n_train_pairs": 176,
+    "n_val_pairs": 36,
+    "n_files": 8523,
+    "n_units": 97700,
+    "ltr_rows": 20518,
+    "ltr_bugs": 68,
+    "ltr": {
+      "weights_method": "w_ttest",
+      "weights_cv_map": 0.35417651125436017,
+      "regressor": "SGDRegressor(loss='squared_epsilon_insensitive', penalty=None, random_state=13,\n             shuffle=False)",
+      "cut_perc": 0.3,
+      "reg_cv_map": 0.3320707802890431
+    },
+    "config": {
+      "encoder": "microsoft/codebert-base",
+      "epochs_max": 10,
+      "batch": 32,
+      "lr_grid": [
+        2e-05,
+        5e-05
+      ],
+      "patience": 3,
+      "selection": "epochs: val MRR (run.py); LR: val MAP (Scripts/lr_select.py)",
+      "nl_len": 128,
+      "code_len": 256,
+      "max_funcs_pos": 5,
+      "ltr_neg_top": 300,
+      "window_lines": 30,
+      "max_windows": 50,
+      "features": [
+        "s_sum_max",
+        "s_sum_mean",
+        "s_desc_max",
+        "s_desc_mean",
+        "f1",
+        "f3",
+        "f4",
+        "f5",
+        "f6",
+        "f7",
+        "f8",
+        "f9",
+        "f10",
+        "f11",
+        "f12",
+        "f13",
+        "f14",
+        "f15",
+        "f16",
+        "f17",
+        "f18",
+        "f19"
+      ],
+      "dropped_features": [
+        "f2 (API-enriched; JDK-only)"
+      ]
+    }
+  }
+}

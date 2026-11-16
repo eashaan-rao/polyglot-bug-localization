@@ -1,0 +1,439 @@
+{
+  "written_at": "2026-11-06T02:53:18",
+  "git_head": "453b2a9aa69b2ac1f08d81bcf666f7f69d1ee21a",
+  "versions": {
+    "python": "3.12.3",
+    "platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
+    "numpy": "2.3.2",
+    "pandas": "2.3.2",
+    "torch": "2.8.0+cu126",
+    "transformers": "4.55.4",
+    "bm25s": "0.3.11",
+    "sklearn": "1.7.1",
+    "tree_sitter": "?",
+    "tree_sitter_languages": "1.10.2",
+    "javalang": "0.13.0",
+    "gpu": "NVIDIA L40"
+  },
+  "technique": "FLIM",
+  "project": "localstack/localstack",
+  "fold": 2,
+  "seed": 13,
+  "smoke": false,
+  "wall_time_sec": 1653.3,
+  "gpu_peak_allocated_gib": 6.79,
+  "split": {
+    "repo": "localstack/localstack",
+    "fold": 2,
+    "train": 216,
+    "val": 21,
+    "test": 95,
+    "test_removed": 9,
+    "test_noprimary": 1,
+    "purged_train": 18,
+    "purged_val": 5,
+    "val_start": "2022-03-16 22:25:12+00:00",
+    "test_start": "2022-06-10 06:00:54+00:00",
+    "test_end": "2023-03-27 09:45:16+00:00"
+  },
+  "test_bug_ids": [
+    "6245",
+    "6304",
+    "6327",
+    "6361",
+    "6416",
+    "6419",
+    "6422",
+    "6445",
+    "6458",
+    "6462",
+    "6495",
+    "6528",
+    "6532",
+    "6544",
+    "6553",
+    "6566",
+    "6567",
+    "6612",
+    "6613",
+    "6620",
+    "6639",
+    "6654",
+    "6657",
+    "6674",
+    "6682",
+    "6707",
+    "6718",
+    "6764",
+    "6784",
+    "6786",
+    "6787",
+    "6792",
+    "6798",
+    "6806",
+    "6849",
+    "6863",
+    "6934",
+    "6974",
+    "6995",
+    "7000",
+    "7060",
+    "7109",
+    "7126",
+    "7146",
+    "7147",
+    "7154",
+    "7156",
+    "7160",
+    "7177",
+    "7188",
+    "7198",
+    "7203",
+    "7216",
+    "7236",
+    "7257",
+    "7268",
+    "7282",
+    "7310",
+    "7323",
+    "7338",
+    "7358",
+    "7377",
+    "7378",
+    "7381",
+    "7398",
+    "7407",
+    "7424",
+    "7426",
+    "7492",
+    "7493",
+    "7494",
+    "7529",
+    "7555",
+    "7562",
+    "7635",
+    "7681",
+    "7699",
+    "7742",
+    "7779",
+    "7782",
+    "7842",
+    "7861",
+    "7902",
+    "7934",
+    "7935",
+    "7975",
+    "R6428",
+    "R6504",
+    "R6725",
+    "R6815",
+    "R6907",
+    "R7158",
+    "R7597",
+    "R7768",
+    "R7880"
+  ],
+  "config": {
+    "encoder": "microsoft/codebert-base",
+    "epochs_max": 10,
+    "batch": 32,
+    "lr_grid": [
+      2e-05,
+      5e-05
+    ],
+    "patience": 3,
+    "selection": "epochs: val MRR (run.py); LR: val MAP (Scripts/lr_select.py)",
+    "nl_len": 128,
+    "code_len": 256,
+    "max_funcs_pos": 5,
+    "ltr_neg_top": 300,
+    "window_lines": 30,
+    "max_windows": 50,
+    "features": [
+      "s_sum_max",
+      "s_sum_mean",
+      "s_desc_max",
+      "s_desc_mean",
+      "f1",
+      "f3",
+      "f4",
+      "f5",
+      "f6",
+      "f7",
+      "f8",
+      "f9",
+      "f10",
+      "f11",
+      "f12",
+      "f13",
+      "f14",
+      "f15",
+      "f16",
+      "f17",
+      "f18",
+      "f19"
+    ],
+    "dropped_features": [
+      "f2 (API-enriched; JDK-only)"
+    ]
+  },
+  "run_info": {
+    "selected_lr": 2e-05,
+    "lr_grid_trained": [
+      2e-05,
+      5e-05
+    ],
+    "lr_runs": [
+      {
+        "lr": 2e-05,
+        "val_map": 0.5723254672390791,
+        "finetune": {
+          "epochs_run": 10,
+          "best_epoch": 7,
+          "best_val_mrr": 0.23518044361412188,
+          "history": [
+            {
+              "epoch": 1,
+              "train_loss": 5.810044642857143,
+              "val_mrr": 0.04836755080938032
+            },
+            {
+              "epoch": 2,
+              "train_loss": 3.7540736607142855,
+              "val_mrr": 0.08533123410715245
+            },
+            {
+              "epoch": 3,
+              "train_loss": 3.6167410714285713,
+              "val_mrr": 0.100778707066892
+            },
+            {
+              "epoch": 4,
+              "train_loss": 3.2526785714285715,
+              "val_mrr": 0.16343932100408132
+            },
+            {
+              "epoch": 5,
+              "train_loss": 2.7193638392857142,
+              "val_mrr": 0.16814834103111004
+            },
+            {
+              "epoch": 6,
+              "train_loss": 2.4105747767857144,
+              "val_mrr": 0.17691598288464042
+            },
+            {
+              "epoch": 7,
+              "train_loss": 2.0113560267857142,
+              "val_mrr": 0.23518044361412188
+            },
+            {
+              "epoch": 8,
+              "train_loss": 1.9138392857142856,
+              "val_mrr": 0.22528765911336932
+            },
+            {
+              "epoch": 9,
+              "train_loss": 1.7548549107142857,
+              "val_mrr": 0.2161983134485111
+            },
+            {
+              "epoch": 10,
+              "train_loss": 1.6529575892857142,
+              "val_mrr": 0.22850945432019848
+            }
+          ]
+        },
+        "ltr": {
+          "weights_method": "w_gboost",
+          "weights_cv_map": 0.50372004764503,
+          "regressor": "SGDRegressor(loss='epsilon_insensitive', penalty='l1', random_state=13,\n             shuffle=False)",
+          "cut_perc": 0.15,
+          "reg_cv_map": 0.48770953313607246
+        }
+      },
+      {
+        "lr": 5e-05,
+        "val_map": 0.5545422821226521,
+        "finetune": {
+          "epochs_run": 10,
+          "best_epoch": 10,
+          "best_val_mrr": 0.2823517659898879,
+          "history": [
+            {
+              "epoch": 1,
+              "train_loss": 5.297823660714286,
+              "val_mrr": 0.055475122560492425
+            },
+            {
+              "epoch": 2,
+              "train_loss": 3.677511160714286,
+              "val_mrr": 0.045384395678370514
+            },
+            {
+              "epoch": 3,
+              "train_loss": 3.600279017857143,
+              "val_mrr": 0.056862978978201646
+            },
+            {
+              "epoch": 4,
+              "train_loss": 3.5444754464285713,
+              "val_mrr": 0.0988513527842192
+            },
+            {
+              "epoch": 5,
+              "train_loss": 3.1285714285714286,
+              "val_mrr": 0.22241345965027212
+            },
+            {
+              "epoch": 6,
+              "train_loss": 2.5115513392857145,
+              "val_mrr": 0.25745684937881913
+            },
+            {
+              "epoch": 7,
+              "train_loss": 1.9994140625,
+              "val_mrr": 0.26654819182028033
+            },
+            {
+              "epoch": 8,
+              "train_loss": 1.7032645089285714,
+              "val_mrr": 0.2594970920931157
+            },
+            {
+              "epoch": 9,
+              "train_loss": 1.4550223214285714,
+              "val_mrr": 0.26377942978065605
+            },
+            {
+              "epoch": 10,
+              "train_loss": 1.3401785714285714,
+              "val_mrr": 0.2823517659898879
+            }
+          ]
+        },
+        "ltr": {
+          "weights_method": "w_gboost",
+          "weights_cv_map": 0.5538542654332659,
+          "regressor": "SGDRegressor(loss='epsilon_insensitive', penalty='l1', random_state=13,\n             shuffle=False)",
+          "cut_perc": 0.05,
+          "reg_cv_map": 0.5628000378563274
+        }
+      }
+    ],
+    "finetune": {
+      "epochs_run": 10,
+      "best_epoch": 7,
+      "best_val_mrr": 0.23518044361412188,
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 5.810044642857143,
+          "val_mrr": 0.04836755080938032
+        },
+        {
+          "epoch": 2,
+          "train_loss": 3.7540736607142855,
+          "val_mrr": 0.08533123410715245
+        },
+        {
+          "epoch": 3,
+          "train_loss": 3.6167410714285713,
+          "val_mrr": 0.100778707066892
+        },
+        {
+          "epoch": 4,
+          "train_loss": 3.2526785714285715,
+          "val_mrr": 0.16343932100408132
+        },
+        {
+          "epoch": 5,
+          "train_loss": 2.7193638392857142,
+          "val_mrr": 0.16814834103111004
+        },
+        {
+          "epoch": 6,
+          "train_loss": 2.4105747767857144,
+          "val_mrr": 0.17691598288464042
+        },
+        {
+          "epoch": 7,
+          "train_loss": 2.0113560267857142,
+          "val_mrr": 0.23518044361412188
+        },
+        {
+          "epoch": 8,
+          "train_loss": 1.9138392857142856,
+          "val_mrr": 0.22528765911336932
+        },
+        {
+          "epoch": 9,
+          "train_loss": 1.7548549107142857,
+          "val_mrr": 0.2161983134485111
+        },
+        {
+          "epoch": 10,
+          "train_loss": 1.6529575892857142,
+          "val_mrr": 0.22850945432019848
+        }
+      ]
+    },
+    "n_train_pairs": 1109,
+    "n_val_pairs": 102,
+    "n_files": 11822,
+    "n_units": 319116,
+    "ltr_rows": 38749,
+    "ltr_bugs": 216,
+    "ltr": {
+      "weights_method": "w_gboost",
+      "weights_cv_map": 0.50372004764503,
+      "regressor": "SGDRegressor(loss='epsilon_insensitive', penalty='l1', random_state=13,\n             shuffle=False)",
+      "cut_perc": 0.15,
+      "reg_cv_map": 0.48770953313607246
+    },
+    "config": {
+      "encoder": "microsoft/codebert-base",
+      "epochs_max": 10,
+      "batch": 32,
+      "lr_grid": [
+        2e-05,
+        5e-05
+      ],
+      "patience": 3,
+      "selection": "epochs: val MRR (run.py); LR: val MAP (Scripts/lr_select.py)",
+      "nl_len": 128,
+      "code_len": 256,
+      "max_funcs_pos": 5,
+      "ltr_neg_top": 300,
+      "window_lines": 30,
+      "max_windows": 50,
+      "features": [
+        "s_sum_max",
+        "s_sum_mean",
+        "s_desc_max",
+        "s_desc_mean",
+        "f1",
+        "f3",
+        "f4",
+        "f5",
+        "f6",
+        "f7",
+        "f8",
+        "f9",
+        "f10",
+        "f11",
+        "f12",
+        "f13",
+        "f14",
+        "f15",
+        "f16",
+        "f17",
+        "f18",
+        "f19"
+      ],
+      "dropped_features": [
+        "f2 (API-enriched; JDK-only)"
+      ]
+    }
+  }
+}

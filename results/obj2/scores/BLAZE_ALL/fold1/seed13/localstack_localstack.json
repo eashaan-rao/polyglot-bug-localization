@@ -1,0 +1,266 @@
+{
+  "written_at": "2026-11-04T21:00:52",
+  "git_head": "0e24325b622c519551f962e69dd1e85425bf93ab",
+  "versions": {
+    "python": "3.12.3",
+    "platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
+    "numpy": "2.3.2",
+    "pandas": "2.3.2",
+    "torch": "2.8.0+cu126",
+    "transformers": "4.55.4",
+    "bm25s": "0.3.11",
+    "sklearn": "1.7.1",
+    "tree_sitter": "?",
+    "tree_sitter_languages": "1.10.2",
+    "javalang": "0.13.0",
+    "gpu": "NVIDIA L40"
+  },
+  "technique": "BLAZE_ALL",
+  "project": "localstack/localstack",
+  "fold": 1,
+  "seed": 13,
+  "smoke": false,
+  "wall_time_sec": 12561.7,
+  "gpu_peak_allocated_gib": 25.91,
+  "split": {
+    "repo": "localstack/localstack",
+    "fold": 1,
+    "train": 290,
+    "val": 25,
+    "test": 92,
+    "test_removed": 5,
+    "test_noprimary": 1,
+    "purged_train": 21,
+    "purged_val": 10,
+    "val_start": "2022-11-18 10:25:27+00:00",
+    "test_start": "2023-03-28 18:28:07+00:00",
+    "test_end": "2024-02-26 23:32:53+00:00"
+  },
+  "test_bug_ids": [
+    "7993",
+    "8002",
+    "8030",
+    "8034",
+    "8044",
+    "8072",
+    "8073",
+    "8083",
+    "8089",
+    "8090",
+    "8092",
+    "8139",
+    "8172",
+    "8174",
+    "8178",
+    "8183",
+    "8213",
+    "8219",
+    "8261",
+    "8325",
+    "8380",
+    "8392",
+    "8397",
+    "8422",
+    "8441",
+    "8444",
+    "8459",
+    "8471",
+    "8478",
+    "8486",
+    "8512",
+    "8566",
+    "8570",
+    "8596",
+    "8642",
+    "8675",
+    "8676",
+    "8703",
+    "8732",
+    "8756",
+    "8777",
+    "8793",
+    "8805",
+    "8812",
+    "8824",
+    "8841",
+    "8895",
+    "8916",
+    "8928",
+    "9016",
+    "9030",
+    "9154",
+    "9193",
+    "9243",
+    "9261",
+    "9331",
+    "9408",
+    "9427",
+    "9428",
+    "9476",
+    "9556",
+    "9598",
+    "9666",
+    "9695",
+    "9731",
+    "9741",
+    "9742",
+    "9753",
+    "9771",
+    "9812",
+    "9826",
+    "9837",
+    "9863",
+    "9872",
+    "9881",
+    "9882",
+    "9912",
+    "9930",
+    "9989",
+    "9990",
+    "10090",
+    "10106",
+    "10107",
+    "10216",
+    "10233",
+    "10311",
+    "10328",
+    "R8173",
+    "R8304",
+    "R8680",
+    "R8869",
+    "R9628"
+  ],
+  "config": {
+    "backbone": "codesage/codesage-small",
+    "revision": "4d2a4f3fa73a3c8a4dd59dba2712202f1f54e109",
+    "full_finetune": true,
+    "report_max_len": 1024,
+    "code_max_len": 512,
+    "epochs_max": 15,
+    "batch": 20,
+    "lr_grid": [
+      2e-07,
+      2e-06,
+      2e-05
+    ],
+    "warmup_steps": 100,
+    "weight_decay": 0.01,
+    "patience": 3,
+    "selection": "epochs: val loss; LR: val MAP (Scripts/lr_select.py)",
+    "tau": 0.3,
+    "chunking": "dynamic (general_cost 50, window 30)",
+    "max_chunks_per_file": 200
+  },
+  "run_info": {
+    "lr": 2e-07,
+    "val_loss_epoch0": 2.205473660940101,
+    "best_val_loss": 1.6005442461021515,
+    "best_epoch": 13,
+    "epochs_run": 15,
+    "history": [
+      {
+        "epoch": 1,
+        "train_loss": 2.5802249663436467,
+        "val_loss": 1.7635077064336553
+      },
+      {
+        "epoch": 2,
+        "train_loss": 2.2701402503773913,
+        "val_loss": 1.6824694273442875
+      },
+      {
+        "epoch": 3,
+        "train_loss": 2.148275320211314,
+        "val_loss": 1.6526038767355173
+      },
+      {
+        "epoch": 4,
+        "train_loss": 2.0660096575038223,
+        "val_loss": 1.64224683804068
+      },
+      {
+        "epoch": 5,
+        "train_loss": 2.0030496971947804,
+        "val_loss": 1.6291374856161203
+      },
+      {
+        "epoch": 6,
+        "train_loss": 1.966202132822731,
+        "val_loss": 1.6202819463212481
+      },
+      {
+        "epoch": 7,
+        "train_loss": 1.9319543114455615,
+        "val_loss": 1.615029102394938
+      },
+      {
+        "epoch": 8,
+        "train_loss": 1.8954577454773511,
+        "val_loss": 1.6078582828344121
+      },
+      {
+        "epoch": 9,
+        "train_loss": 1.8836773477941064,
+        "val_loss": 1.609174372213572
+      },
+      {
+        "epoch": 10,
+        "train_loss": 1.8659144639968872,
+        "val_loss": 1.601487370637747
+      },
+      {
+        "epoch": 11,
+        "train_loss": 1.8496203982884982,
+        "val_loss": 1.605571057149756
+      },
+      {
+        "epoch": 12,
+        "train_loss": 1.8388088281253516,
+        "val_loss": 1.6069849753669398
+      },
+      {
+        "epoch": 13,
+        "train_loss": 1.8281710317057949,
+        "val_loss": 1.6005442461021515
+      },
+      {
+        "epoch": 14,
+        "train_loss": 1.8250090629823745,
+        "val_loss": 1.6027798734695806
+      },
+      {
+        "epoch": 15,
+        "train_loss": 1.8232368286853562,
+        "val_loss": 1.6017833639253005
+      }
+    ],
+    "selected_lr": 2e-07,
+    "lr_grid_trained": [
+      2e-07
+    ],
+    "lr_runs": null,
+    "n_train_chunks": 21699,
+    "n_val_chunks": 4932,
+    "config": {
+      "backbone": "codesage/codesage-small",
+      "revision": "4d2a4f3fa73a3c8a4dd59dba2712202f1f54e109",
+      "full_finetune": true,
+      "report_max_len": 1024,
+      "code_max_len": 512,
+      "epochs_max": 15,
+      "batch": 20,
+      "lr_grid": [
+        2e-07,
+        2e-06,
+        2e-05
+      ],
+      "warmup_steps": 100,
+      "weight_decay": 0.01,
+      "patience": 3,
+      "selection": "epochs: val loss; LR: val MAP (Scripts/lr_select.py)",
+      "tau": 0.3,
+      "chunking": "dynamic (general_cost 50, window 30)",
+      "max_chunks_per_file": 200
+    }
+  }
+}

@@ -1,0 +1,146 @@
+{
+  "technique": "FLIM",
+  "fold": 2,
+  "project": "localstack/localstack",
+  "selected_lr": 2e-05,
+  "selected_with_seed": 13,
+  "criterion": "validation MAP (universe R)",
+  "runs": [
+    {
+      "lr": 2e-05,
+      "val_map": 0.5723254672390791,
+      "finetune": {
+        "epochs_run": 10,
+        "best_epoch": 7,
+        "best_val_mrr": 0.23518044361412188,
+        "history": [
+          {
+            "epoch": 1,
+            "train_loss": 5.810044642857143,
+            "val_mrr": 0.04836755080938032
+          },
+          {
+            "epoch": 2,
+            "train_loss": 3.7540736607142855,
+            "val_mrr": 0.08533123410715245
+          },
+          {
+            "epoch": 3,
+            "train_loss": 3.6167410714285713,
+            "val_mrr": 0.100778707066892
+          },
+          {
+            "epoch": 4,
+            "train_loss": 3.2526785714285715,
+            "val_mrr": 0.16343932100408132
+          },
+          {
+            "epoch": 5,
+            "train_loss": 2.7193638392857142,
+            "val_mrr": 0.16814834103111004
+          },
+          {
+            "epoch": 6,
+            "train_loss": 2.4105747767857144,
+            "val_mrr": 0.17691598288464042
+          },
+          {
+            "epoch": 7,
+            "train_loss": 2.0113560267857142,
+            "val_mrr": 0.23518044361412188
+          },
+          {
+            "epoch": 8,
+            "train_loss": 1.9138392857142856,
+            "val_mrr": 0.22528765911336932
+          },
+          {
+            "epoch": 9,
+            "train_loss": 1.7548549107142857,
+            "val_mrr": 0.2161983134485111
+          },
+          {
+            "epoch": 10,
+            "train_loss": 1.6529575892857142,
+            "val_mrr": 0.22850945432019848
+          }
+        ]
+      },
+      "ltr": {
+        "weights_method": "w_gboost",
+        "weights_cv_map": 0.50372004764503,
+        "regressor": "SGDRegressor(loss='epsilon_insensitive', penalty='l1', random_state=13,\n             shuffle=False)",
+        "cut_perc": 0.15,
+        "reg_cv_map": 0.48770953313607246
+      }
+    },
+    {
+      "lr": 5e-05,
+      "val_map": 0.5545422821226521,
+      "finetune": {
+        "epochs_run": 10,
+        "best_epoch": 10,
+        "best_val_mrr": 0.2823517659898879,
+        "history": [
+          {
+            "epoch": 1,
+            "train_loss": 5.297823660714286,
+            "val_mrr": 0.055475122560492425
+          },
+          {
+            "epoch": 2,
+            "train_loss": 3.677511160714286,
+            "val_mrr": 0.045384395678370514
+          },
+          {
+            "epoch": 3,
+            "train_loss": 3.600279017857143,
+            "val_mrr": 0.056862978978201646
+          },
+          {
+            "epoch": 4,
+            "train_loss": 3.5444754464285713,
+            "val_mrr": 0.0988513527842192
+          },
+          {
+            "epoch": 5,
+            "train_loss": 3.1285714285714286,
+            "val_mrr": 0.22241345965027212
+          },
+          {
+            "epoch": 6,
+            "train_loss": 2.5115513392857145,
+            "val_mrr": 0.25745684937881913
+          },
+          {
+            "epoch": 7,
+            "train_loss": 1.9994140625,
+            "val_mrr": 0.26654819182028033
+          },
+          {
+            "epoch": 8,
+            "train_loss": 1.7032645089285714,
+            "val_mrr": 0.2594970920931157
+          },
+          {
+            "epoch": 9,
+            "train_loss": 1.4550223214285714,
+            "val_mrr": 0.26377942978065605
+          },
+          {
+            "epoch": 10,
+            "train_loss": 1.3401785714285714,
+            "val_mrr": 0.2823517659898879
+          }
+        ]
+      },
+      "ltr": {
+        "weights_method": "w_gboost",
+        "weights_cv_map": 0.5538542654332659,
+        "regressor": "SGDRegressor(loss='epsilon_insensitive', penalty='l1', random_state=13,\n             shuffle=False)",
+        "cut_perc": 0.05,
+        "reg_cv_map": 0.5628000378563274
+      }
+    }
+  ]
+}

@@ -1,0 +1,448 @@
+{
+  "written_at": "2026-11-06T06:51:57",
+  "git_head": "453b2a9aa69b2ac1f08d81bcf666f7f69d1ee21a",
+  "versions": {
+    "python": "3.12.3",
+    "platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
+    "numpy": "2.3.2",
+    "pandas": "2.3.2",
+    "torch": "2.8.0+cu126",
+    "transformers": "4.55.4",
+    "bm25s": "0.3.11",
+    "sklearn": "1.7.1",
+    "tree_sitter": "?",
+    "tree_sitter_languages": "1.10.2",
+    "javalang": "0.13.0",
+    "gpu": "NVIDIA L40"
+  },
+  "technique": "BLAZE",
+  "project": "localstack/localstack",
+  "fold": 2,
+  "seed": 13,
+  "smoke": false,
+  "wall_time_sec": 14319.1,
+  "gpu_peak_allocated_gib": 25.91,
+  "split": {
+    "repo": "localstack/localstack",
+    "fold": 2,
+    "train": 216,
+    "val": 21,
+    "test": 95,
+    "test_removed": 9,
+    "test_noprimary": 1,
+    "purged_train": 18,
+    "purged_val": 5,
+    "val_start": "2022-03-16 22:25:12+00:00",
+    "test_start": "2022-06-10 06:00:54+00:00",
+    "test_end": "2023-03-27 09:45:16+00:00"
+  },
+  "test_bug_ids": [
+    "6245",
+    "6304",
+    "6327",
+    "6361",
+    "6416",
+    "6419",
+    "6422",
+    "6445",
+    "6458",
+    "6462",
+    "6495",
+    "6528",
+    "6532",
+    "6544",
+    "6553",
+    "6566",
+    "6567",
+    "6612",
+    "6613",
+    "6620",
+    "6639",
+    "6654",
+    "6657",
+    "6674",
+    "6682",
+    "6707",
+    "6718",
+    "6764",
+    "6784",
+    "6786",
+    "6787",
+    "6792",
+    "6798",
+    "6806",
+    "6849",
+    "6863",
+    "6934",
+    "6974",
+    "6995",
+    "7000",
+    "7060",
+    "7109",
+    "7126",
+    "7146",
+    "7147",
+    "7154",
+    "7156",
+    "7160",
+    "7177",
+    "7188",
+    "7198",
+    "7203",
+    "7216",
+    "7236",
+    "7257",
+    "7268",
+    "7282",
+    "7310",
+    "7323",
+    "7338",
+    "7358",
+    "7377",
+    "7378",
+    "7381",
+    "7398",
+    "7407",
+    "7424",
+    "7426",
+    "7492",
+    "7493",
+    "7494",
+    "7529",
+    "7555",
+    "7562",
+    "7635",
+    "7681",
+    "7699",
+    "7742",
+    "7779",
+    "7782",
+    "7842",
+    "7861",
+    "7902",
+    "7934",
+    "7935",
+    "7975",
+    "R6428",
+    "R6504",
+    "R6725",
+    "R6815",
+    "R6907",
+    "R7158",
+    "R7597",
+    "R7768",
+    "R7880"
+  ],
+  "config": {
+    "backbone": "codesage/codesage-small",
+    "revision": "4d2a4f3fa73a3c8a4dd59dba2712202f1f54e109",
+    "full_finetune": true,
+    "report_max_len": 1024,
+    "code_max_len": 512,
+    "epochs_max": 15,
+    "batch": 20,
+    "lr_grid": [
+      2e-07,
+      2e-06,
+      2e-05
+    ],
+    "warmup_steps": 100,
+    "weight_decay": 0.01,
+    "patience": 3,
+    "selection": "epochs: val loss; LR: val MAP (Scripts/lr_select.py)",
+    "tau": 0.3,
+    "chunking": "dynamic (general_cost 50, window 30)",
+    "max_chunks_per_file": 200
+  },
+  "run_info": {
+    "lr": 2e-07,
+    "val_loss_epoch0": 2.234964918522608,
+    "best_val_loss": 1.678431157554899,
+    "best_epoch": 15,
+    "epochs_run": 15,
+    "history": [
+      {
+        "epoch": 1,
+        "train_loss": 2.7269302246603147,
+        "val_loss": 1.975210387082327
+      },
+      {
+        "epoch": 2,
+        "train_loss": 2.4640834865150394,
+        "val_loss": 1.851609346412477
+      },
+      {
+        "epoch": 3,
+        "train_loss": 2.333651747435829,
+        "val_loss": 1.8012188871701558
+      },
+      {
+        "epoch": 4,
+        "train_loss": 2.2542148868303196,
+        "val_loss": 1.7699364040579115
+      },
+      {
+        "epoch": 5,
+        "train_loss": 2.193928904345256,
+        "val_loss": 1.7425558396748133
+      },
+      {
+        "epoch": 6,
+        "train_loss": 2.1422133259418703,
+        "val_loss": 1.7234739732174646
+      },
+      {
+        "epoch": 7,
+        "train_loss": 2.118833191297123,
+        "val_loss": 1.7117740185487837
+      },
+      {
+        "epoch": 8,
+        "train_loss": 2.0896269509933427,
+        "val_loss": 1.7008308001926966
+      },
+      {
+        "epoch": 9,
+        "train_loss": 2.0645330858520023,
+        "val_loss": 1.693760355313619
+      },
+      {
+        "epoch": 10,
+        "train_loss": 2.051905054062017,
+        "val_loss": 1.6863344183989935
+      },
+      {
+        "epoch": 11,
+        "train_loss": 2.0361277573206356,
+        "val_loss": 1.6808156229200817
+      },
+      {
+        "epoch": 12,
+        "train_loss": 2.027872272435016,
+        "val_loss": 1.678452805394218
+      },
+      {
+        "epoch": 13,
+        "train_loss": 2.020706656489278,
+        "val_loss": 1.6788772089140755
+      },
+      {
+        "epoch": 14,
+        "train_loss": 2.017702954130216,
+        "val_loss": 1.6787545056570143
+      },
+      {
+        "epoch": 15,
+        "train_loss": 2.006929886630526,
+        "val_loss": 1.678431157554899
+      }
+    ],
+    "val_map": 0.3639355020233082,
+    "selected_lr": 2e-07,
+    "lr_grid_trained": [
+      2e-07,
+      2e-06,
+      2e-05
+    ],
+    "lr_runs": [
+      {
+        "lr": 2e-07,
+        "val_loss_epoch0": 2.234964918522608,
+        "best_val_loss": 1.678431157554899,
+        "best_epoch": 15,
+        "epochs_run": 15,
+        "history": [
+          {
+            "epoch": 1,
+            "train_loss": 2.7269302246603147,
+            "val_loss": 1.975210387082327
+          },
+          {
+            "epoch": 2,
+            "train_loss": 2.4640834865150394,
+            "val_loss": 1.851609346412477
+          },
+          {
+            "epoch": 3,
+            "train_loss": 2.333651747435829,
+            "val_loss": 1.8012188871701558
+          },
+          {
+            "epoch": 4,
+            "train_loss": 2.2542148868303196,
+            "val_loss": 1.7699364040579115
+          },
+          {
+            "epoch": 5,
+            "train_loss": 2.193928904345256,
+            "val_loss": 1.7425558396748133
+          },
+          {
+            "epoch": 6,
+            "train_loss": 2.1422133259418703,
+            "val_loss": 1.7234739732174646
+          },
+          {
+            "epoch": 7,
+            "train_loss": 2.118833191297123,
+            "val_loss": 1.7117740185487837
+          },
+          {
+            "epoch": 8,
+            "train_loss": 2.0896269509933427,
+            "val_loss": 1.7008308001926966
+          },
+          {
+            "epoch": 9,
+            "train_loss": 2.0645330858520023,
+            "val_loss": 1.693760355313619
+          },
+          {
+            "epoch": 10,
+            "train_loss": 2.051905054062017,
+            "val_loss": 1.6863344183989935
+          },
+          {
+            "epoch": 11,
+            "train_loss": 2.0361277573206356,
+            "val_loss": 1.6808156229200817
+          },
+          {
+            "epoch": 12,
+            "train_loss": 2.027872272435016,
+            "val_loss": 1.678452805394218
+          },
+          {
+            "epoch": 13,
+            "train_loss": 2.020706656489278,
+            "val_loss": 1.6788772089140755
+          },
+          {
+            "epoch": 14,
+            "train_loss": 2.017702954130216,
+            "val_loss": 1.6787545056570143
+          },
+          {
+            "epoch": 15,
+            "train_loss": 2.006929886630526,
+            "val_loss": 1.678431157554899
+          }
+        ],
+        "val_map": 0.3639355020233082
+      },
+      {
+        "lr": 2e-06,
+        "val_loss_epoch0": 2.234964918522608,
+        "best_val_loss": 1.6269704287960416,
+        "best_epoch": 6,
+        "epochs_run": 9,
+        "history": [
+          {
+            "epoch": 1,
+            "train_loss": 2.2971825259589282,
+            "val_loss": 1.6950409710407257
+          },
+          {
+            "epoch": 2,
+            "train_loss": 1.927014174700145,
+            "val_loss": 1.7015471103645505
+          },
+          {
+            "epoch": 3,
+            "train_loss": 1.8040777163548969,
+            "val_loss": 1.6435168144248782
+          },
+          {
+            "epoch": 4,
+            "train_loss": 1.7155428062078624,
+            "val_loss": 1.6711284333751315
+          },
+          {
+            "epoch": 5,
+            "train_loss": 1.6478757314689243,
+            "val_loss": 1.6851912921383267
+          },
+          {
+            "epoch": 6,
+            "train_loss": 1.573030314062,
+            "val_loss": 1.6269704287960416
+          },
+          {
+            "epoch": 7,
+            "train_loss": 1.5278246979793033,
+            "val_loss": 1.6845929196902685
+          },
+          {
+            "epoch": 8,
+            "train_loss": 1.4872336177796985,
+            "val_loss": 1.6756839255491893
+          },
+          {
+            "epoch": 9,
+            "train_loss": 1.4577583406510592,
+            "val_loss": 1.672437772864387
+          }
+        ],
+        "val_map": 0.3439762603455468
+      },
+      {
+        "lr": 2e-05,
+        "val_loss_epoch0": 2.234964918522608,
+        "best_val_loss": 1.6611852887130918,
+        "best_epoch": 2,
+        "epochs_run": 5,
+        "history": [
+          {
+            "epoch": 1,
+            "train_loss": 1.9819669781396891,
+            "val_loss": 1.694494475920995
+          },
+          {
+            "epoch": 2,
+            "train_loss": 1.5239570187871119,
+            "val_loss": 1.6611852887130918
+          },
+          {
+            "epoch": 3,
+            "train_loss": 1.3865545310181804,
+            "val_loss": 1.6911382022358121
+          },
+          {
+            "epoch": 4,
+            "train_loss": 1.318532126716851,
+            "val_loss": 1.6687053030445462
+          },
+          {
+            "epoch": 5,
+            "train_loss": 1.2634361823610905,
+            "val_loss": 1.691008299589157
+          }
+        ],
+        "val_map": 0.2579525231539114
+      }
+    ],
+    "n_train_chunks": 13166,
+    "n_val_chunks": 1669,
+    "config": {
+      "backbone": "codesage/codesage-small",
+      "revision": "4d2a4f3fa73a3c8a4dd59dba2712202f1f54e109",
+      "full_finetune": true,
+      "report_max_len": 1024,
+      "code_max_len": 512,
+      "epochs_max": 15,
+      "batch": 20,
+      "lr_grid": [
+        2e-07,
+        2e-06,
+        2e-05
+      ],
+      "warmup_steps": 100,
+      "weight_decay": 0.01,
+      "patience": 3,
+      "selection": "epochs: val loss; LR: val MAP (Scripts/lr_select.py)",
+      "tau": 0.3,
+      "chunking": "dynamic (general_cost 50, window 30)",
+      "max_chunks_per_file": 200
+    }
+  }
+}

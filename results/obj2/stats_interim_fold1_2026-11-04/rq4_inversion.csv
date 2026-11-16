@@ -1,0 +1,197 @@
+condition,pair,outcome,model,n_bugs,interaction_poly,ci_lo,ci_hi,p,mean_diff_mono,mean_diff_poly,inversion_pattern
+primary,BM25 vs FLIM-strict,ap,mixedlm_powell,691,0.0969,0.0341,0.1597,0.0025,-0.0446,0.0297,True
+primary,BM25 vs FLIM-strict,cfr10,mixedlm_powell,691,0.1473,0.0673,0.2274,0.0003,-0.0601,0.0531,True
+primary,BM25 vs FLIM-strict,rr,mixedlm_powell,691,-0.0123,-0.0926,0.0679,0.7631,-0.0499,-0.1091,False
+primary,BM25 vs FLIM-strict,top10,mixedlm_lbfgs,691,0.0465,-0.0503,0.1432,0.3466,-0.069,-0.0798,False
+primary,BM25 vs FLIM-fallback,ap,mixedlm_powell,691,0.0643,0.0018,0.1267,0.0437,-0.0418,-0.0022,False
+primary,BM25 vs FLIM-fallback,cfr10,mixedlm_powell,691,0.0831,0.0021,0.1641,0.0443,-0.0518,0.0054,True
+primary,BM25 vs FLIM-fallback,rr,mixedlm_powell,691,-0.0103,-0.0903,0.0697,0.8012,-0.0479,-0.1047,False
+primary,BM25 vs FLIM-fallback,top10,mixedlm_lbfgs,691,0.0252,-0.071,0.1213,0.6078,-0.0607,-0.0845,False
+primary,BM25-parse vs FLIM-strict (control),ap,mixedlm_lbfgs,691,-0.0352,-0.0962,0.0259,0.2588,0.0013,-0.0499,False
+primary,BM25-parse vs FLIM-strict (control),cfr10,mixedlm_powell,691,-0.0266,-0.1042,0.0511,0.5024,-0.0194,-0.0581,False
+primary,BM25-parse vs FLIM-strict (control),rr,mixedlm_powell,691,-0.1017,-0.1794,-0.024,0.0103,0.005,-0.1255,False
+primary,BM25-parse vs FLIM-strict (control),top10,mixedlm_lbfgs,691,-0.0541,-0.153,0.0448,0.2837,-0.0251,-0.1033,False
+primary,BM25 vs LocAgent,ap10,ols_project_fe_hc3,87,0.2915,0.1076,0.4755,0.0019,-0.0447,0.1992,True
+primary,BM25 vs LocAgent,cfr10,ols_project_fe_hc3,87,0.467,0.2394,0.6947,0.0001,-0.0573,0.3323,True
+primary,BM25 vs LocAgent,top10,ols_project_fe_hc3,87,0.1882,-0.0816,0.458,0.1716,-0.0625,0.1273,True
+primary,BM25 vs LocAgent,rr10,ols_project_fe_hc3,87,0.1138,-0.1388,0.3664,0.3774,-0.0554,0.0213,True
+primary,BLAZE_ALL vs BLAZE (ablation),ap,ols_project_fe_hc3,124,0.0018,-0.0833,0.0868,0.9677,-0.0293,0.0075,True
+primary,BLAZE_ALL vs BLAZE (ablation),cfr10,ols_project_fe_hc3,124,0.0168,-0.1233,0.1569,0.8145,-0.0647,0.0176,True
+primary,BLAZE_ALL vs BLAZE (ablation),rr,ols_project_fe_hc3,124,-0.002,-0.1909,0.187,0.9838,-0.0242,0.0037,True
+primary,BLAZE_ALL vs BLAZE (ablation),top10,ols_project_fe_hc3,124,-0.0419,-0.3561,0.2722,0.7937,-0.0388,0.0,True
+S1_no_tests,BM25 vs FLIM-strict,ap,mixedlm_powell,647,0.0272,-0.0387,0.0931,0.4188,-0.0298,-0.028,False
+S1_no_tests,BM25 vs FLIM-strict,cfr10,mixedlm_powell,647,0.0548,-0.0345,0.144,0.2291,-0.0484,-0.0578,False
+S1_no_tests,BM25 vs FLIM-strict,rr,mixedlm_lbfgs,647,0.0125,-0.0639,0.0889,0.7482,-0.041,-0.0636,False
+S1_no_tests,BM25 vs FLIM-strict,top10,mixedlm_powell,647,0.0549,-0.0417,0.1514,0.2652,-0.0611,-0.0927,False
+S1_no_tests,BM25 vs FLIM-fallback,ap,mixedlm_powell,647,0.0234,-0.0423,0.0892,0.4848,-0.0271,-0.028,False
+S1_no_tests,BM25 vs FLIM-fallback,cfr10,mixedlm_powell,647,0.0589,-0.0302,0.148,0.195,-0.0379,-0.0294,False
+S1_no_tests,BM25 vs FLIM-fallback,rr,mixedlm_lbfgs,647,0.0108,-0.0653,0.0869,0.7812,-0.0387,-0.0615,False
+S1_no_tests,BM25 vs FLIM-fallback,top10,mixedlm_lbfgs,647,0.0386,-0.0573,0.1345,0.4301,-0.0475,-0.078,False
+S1_no_tests,BM25-parse vs FLIM-strict (control),ap,ols_project_fe_hc3,647,-0.0419,-0.0977,0.0138,0.1406,0.0184,-0.04,False
+S1_no_tests,BM25-parse vs FLIM-strict (control),cfr10,mixedlm_powell,647,-0.0402,-0.1266,0.0463,0.3628,0.001,-0.0862,False
+S1_no_tests,BM25-parse vs FLIM-strict (control),rr,mixedlm_powell,647,-0.0534,-0.1261,0.0192,0.1492,0.0153,-0.0659,False
+S1_no_tests,BM25-parse vs FLIM-strict (control),top10,mixedlm_powell,647,-0.0459,-0.1384,0.0465,0.3302,-0.0068,-0.1073,False
+S1_no_tests,BM25 vs LocAgent,ap10,ols_project_fe_hc3,84,-0.079,-0.2633,0.1054,0.4012,-0.1674,-0.25,False
+S1_no_tests,BM25 vs LocAgent,cfr10,ols_project_fe_hc3,84,0.172,-0.0677,0.4117,0.1596,-0.1882,-0.044,False
+S1_no_tests,BM25 vs LocAgent,top10,ols_project_fe_hc3,84,0.1459,-0.1028,0.3947,0.2502,-0.1935,-0.0755,False
+S1_no_tests,BM25 vs LocAgent,rr10,ols_project_fe_hc3,84,-0.1171,-0.3012,0.067,0.2125,-0.1647,-0.2937,False
+S1_no_tests,BLAZE_ALL vs BLAZE (ablation),ap,ols_project_fe_hc3,96,0.0208,-0.0827,0.1243,0.6933,-0.0529,-0.0191,False
+S1_no_tests,BLAZE_ALL vs BLAZE (ablation),cfr10,ols_project_fe_hc3,96,0.1056,-0.0716,0.2827,0.2429,-0.1017,-0.0088,False
+S1_no_tests,BLAZE_ALL vs BLAZE (ablation),rr,ols_project_fe_hc3,96,0.009,-0.1949,0.2129,0.931,-0.041,-0.0091,False
+S1_no_tests,BLAZE_ALL vs BLAZE (ablation),top10,ols_project_fe_hc3,96,0.1402,-0.1769,0.4573,0.3863,-0.0779,0.0526,True
+S2_headline,BM25 vs FLIM-strict,ap,mixedlm_powell,663,0.0916,0.0246,0.1586,0.0074,-0.0446,0.0256,True
+S2_headline,BM25 vs FLIM-strict,cfr10,mixedlm_powell,663,0.1483,0.0636,0.233,0.0006,-0.0601,0.0542,True
+S2_headline,BM25 vs FLIM-strict,rr,mixedlm_powell,663,-0.0344,-0.1189,0.05,0.4244,-0.0499,-0.1256,False
+S2_headline,BM25 vs FLIM-strict,top10,mixedlm_powell,663,0.0199,-0.0813,0.121,0.7001,-0.069,-0.0973,False
+S2_headline,BM25 vs FLIM-fallback,ap,mixedlm_powell,663,0.0547,-0.012,0.1214,0.1078,-0.0418,-0.0107,False
+S2_headline,BM25 vs FLIM-fallback,cfr10,mixedlm_lbfgs,663,0.0792,-0.0069,0.1653,0.0713,-0.0518,-0.0001,False
+S2_headline,BM25 vs FLIM-fallback,rr,mixedlm_powell,663,-0.0328,-0.1175,0.0519,0.4481,-0.0479,-0.121,False
+S2_headline,BM25 vs FLIM-fallback,top10,mixedlm_powell,663,-0.0005,-0.1032,0.1022,0.9922,-0.0607,-0.0973,False
+S2_headline,BM25-parse vs FLIM-strict (control),ap,mixedlm_powell,663,-0.0464,-0.1114,0.0186,0.1618,0.0013,-0.0594,False
+S2_headline,BM25-parse vs FLIM-strict (control),cfr10,mixedlm_powell,663,-0.0324,-0.1124,0.0476,0.427,-0.0194,-0.0665,False
+S2_headline,BM25-parse vs FLIM-strict (control),rr,mixedlm_powell,663,-0.116,-0.1983,-0.0337,0.0057,0.005,-0.1341,False
+S2_headline,BM25-parse vs FLIM-strict (control),top10,mixedlm_powell,663,-0.0677,-0.1702,0.0348,0.1957,-0.0251,-0.1135,False
+S2_headline,BM25 vs LocAgent,ap10,ols_project_fe_hc3,87,0.2915,0.1076,0.4755,0.0019,-0.0447,0.1992,True
+S2_headline,BM25 vs LocAgent,cfr10,ols_project_fe_hc3,87,0.467,0.2394,0.6947,0.0001,-0.0573,0.3323,True
+S2_headline,BM25 vs LocAgent,top10,ols_project_fe_hc3,87,0.1882,-0.0816,0.458,0.1716,-0.0625,0.1273,True
+S2_headline,BM25 vs LocAgent,rr10,ols_project_fe_hc3,87,0.1138,-0.1388,0.3664,0.3774,-0.0554,0.0213,True
+S2_headline,BLAZE_ALL vs BLAZE (ablation),ap,ols_project_fe_hc3,121,-0.0123,-0.1049,0.0802,0.7943,-0.0293,0.0017,True
+S2_headline,BLAZE_ALL vs BLAZE (ablation),cfr10,ols_project_fe_hc3,121,-0.0121,-0.1673,0.1432,0.8789,-0.0647,0.002,True
+S2_headline,BLAZE_ALL vs BLAZE (ablation),rr,ols_project_fe_hc3,121,-0.0298,-0.2462,0.1866,0.7873,-0.0242,-0.0134,False
+S2_headline,BLAZE_ALL vs BLAZE (ablation),top10,ols_project_fe_hc3,121,-0.1241,-0.4634,0.2151,0.4733,-0.0388,-0.0556,False
+S2_strict,BM25 vs FLIM-strict,ap,mixedlm_powell,535,0.0773,-0.0296,0.1841,0.1563,-0.0446,0.0036,True
+S2_strict,BM25 vs FLIM-strict,cfr10,mixedlm_powell,535,0.0488,-0.0833,0.1808,0.4692,-0.0601,-0.042,False
+S2_strict,BM25 vs FLIM-strict,rr,mixedlm_powell,535,0.0065,-0.1223,0.1352,0.9218,-0.0499,-0.0847,False
+S2_strict,BM25 vs FLIM-strict,top10,mixedlm_powell,535,-0.1299,-0.289,0.0291,0.1093,-0.069,-0.2456,False
+S2_strict,BM25 vs FLIM-fallback,ap,mixedlm_powell,535,0.0607,-0.0462,0.1677,0.2658,-0.0418,-0.0104,False
+S2_strict,BM25 vs FLIM-fallback,cfr10,mixedlm_lbfgs,535,0.0453,-0.0889,0.1795,0.5079,-0.0518,-0.0416,False
+S2_strict,BM25 vs FLIM-fallback,rr,mixedlm_powell,535,0.0154,-0.1129,0.1437,0.8145,-0.0479,-0.0738,False
+S2_strict,BM25 vs FLIM-fallback,top10,mixedlm_powell,535,-0.1381,-0.2953,0.019,0.0849,-0.0607,-0.2456,False
+S2_strict,BM25-parse vs FLIM-strict (control),ap,mixedlm_powell,535,-0.0005,-0.1079,0.107,0.9933,0.0013,-0.0267,False
+S2_strict,BM25-parse vs FLIM-strict (control),cfr10,mixedlm_powell,535,-0.0401,-0.1715,0.0912,0.5496,-0.0194,-0.0885,False
+S2_strict,BM25-parse vs FLIM-strict (control),rr,mixedlm_powell,535,-0.0447,-0.1734,0.084,0.4963,0.005,-0.0699,False
+S2_strict,BM25-parse vs FLIM-strict (control),top10,mixedlm_powell,535,-0.1659,-0.3224,-0.0093,0.0378,-0.0251,-0.2281,False
+S3_universe_T,BM25 vs FLIM-strict,ap,mixedlm_powell,691,0.099,0.039,0.159,0.0012,-0.2003,-0.0681,False
+S3_universe_T,BM25 vs FLIM-strict,cfr10,mixedlm_powell,691,0.1367,0.0544,0.2189,0.0011,-0.2374,-0.0707,False
+S3_universe_T,BM25 vs FLIM-strict,rr,mixedlm_powell,691,-0.0366,-0.115,0.0418,0.3602,-0.2434,-0.2753,False
+S3_universe_T,BM25 vs FLIM-strict,top10,mixedlm_powell,691,0.0261,-0.0754,0.1276,0.6143,-0.272,-0.2723,False
+S3_universe_T,BM25 vs FLIM-fallback,ap,mixedlm_powell,691,0.069,0.0088,0.1291,0.0246,-0.1927,-0.0967,False
+S3_universe_T,BM25 vs FLIM-fallback,cfr10,mixedlm_powell,691,0.0863,0.0042,0.1683,0.0393,-0.2247,-0.1104,False
+S3_universe_T,BM25 vs FLIM-fallback,rr,mixedlm_powell,691,-0.0339,-0.1126,0.0448,0.3983,-0.2366,-0.2678,False
+S3_universe_T,BM25 vs FLIM-fallback,top10,mixedlm_powell,691,0.011,-0.0905,0.1124,0.8322,-0.2573,-0.2629,False
+S3_universe_T,BM25-parse vs FLIM-strict (control),ap,mixedlm_powell,691,-0.0352,-0.0963,0.0258,0.2579,0.0016,-0.0499,False
+S3_universe_T,BM25-parse vs FLIM-strict (control),cfr10,mixedlm_lbfgs,691,-0.0266,-0.1043,0.0511,0.5021,-0.0194,-0.0581,False
+S3_universe_T,BM25-parse vs FLIM-strict (control),rr,mixedlm_powell,691,-0.1017,-0.1794,-0.024,0.0103,0.005,-0.1255,False
+S3_universe_T,BM25-parse vs FLIM-strict (control),top10,mixedlm_powell,691,-0.0541,-0.1531,0.045,0.2844,-0.0251,-0.1033,False
+S3_universe_T,BM25 vs LocAgent,ap10,ols_project_fe_hc3,87,0.3274,0.1459,0.509,0.0004,-0.1016,0.1845,True
+S3_universe_T,BM25 vs LocAgent,cfr10,ols_project_fe_hc3,87,0.485,0.2512,0.7187,0.0,-0.0729,0.3246,True
+S3_universe_T,BM25 vs LocAgent,top10,ols_project_fe_hc3,87,0.2656,-0.0171,0.5483,0.0655,-0.0938,0.0909,True
+S3_universe_T,BM25 vs LocAgent,rr10,ols_project_fe_hc3,87,0.1625,-0.0944,0.4195,0.215,-0.1276,-0.0077,False
+S3_universe_T,BLAZE_ALL vs BLAZE (ablation),ap,ols_project_fe_hc3,124,0.0074,-0.0749,0.0896,0.8609,-0.0335,0.0077,True
+S3_universe_T,BLAZE_ALL vs BLAZE (ablation),cfr10,ols_project_fe_hc3,124,0.001,-0.1335,0.1355,0.9884,-0.0557,0.0017,True
+S3_universe_T,BLAZE_ALL vs BLAZE (ablation),rr,ols_project_fe_hc3,124,0.0131,-0.1782,0.2045,0.893,-0.0316,0.0037,True
+S3_universe_T,BLAZE_ALL vs BLAZE (ablation),top10,ols_project_fe_hc3,124,-0.0498,-0.3639,0.2642,0.7558,-0.0388,-0.0476,False
+S4_untangled,BM25 vs FLIM-strict,ap,mixedlm_powell,691,0.0969,0.0341,0.1597,0.0025,-0.0446,0.0297,True
+S4_untangled,BM25 vs FLIM-strict,cfr10,mixedlm_powell,691,0.1473,0.0673,0.2274,0.0003,-0.0601,0.0531,True
+S4_untangled,BM25 vs FLIM-strict,rr,mixedlm_powell,691,-0.0123,-0.0926,0.0679,0.7631,-0.0499,-0.1091,False
+S4_untangled,BM25 vs FLIM-strict,top10,mixedlm_lbfgs,691,0.0465,-0.0503,0.1432,0.3466,-0.069,-0.0798,False
+S4_untangled,BM25 vs FLIM-fallback,ap,mixedlm_powell,691,0.0643,0.0018,0.1267,0.0437,-0.0418,-0.0022,False
+S4_untangled,BM25 vs FLIM-fallback,cfr10,mixedlm_powell,691,0.0831,0.0021,0.1641,0.0443,-0.0518,0.0054,True
+S4_untangled,BM25 vs FLIM-fallback,rr,mixedlm_powell,691,-0.0103,-0.0903,0.0697,0.8012,-0.0479,-0.1047,False
+S4_untangled,BM25 vs FLIM-fallback,top10,mixedlm_lbfgs,691,0.0252,-0.071,0.1213,0.6078,-0.0607,-0.0845,False
+S4_untangled,BM25-parse vs FLIM-strict (control),ap,mixedlm_lbfgs,691,-0.0352,-0.0962,0.0259,0.2588,0.0013,-0.0499,False
+S4_untangled,BM25-parse vs FLIM-strict (control),cfr10,mixedlm_powell,691,-0.0266,-0.1042,0.0511,0.5024,-0.0194,-0.0581,False
+S4_untangled,BM25-parse vs FLIM-strict (control),rr,mixedlm_powell,691,-0.1017,-0.1794,-0.024,0.0103,0.005,-0.1255,False
+S4_untangled,BM25-parse vs FLIM-strict (control),top10,mixedlm_lbfgs,691,-0.0541,-0.153,0.0448,0.2837,-0.0251,-0.1033,False
+S4_untangled,BM25 vs LocAgent,ap10,ols_project_fe_hc3,87,0.2915,0.1076,0.4755,0.0019,-0.0447,0.1992,True
+S4_untangled,BM25 vs LocAgent,cfr10,ols_project_fe_hc3,87,0.467,0.2394,0.6947,0.0001,-0.0573,0.3323,True
+S4_untangled,BM25 vs LocAgent,top10,ols_project_fe_hc3,87,0.1882,-0.0816,0.458,0.1716,-0.0625,0.1273,True
+S4_untangled,BM25 vs LocAgent,rr10,ols_project_fe_hc3,87,0.1138,-0.1388,0.3664,0.3774,-0.0554,0.0213,True
+S4_untangled,BLAZE_ALL vs BLAZE (ablation),ap,ols_project_fe_hc3,124,0.0018,-0.0833,0.0868,0.9677,-0.0293,0.0075,True
+S4_untangled,BLAZE_ALL vs BLAZE (ablation),cfr10,ols_project_fe_hc3,124,0.0168,-0.1233,0.1569,0.8145,-0.0647,0.0176,True
+S4_untangled,BLAZE_ALL vs BLAZE (ablation),rr,ols_project_fe_hc3,124,-0.002,-0.1909,0.187,0.9838,-0.0242,0.0037,True
+S4_untangled,BLAZE_ALL vs BLAZE (ablation),top10,ols_project_fe_hc3,124,-0.0419,-0.3561,0.2722,0.7937,-0.0388,0.0,True
+S5_fold1,BM25 vs FLIM-strict,ap,mixedlm_powell,691,0.0969,0.0341,0.1597,0.0025,-0.0446,0.0297,True
+S5_fold1,BM25 vs FLIM-strict,cfr10,mixedlm_powell,691,0.1473,0.0673,0.2274,0.0003,-0.0601,0.0531,True
+S5_fold1,BM25 vs FLIM-strict,rr,mixedlm_powell,691,-0.0123,-0.0926,0.0679,0.7631,-0.0499,-0.1091,False
+S5_fold1,BM25 vs FLIM-strict,top10,mixedlm_lbfgs,691,0.0465,-0.0503,0.1432,0.3466,-0.069,-0.0798,False
+S5_fold1,BM25 vs FLIM-fallback,ap,mixedlm_powell,691,0.0643,0.0018,0.1267,0.0437,-0.0418,-0.0022,False
+S5_fold1,BM25 vs FLIM-fallback,cfr10,mixedlm_powell,691,0.0831,0.0021,0.1641,0.0443,-0.0518,0.0054,True
+S5_fold1,BM25 vs FLIM-fallback,rr,mixedlm_powell,691,-0.0103,-0.0903,0.0697,0.8012,-0.0479,-0.1047,False
+S5_fold1,BM25 vs FLIM-fallback,top10,mixedlm_lbfgs,691,0.0252,-0.071,0.1213,0.6078,-0.0607,-0.0845,False
+S5_fold1,BM25-parse vs FLIM-strict (control),ap,mixedlm_lbfgs,691,-0.0352,-0.0962,0.0259,0.2588,0.0013,-0.0499,False
+S5_fold1,BM25-parse vs FLIM-strict (control),cfr10,mixedlm_powell,691,-0.0266,-0.1042,0.0511,0.5024,-0.0194,-0.0581,False
+S5_fold1,BM25-parse vs FLIM-strict (control),rr,mixedlm_powell,691,-0.1017,-0.1794,-0.024,0.0103,0.005,-0.1255,False
+S5_fold1,BM25-parse vs FLIM-strict (control),top10,mixedlm_lbfgs,691,-0.0541,-0.153,0.0448,0.2837,-0.0251,-0.1033,False
+S5_fold1,BM25 vs LocAgent,ap10,ols_project_fe_hc3,87,0.2915,0.1076,0.4755,0.0019,-0.0447,0.1992,True
+S5_fold1,BM25 vs LocAgent,cfr10,ols_project_fe_hc3,87,0.467,0.2394,0.6947,0.0001,-0.0573,0.3323,True
+S5_fold1,BM25 vs LocAgent,top10,ols_project_fe_hc3,87,0.1882,-0.0816,0.458,0.1716,-0.0625,0.1273,True
+S5_fold1,BM25 vs LocAgent,rr10,ols_project_fe_hc3,87,0.1138,-0.1388,0.3664,0.3774,-0.0554,0.0213,True
+S5_fold1,BLAZE_ALL vs BLAZE (ablation),ap,ols_project_fe_hc3,124,0.0018,-0.0833,0.0868,0.9677,-0.0293,0.0075,True
+S5_fold1,BLAZE_ALL vs BLAZE (ablation),cfr10,ols_project_fe_hc3,124,0.0168,-0.1233,0.1569,0.8145,-0.0647,0.0176,True
+S5_fold1,BLAZE_ALL vs BLAZE (ablation),rr,ols_project_fe_hc3,124,-0.002,-0.1909,0.187,0.9838,-0.0242,0.0037,True
+S5_fold1,BLAZE_ALL vs BLAZE (ablation),top10,ols_project_fe_hc3,124,-0.0419,-0.3561,0.2722,0.7937,-0.0388,0.0,True
+S6_removed,BM25 vs FLIM-strict,ap,mixedlm_lbfgs,198,0.0617,-0.1004,0.2237,0.4557,-0.1172,0.0646,True
+S6_removed,BM25 vs FLIM-strict,cfr10,mixedlm_powell,198,0.1644,-0.0184,0.3472,0.0779,-0.1748,0.0834,True
+S6_removed,BM25 vs FLIM-strict,rr,mixedlm_powell,198,0.0669,-0.1283,0.2622,0.5016,-0.1365,0.0121,True
+S6_removed,BM25 vs FLIM-strict,top10,ols_project_fe_hc3,198,0.1316,-0.0861,0.3493,0.2362,-0.1951,-0.0294,False
+S6_removed,BM25 vs FLIM-fallback,ap,mixedlm_powell,198,-0.0125,-0.1738,0.1487,0.8789,-0.1105,0.01,True
+S6_removed,BM25 vs FLIM-fallback,cfr10,mixedlm_powell,198,0.0699,-0.1094,0.2492,0.4447,-0.1636,0.0221,True
+S6_removed,BM25 vs FLIM-fallback,rr,mixedlm_lbfgs,198,0.0197,-0.175,0.2144,0.8427,-0.1309,-0.0162,False
+S6_removed,BM25 vs FLIM-fallback,top10,ols_project_fe_hc3,198,0.079,-0.1286,0.2865,0.4558,-0.189,-0.0588,False
+S6_removed,BM25-parse vs FLIM-strict (control),ap,mixedlm_lbfgs,198,-0.0425,-0.2002,0.1153,0.5976,-0.0973,-0.0023,False
+S6_removed,BM25-parse vs FLIM-strict (control),cfr10,mixedlm_powell,198,-0.0245,-0.2067,0.1576,0.7917,-0.1605,-0.0539,False
+S6_removed,BM25-parse vs FLIM-strict (control),rr,mixedlm_lbfgs,198,0.0379,-0.1516,0.2274,0.6951,-0.113,0.0278,True
+S6_removed,BM25-parse vs FLIM-strict (control),top10,mixedlm_powell,198,0.0439,-0.1604,0.2482,0.6734,-0.189,-0.0294,False
+S6_kept+removed,BM25 vs FLIM-strict,ap,mixedlm_powell,889,0.0878,0.0266,0.149,0.0049,-0.0631,0.0345,True
+S6_kept+removed,BM25 vs FLIM-strict,cfr10,mixedlm_powell,889,0.155,0.0812,0.2288,0.0,-0.0894,0.0573,True
+S6_kept+removed,BM25 vs FLIM-strict,rr,mixedlm_powell,889,0.0002,-0.0766,0.077,0.996,-0.072,-0.0924,False
+S6_kept+removed,BM25 vs FLIM-strict,top10,mixedlm_powell,889,0.0569,-0.0306,0.1444,0.2025,-0.1012,-0.0729,False
+S6_kept+removed,BM25 vs FLIM-fallback,ap,mixedlm_lbfgs,889,0.0485,-0.0126,0.1096,0.1195,-0.0593,-0.0005,False
+S6_kept+removed,BM25 vs FLIM-fallback,cfr10,mixedlm_powell,889,0.0864,0.0121,0.1606,0.0226,-0.0803,0.0077,True
+S6_kept+removed,BM25 vs FLIM-fallback,rr,mixedlm_powell,889,-0.0062,-0.0827,0.0703,0.8732,-0.0691,-0.0925,False
+S6_kept+removed,BM25 vs FLIM-fallback,top10,mixedlm_powell,889,0.0322,-0.0548,0.1192,0.4685,-0.0935,-0.081,False
+S6_kept+removed,BM25-parse vs FLIM-strict (control),ap,mixedlm_powell,889,-0.0386,-0.099,0.0219,0.2108,-0.0239,-0.0433,False
+S6_kept+removed,BM25-parse vs FLIM-strict (control),cfr10,mixedlm_powell,889,-0.0199,-0.0913,0.0515,0.5846,-0.0555,-0.0575,False
+S6_kept+removed,BM25-parse vs FLIM-strict (control),rr,mixedlm_powell,889,-0.0816,-0.1579,-0.0053,0.0361,-0.0252,-0.1044,False
+S6_kept+removed,BM25-parse vs FLIM-strict (control),top10,mixedlm_lbfgs,889,-0.0355,-0.1211,0.0501,0.4165,-0.067,-0.0931,False
+S6_kept+removed,BM25 vs LocAgent,ap10,ols_project_fe_hc3,92,0.3218,0.1343,0.5093,0.0008,-0.0941,0.1873,True
+S6_kept+removed,BM25 vs LocAgent,cfr10,ols_project_fe_hc3,92,0.457,0.2383,0.6758,0.0,-0.0619,0.3192,True
+S6_kept+removed,BM25 vs LocAgent,top10,ols_project_fe_hc3,92,0.1756,-0.0848,0.436,0.1863,-0.0571,0.1228,True
+S6_kept+removed,BM25 vs LocAgent,rr10,ols_project_fe_hc3,92,0.1568,-0.1055,0.419,0.2414,-0.1234,0.0065,True
+S6_kept+removed,BLAZE_ALL vs BLAZE (ablation),ap,ols_project_fe_hc3,189,0.0185,-0.0502,0.0873,0.5975,-0.025,0.0078,True
+S6_kept+removed,BLAZE_ALL vs BLAZE (ablation),cfr10,ols_project_fe_hc3,189,0.0035,-0.1192,0.1263,0.9549,-0.0434,0.0029,True
+S6_kept+removed,BLAZE_ALL vs BLAZE (ablation),rr,ols_project_fe_hc3,189,0.0493,-0.1199,0.2185,0.5679,-0.0321,0.0114,True
+S6_kept+removed,BLAZE_ALL vs BLAZE (ablation),top10,ols_project_fe_hc3,189,-0.0176,-0.3177,0.2825,0.9085,-0.0303,0.0,True
+P_behavioural,BM25 vs FLIM-strict,ap,mixedlm_powell,549,0.117,0.0186,0.2154,0.0197,-0.0446,0.0742,True
+P_behavioural,BM25 vs FLIM-strict,cfr10,mixedlm_powell,549,0.1622,0.0412,0.2833,0.0086,-0.0601,0.1041,True
+P_behavioural,BM25 vs FLIM-strict,rr,mixedlm_powell,549,0.03,-0.0899,0.1499,0.6242,-0.0499,-0.0402,False
+P_behavioural,BM25 vs FLIM-strict,top10,mixedlm_powell,549,0.0721,-0.0689,0.2132,0.3161,-0.069,-0.0282,False
+P_behavioural,BM25 vs FLIM-fallback,ap,mixedlm_powell,549,0.0958,-0.0028,0.1944,0.057,-0.0418,0.0557,True
+P_behavioural,BM25 vs FLIM-fallback,cfr10,mixedlm_powell,549,0.1126,-0.01,0.2352,0.0719,-0.0518,0.0702,True
+P_behavioural,BM25 vs FLIM-fallback,rr,mixedlm_lbfgs,549,0.0259,-0.0936,0.1455,0.6707,-0.0479,-0.0427,False
+P_behavioural,BM25 vs FLIM-fallback,top10,mixedlm_lbfgs,549,-0.0014,-0.1425,0.1397,0.9843,-0.0607,-0.0845,False
+P_behavioural,BM25-parse vs FLIM-strict (control),ap,mixedlm_powell,549,-0.0432,-0.1412,0.0549,0.388,0.0013,-0.0375,False
+P_behavioural,BM25-parse vs FLIM-strict (control),cfr10,mixedlm_powell,549,-0.0452,-0.162,0.0717,0.4489,-0.0194,-0.0466,False
+P_behavioural,BM25-parse vs FLIM-strict (control),rr,mixedlm_powell,549,-0.1179,-0.2378,0.0021,0.0541,0.005,-0.1196,False
+P_behavioural,BM25-parse vs FLIM-strict (control),top10,mixedlm_powell,549,-0.0565,-0.1937,0.0807,0.4199,-0.0251,-0.1127,False
+P_test_only,BM25 vs FLIM-strict,ap,mixedlm_powell,620,0.0788,0.005,0.1525,0.0363,-0.0446,0.0074,True
+P_test_only,BM25 vs FLIM-strict,cfr10,mixedlm_lbfgs,620,0.1198,0.0255,0.214,0.0127,-0.0601,0.0276,True
+P_test_only,BM25 vs FLIM-strict,rr,mixedlm_powell,620,-0.0502,-0.1426,0.0421,0.2864,-0.0499,-0.1436,False
+P_test_only,BM25 vs FLIM-strict,top10,mixedlm_powell,620,0.0263,-0.0894,0.142,0.6557,-0.069,-0.1056,False
+P_test_only,BM25 vs FLIM-fallback,ap,mixedlm_powell,620,0.0388,-0.034,0.1116,0.2962,-0.0418,-0.0311,False
+P_test_only,BM25 vs FLIM-fallback,cfr10,mixedlm_lbfgs,620,0.0584,-0.0359,0.1526,0.2249,-0.0518,-0.027,False
+P_test_only,BM25 vs FLIM-fallback,rr,mixedlm_powell,620,-0.0446,-0.1374,0.0483,0.3467,-0.0479,-0.1357,False
+P_test_only,BM25 vs FLIM-fallback,top10,mixedlm_powell,620,0.0374,-0.0786,0.1534,0.527,-0.0607,-0.0845,False
+P_test_only,BM25-parse vs FLIM-strict (control),ap,mixedlm_powell,620,-0.0351,-0.1122,0.042,0.3724,0.0013,-0.056,False
+P_test_only,BM25-parse vs FLIM-strict (control),cfr10,mixedlm_lbfgs,620,-0.0173,-0.1196,0.0851,0.7408,-0.0194,-0.0639,False
+P_test_only,BM25-parse vs FLIM-strict (control),rr,mixedlm_lbfgs,620,-0.0996,-0.1917,-0.0074,0.0342,0.005,-0.1284,False
+P_test_only,BM25-parse vs FLIM-strict (control),top10,mixedlm_powell,620,-0.0418,-0.1632,0.0796,0.4999,-0.0251,-0.0986,False
+P_test_only,BM25 vs LocAgent,ap10,ols_project_fe_hc3,82,0.335,0.1447,0.5252,0.0006,-0.0447,0.2194,True
+P_test_only,BM25 vs LocAgent,cfr10,ols_project_fe_hc3,82,0.5201,0.285,0.7551,0.0,-0.0573,0.3586,True
+P_test_only,BM25 vs LocAgent,top10,ols_project_fe_hc3,82,0.2073,-0.0739,0.4886,0.1485,-0.0625,0.14,True
+P_test_only,BM25 vs LocAgent,rr10,ols_project_fe_hc3,82,0.136,-0.132,0.4041,0.3199,-0.0554,0.0294,True
+P_test_only,BLAZE_ALL vs BLAZE (ablation),ap,ols_project_fe_hc3,120,0.0113,-0.0778,0.1005,0.8033,-0.0293,0.0189,True
+P_test_only,BLAZE_ALL vs BLAZE (ablation),cfr10,ols_project_fe_hc3,120,0.0234,-0.133,0.1798,0.7692,-0.0647,0.0217,True
+P_test_only,BLAZE_ALL vs BLAZE (ablation),rr,ols_project_fe_hc3,120,0.0295,-0.1828,0.2418,0.7856,-0.0242,0.0566,True
+P_test_only,BLAZE_ALL vs BLAZE (ablation),top10,ols_project_fe_hc3,120,-0.038,-0.4081,0.332,0.8403,-0.0388,0.0,True

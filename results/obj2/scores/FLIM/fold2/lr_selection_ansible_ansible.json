@@ -1,0 +1,136 @@
+{
+  "technique": "FLIM",
+  "fold": 2,
+  "project": "ansible/ansible",
+  "selected_lr": 5e-05,
+  "selected_with_seed": 13,
+  "criterion": "validation MAP (universe R)",
+  "runs": [
+    {
+      "lr": 2e-05,
+      "val_map": 0.23436368588988227,
+      "finetune": {
+        "epochs_run": 10,
+        "best_epoch": 10,
+        "best_val_mrr": 0.39578046542093576,
+        "history": [
+          {
+            "epoch": 1,
+            "train_loss": 6.28171875,
+            "val_mrr": 0.07107909026308126
+          },
+          {
+            "epoch": 2,
+            "train_loss": 3.909765625,
+            "val_mrr": 0.07408349905653168
+          },
+          {
+            "epoch": 3,
+            "train_loss": 3.62375,
+            "val_mrr": 0.13647301826807698
+          },
+          {
+            "epoch": 4,
+            "train_loss": 2.9147265625,
+            "val_mrr": 0.3690386509172104
+          },
+          {
+            "epoch": 5,
+            "train_loss": 1.99140625,
+            "val_mrr": 0.3877655518141502
+          },
+          {
+            "epoch": 6,
+            "train_loss": 1.4260546875,
+            "val_mrr": 0.3798497230119394
+          },
+          {
+            "epoch": 7,
+            "train_loss": 1.1446875,
+            "val_mrr": 0.3939509612747668
+          },
+          {
+            "epoch": 8,
+            "train_loss": 0.9009228515625,
+            "val_mrr": 0.3835367783075435
+          },
+          {
+            "epoch": 9,
+            "train_loss": 0.872900390625,
+            "val_mrr": 0.3772552084661634
+          },
+          {
+            "epoch": 10,
+            "train_loss": 0.768916015625,
+            "val_mrr": 0.39578046542093576
+          }
+        ]
+      },
+      "ltr": {
+        "weights_method": "w_gboost",
+        "weights_cv_map": 0.5907277937443915,
+        "regressor": "SGDRegressor(loss='epsilon_insensitive', penalty='elasticnet', random_state=13,\n             shuffle=False)",
+        "cut_perc": 0.3,
+        "reg_cv_map": 0.557723592589209
+      }
+    },
+    {
+      "lr": 5e-05,
+      "val_map": 0.25236013620623193,
+      "finetune": {
+        "epochs_run": 8,
+        "best_epoch": 5,
+        "best_val_mrr": 0.4562363867139726,
+        "history": [
+          {
+            "epoch": 1,
+            "train_loss": 5.829375,
+            "val_mrr": 0.062703073221098
+          },
+          {
+            "epoch": 2,
+            "train_loss": 3.608203125,
+            "val_mrr": 0.3374098331098309
+          },
+          {
+            "epoch": 3,
+            "train_loss": 2.314140625,
+            "val_mrr": 0.41769284850890087
+          },
+          {
+            "epoch": 4,
+            "train_loss": 1.289296875,
+            "val_mrr": 0.4428965337915564
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.74697265625,
+            "val_mrr": 0.4562363867139726
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.519326171875,
+            "val_mrr": 0.4252266442908827
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.355673828125,
+            "val_mrr": 0.4450394974836007
+          },
+          {
+            "epoch": 8,
+            "train_loss": 0.260428466796875,
+            "val_mrr": 0.44318636679681933
+          }
+        ]
+      },
+      "ltr": {
+        "weights_method": "w_gboost",
+        "weights_cv_map": 0.6288615246099392,
+        "regressor": "SGDRegressor(loss='epsilon_insensitive', penalty='l1', random_state=13,\n             shuffle=False)",
+        "cut_perc": 0.15,
+        "reg_cv_map": 0.5994273359002587
+      }
+    }
+  ]
+}

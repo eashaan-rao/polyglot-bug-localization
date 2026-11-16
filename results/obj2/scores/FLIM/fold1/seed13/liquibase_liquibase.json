@@ -1,0 +1,363 @@
+{
+  "written_at": "2026-11-03T10:46:21",
+  "git_head": "b3fa90787ce4240d4abde1bb02977698bc89e6ff",
+  "versions": {
+    "python": "3.12.3",
+    "platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
+    "numpy": "2.3.2",
+    "pandas": "2.3.2",
+    "torch": "2.8.0+cu126",
+    "transformers": "4.55.4",
+    "bm25s": "0.3.11",
+    "sklearn": "1.7.1",
+    "tree_sitter": "?",
+    "tree_sitter_languages": "1.10.2",
+    "javalang": "0.13.0",
+    "gpu": "NVIDIA L40"
+  },
+  "technique": "FLIM",
+  "project": "liquibase/liquibase",
+  "fold": 1,
+  "seed": 13,
+  "smoke": false,
+  "wall_time_sec": 348.3,
+  "gpu_peak_allocated_gib": 6.79,
+  "split": {
+    "repo": "liquibase/liquibase",
+    "fold": 1,
+    "train": 114,
+    "val": 10,
+    "test": 44,
+    "test_removed": 4,
+    "test_noprimary": 5,
+    "purged_train": 25,
+    "purged_val": 10,
+    "val_start": "2023-03-03 21:14:22+00:00",
+    "test_start": "2023-06-21 15:17:54+00:00",
+    "test_end": "2024-02-02 09:11:12+00:00"
+  },
+  "test_bug_ids": [
+    "4415",
+    "4429",
+    "4448",
+    "4456",
+    "4460",
+    "4489",
+    "4512",
+    "4514",
+    "4530",
+    "4536",
+    "4575",
+    "4588",
+    "4597",
+    "4620",
+    "4650",
+    "4662",
+    "4665",
+    "4669",
+    "4678",
+    "4682",
+    "4723",
+    "4734",
+    "4891",
+    "4987",
+    "4990",
+    "5034",
+    "5069",
+    "5098",
+    "5155",
+    "5171",
+    "5247",
+    "5263",
+    "5266",
+    "5278",
+    "5410",
+    "5442",
+    "5475",
+    "5489",
+    "5523",
+    "5550",
+    "R4576",
+    "R4794",
+    "R5225",
+    "R5246"
+  ],
+  "config": {
+    "encoder": "microsoft/codebert-base",
+    "epochs_max": 10,
+    "batch": 32,
+    "lr_grid": [
+      2e-05,
+      5e-05
+    ],
+    "patience": 3,
+    "selection": "epochs: val MRR (run.py); LR: val MAP (Scripts/lr_select.py)",
+    "nl_len": 128,
+    "code_len": 256,
+    "max_funcs_pos": 5,
+    "ltr_neg_top": 300,
+    "window_lines": 30,
+    "max_windows": 50,
+    "features": [
+      "s_sum_max",
+      "s_sum_mean",
+      "s_desc_max",
+      "s_desc_mean",
+      "f1",
+      "f3",
+      "f4",
+      "f5",
+      "f6",
+      "f7",
+      "f8",
+      "f9",
+      "f10",
+      "f11",
+      "f12",
+      "f13",
+      "f14",
+      "f15",
+      "f16",
+      "f17",
+      "f18",
+      "f19"
+    ],
+    "dropped_features": [
+      "f2 (API-enriched; JDK-only)"
+    ]
+  },
+  "run_info": {
+    "selected_lr": 5e-05,
+    "lr_grid_trained": [
+      2e-05,
+      5e-05
+    ],
+    "lr_runs": [
+      {
+        "lr": 2e-05,
+        "val_map": 0.08635836404508315,
+        "finetune": {
+          "epochs_run": 7,
+          "best_epoch": 4,
+          "best_val_mrr": 0.2439856150793651,
+          "history": [
+            {
+              "epoch": 1,
+              "train_loss": 7.353338068181818,
+              "val_mrr": 0.2187872023809524
+            },
+            {
+              "epoch": 2,
+              "train_loss": 4.158380681818182,
+              "val_mrr": 0.21412927350427352
+            },
+            {
+              "epoch": 3,
+              "train_loss": 3.983309659090909,
+              "val_mrr": 0.21161867646242646
+            },
+            {
+              "epoch": 4,
+              "train_loss": 3.735262784090909,
+              "val_mrr": 0.2439856150793651
+            },
+            {
+              "epoch": 5,
+              "train_loss": 3.693359375,
+              "val_mrr": 0.22131384240759241
+            },
+            {
+              "epoch": 6,
+              "train_loss": 3.634055397727273,
+              "val_mrr": 0.22489290223665223
+            },
+            {
+              "epoch": 7,
+              "train_loss": 3.5880681818181817,
+              "val_mrr": 0.2007564484126984
+            }
+          ]
+        },
+        "ltr": {
+          "weights_method": "w_ttest",
+          "weights_cv_map": 0.31570574339822605,
+          "regressor": "SGDRegressor(loss='epsilon_insensitive', penalty=None, random_state=13,\n             shuffle=False)",
+          "cut_perc": 0.3,
+          "reg_cv_map": 0.3088046841008518
+        }
+      },
+      {
+        "lr": 5e-05,
+        "val_map": 0.09391263287390207,
+        "finetune": {
+          "epochs_run": 9,
+          "best_epoch": 6,
+          "best_val_mrr": 0.3790884462759463,
+          "history": [
+            {
+              "epoch": 1,
+              "train_loss": 6.812144886363637,
+              "val_mrr": 0.23812680375180373
+            },
+            {
+              "epoch": 2,
+              "train_loss": 3.897372159090909,
+              "val_mrr": 0.19889251373626374
+            },
+            {
+              "epoch": 3,
+              "train_loss": 3.7698863636363638,
+              "val_mrr": 0.2402453449328449
+            },
+            {
+              "epoch": 4,
+              "train_loss": 3.5903764204545454,
+              "val_mrr": 0.2725246108058608
+            },
+            {
+              "epoch": 5,
+              "train_loss": 3.504794034090909,
+              "val_mrr": 0.29679365773115773
+            },
+            {
+              "epoch": 6,
+              "train_loss": 3.3774857954545454,
+              "val_mrr": 0.3790884462759463
+            },
+            {
+              "epoch": 7,
+              "train_loss": 3.0384410511363638,
+              "val_mrr": 0.3453853438228438
+            },
+            {
+              "epoch": 8,
+              "train_loss": 2.619850852272727,
+              "val_mrr": 0.3419439935064935
+            },
+            {
+              "epoch": 9,
+              "train_loss": 2.2634943181818183,
+              "val_mrr": 0.37301656676656675
+            }
+          ]
+        },
+        "ltr": {
+          "weights_method": "w_ttest",
+          "weights_cv_map": 0.3146464063093196,
+          "regressor": "SGDRegressor(loss='epsilon_insensitive', penalty='elasticnet', random_state=13,\n             shuffle=False)",
+          "cut_perc": 0.25,
+          "reg_cv_map": 0.3072218170226909
+        }
+      }
+    ],
+    "finetune": {
+      "epochs_run": 9,
+      "best_epoch": 6,
+      "best_val_mrr": 0.3790884462759463,
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 6.812144886363637,
+          "val_mrr": 0.23812680375180373
+        },
+        {
+          "epoch": 2,
+          "train_loss": 3.897372159090909,
+          "val_mrr": 0.19889251373626374
+        },
+        {
+          "epoch": 3,
+          "train_loss": 3.7698863636363638,
+          "val_mrr": 0.2402453449328449
+        },
+        {
+          "epoch": 4,
+          "train_loss": 3.5903764204545454,
+          "val_mrr": 0.2725246108058608
+        },
+        {
+          "epoch": 5,
+          "train_loss": 3.504794034090909,
+          "val_mrr": 0.29679365773115773
+        },
+        {
+          "epoch": 6,
+          "train_loss": 3.3774857954545454,
+          "val_mrr": 0.3790884462759463
+        },
+        {
+          "epoch": 7,
+          "train_loss": 3.0384410511363638,
+          "val_mrr": 0.3453853438228438
+        },
+        {
+          "epoch": 8,
+          "train_loss": 2.619850852272727,
+          "val_mrr": 0.3419439935064935
+        },
+        {
+          "epoch": 9,
+          "train_loss": 2.2634943181818183,
+          "val_mrr": 0.37301656676656675
+        }
+      ]
+    },
+    "n_train_pairs": 330,
+    "n_val_pairs": 16,
+    "n_files": 8176,
+    "n_units": 98123,
+    "ltr_rows": 34105,
+    "ltr_bugs": 113,
+    "ltr": {
+      "weights_method": "w_ttest",
+      "weights_cv_map": 0.3146464063093196,
+      "regressor": "SGDRegressor(loss='epsilon_insensitive', penalty='elasticnet', random_state=13,\n             shuffle=False)",
+      "cut_perc": 0.25,
+      "reg_cv_map": 0.3072218170226909
+    },
+    "config": {
+      "encoder": "microsoft/codebert-base",
+      "epochs_max": 10,
+      "batch": 32,
+      "lr_grid": [
+        2e-05,
+        5e-05
+      ],
+      "patience": 3,
+      "selection": "epochs: val MRR (run.py); LR: val MAP (Scripts/lr_select.py)",
+      "nl_len": 128,
+      "code_len": 256,
+      "max_funcs_pos": 5,
+      "ltr_neg_top": 300,
+      "window_lines": 30,
+      "max_windows": 50,
+      "features": [
+        "s_sum_max",
+        "s_sum_mean",
+        "s_desc_max",
+        "s_desc_mean",
+        "f1",
+        "f3",
+        "f4",
+        "f5",
+        "f6",
+        "f7",
+        "f8",
+        "f9",
+        "f10",
+        "f11",
+        "f12",
+        "f13",
+        "f14",
+        "f15",
+        "f16",
+        "f17",
+        "f18",
+        "f19"
+      ],
+      "dropped_features": [
+        "f2 (API-enriched; JDK-only)"
+      ]
+    }
+  }
+}
