@@ -349,6 +349,70 @@ Condition & BM25 & FLIM-strict & LocAgent & SweRank & FLIM-strict & FLIM-fallbac
     write("tab_sensitivity.tex", body)
 
 
+
+# ---------------------------------------------------------------- diagnostic variants
+def variants(T):
+    """Hybrids and SweRank with an extended corpus (diagnostic, not proposed techniques)."""
+    rc = json.load(open(os.path.join(ST, "review_checks.json")))["decomposition"]
+    py = [p[0] for p in PY]
+
+    def pooled(tech, view, out, python_only=False):
+        if tech == "BM25" and python_only and out == "ap10":   # BM25 at AP@10 exists only in the paired table
+            d = sel(T["pair"], condition="primary", pair="BM25 vs LocAgent", outcome="ap10", project="POOLED")
+            mo, po = d[d["class"] == "Mono-fix"].iloc[0], d[d["class"] == "Poly-fix"].iloc[0]
+            return mo.mean_A, po.mean_A, int(mo.n_bugs + po.n_bugs)
+        if tech == "BM25" and python_only:
+            d = sel(T["pp"], condition="primary", tech="BM25", view="all", outcome=out)
+            d = d[d.project.isin(py)]
+            return ((d.mean_mono * d.n_mono).sum() / d.n_mono.sum(), (d.mean_poly * d.n_poly).sum() / d.n_poly.sum(),
+                    int(d.n_mono.sum() + d.n_poly.sum()))
+        r = one(T["pp"], condition="primary", tech=tech, view=view, outcome=out, project="POOLED")
+        return r.mean_mono, r.mean_poly, int(r.n_mono + r.n_poly)
+
+    groups = [
+        ("All six projects (AP)", [
+            ("BM25", "BM25", "all", "ap", False, "BM25-all-ap"),
+            ("FLIM-strict", "FLIM", "parse", "ap", False, "FLIM-parse-ap"),
+            ("Hybrid: FLIM-strict + BM25", "HybridFLIM", "all", "ap", False, "HybridFLIM-all-ap")]),
+        ("Python projects (AP@10)", [
+            ("BM25", "BM25", "all", "ap10", True, "BM25-all-ap10-py"),
+            ("LocAgent", "LocAgent", "all", "ap10", False, "LocAgent-all-ap10"),
+            ("Hybrid: LocAgent + BM25", "HybridLocAgent", "all", "ap10", False, "HybridLocAgent-all-ap10")]),
+        ("Python projects (AP)", [
+            ("BM25", "BM25", "all", "ap", True, "BM25-all-ap-py"),
+            ("SweRank retriever (Python functions)", "SweRankEmbed", "all", "ap", False, "SweRankEmbed-all-ap"),
+            ("SweRank retriever, all text files", "SweRankEmbedAll", "all", "ap", False, "SweRankEmbedAll-all-ap"),
+            ("SweRank (Python functions, as published)", "SweRank", "all", "ap", False, "SweRank-all-ap"),
+            ("SweRank, all text files", "SweRankAll", "all", "ap", False, "SweRankAll-all-ap"),
+            ("Hybrid: SweRank + BM25", "HybridSweRank", "all", "ap", False, "HybridSweRank-all-ap")]),
+    ]
+    rows = []
+    for gname, specs in groups:
+        rows.append(r"\multicolumn{6}{l}{\emph{" + gname + r"}} \\")
+        for lab, tech, view, out, pyonly, key in specs:
+            mo, po, n = pooled(tech, view, out, pyonly)
+            sec = "--" if key is None else ("n/a" if key == "FLIM-parse-ap" else f(rc[key]["poly_sec_removed"]))
+            if tech == "BM25" and pyonly:
+                ce = "--"
+            else:
+                m = one(T["m"], condition="primary", tech=tech, view=view, outcome=out)
+                ce = ci(m["class_effect_poly"], m["ci_lo"], m["ci_hi"])
+            rows.append(" & ".join([r"\quad " + lab, str(n), f(mo), f(po), sec, ce]) + r" \\")
+    body = r"""\begin{table*}[pos=t]
+\caption{Reach or understanding: diagnostic variants of the parser-dependent techniques (ours, untuned; not proposed as techniques). A hybrid ranks the files the technique can represent by its own ranking and every other file by BM25, merged by reciprocal rank fusion ($k{=}60$). ``All text files'' gives SweRank every candidate file: its own function documents plus 50-line chunks of all other files. MAP of Mono-fix and Poly-fix bugs, MAP on the secondary-language files of Poly-fix bugs (other ground-truth files removed from the ranking), and the adjusted class effect as in Table~\ref{tab:rq3models} ($^{*}$: 95\% CI excludes 0).}
+\label{tab:variants}
+\footnotesize
+\begin{tabular}{lrrrrl}
+\toprule
+Technique & Bugs & MAP Mono & MAP Poly & MAP sec. & Class effect [95\% CI] \\
+\midrule
+""" + "\n".join(rows) + r"""
+\bottomrule
+\end{tabular}
+\end{table*}
+"""
+    write("tab_variants.tex", body)
+
 # ---------------------------------------------------------------- seeds, LR, cost
 def manifests():
     rows = []
@@ -460,6 +524,7 @@ def main():
     decomposition(T)
     rq4(T)
     sensitivity(T)
+    variants(T)
     M = manifests()
     lr_table(M)
     seeds(T)

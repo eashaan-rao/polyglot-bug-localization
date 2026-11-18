@@ -73,3 +73,7 @@ data/obj2/swerank/retrieval/
 data/obj2/swerank/rerank/
 data/obj2/swerank/rerun/
 data/obj2/swerank/tmp/
+data/obj2/swerank/candidates/
+data/obj2/swerank/retrieval_all/
+data/obj2/swerank/retrieval_all_top/
+data/obj2/swerank/rerank_all/

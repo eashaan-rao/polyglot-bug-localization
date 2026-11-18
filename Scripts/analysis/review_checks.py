@@ -34,6 +34,10 @@ RNG = np.random.default_rng(20261116)
 MARGIN = 0.05
 TECHS = [("BM25", "all", "ap"), ("BLAZE", "all", "ap"), ("FLIM", "all", "ap"), ("FLIM", "parse", "ap"),
          ("LocAgent", "all", "ap10"), ("SweRank", "all", "ap")]
+# diagnostic variants (2026-11-17/18): decomposition only
+VARIANTS = [("SweRankEmbed", "all", "ap"), ("SweRankEmbedAll", "all", "ap"), ("SweRankAll", "all", "ap"),
+            ("HybridFLIM", "all", "ap"), ("HybridSweRank", "all", "ap"), ("HybridLocAgent", "all", "ap10"),
+            ("BM25", "all", "ap10")]
 OUT = {}
 
 
@@ -88,7 +92,7 @@ OUT["equivalence_margin_0.05"] = eq
 g = pd.read_parquet(os.path.join(EV, "per_gt.parquet"))
 g = g[(g.universe == "R") & (g.source == "kept") & g.study_class.isin(["Mono-fix", "Poly-fix"])]
 dec = {}
-for t, v, o in TECHS:
+for t, v, o in TECHS + VARIANTS:
     x = g[(g.tech == t) & (g.view == v)]
     rows = []
     for (fold, seed, proj, bug), h in x.groupby(["fold", "seed", "project", "bug_id"], sort=False):
@@ -117,6 +121,12 @@ for t, v, o in TECHS:
         if k.startswith("prim"):
             res[f"poly_{k}_minus_mono_ci"] = boot_diff(vals, mono)
     dec[f"{t}-{v}-{o}"] = res
+    if t == "BM25":   # Python projects only, for the LLM-based techniques and their variants
+        dp = d[d.project.isin(["ansible/ansible", "apache/airflow", "localstack/localstack"])]
+        dec[f"{t}-{v}-{o}-py"] = dict(
+            mono=float(dp[dp.cls == "Mono-fix"].ap_all.mean()),
+            poly_prim_removed=float(dp[dp.cls == "Poly-fix"].ap_prim_removed.mean()),
+            poly_sec_removed=float(dp[dp.cls == "Poly-fix"].ap_sec_removed.mean()))
 OUT["decomposition"] = dec
 
 # 3 ------------------------------------------------------------- FDR

@@ -30,48 +30,48 @@
   "poly_diff BM25 vs FLIM-strict": {
    "est": 0.0289,
    "ci95": [
-    0.0035,
-    0.0531
+    0.005,
+    0.0543
    ],
    "ci90": [
-    0.008085714285714286,
-    0.04971428571428571
+    0.008211607142857139,
+    0.04958839285714286
    ],
    "equivalent": true
   },
   "poly_diff BM25 vs FLIM-fallback": {
    "est": 0.0024,
    "ci95": [
-    -0.0214,
-    0.027
+    -0.0219,
+    0.0256
    ],
    "ci90": [
-    -0.017910714285714287,
-    0.022710714285714285
+    -0.017533035714285713,
+    0.02233303571428571
    ],
    "equivalent": true
   },
   "poly_diff BM25 vs LocAgent": {
    "est": 0.0365,
    "ci95": [
-    -0.0063,
-    0.0766
+    -0.0038,
+    0.0796
    ],
    "ci90": [
-    0.0017116071428571397,
-    0.07128839285714286
+    0.0015017857142857055,
+    0.07149821428571429
    ],
    "equivalent": false
   },
   "poly_diff BM25 vs SweRank": {
    "est": 0.0418,
    "ci95": [
-    0.0016,
-    0.0824
+    0.003,
+    0.081
    ],
    "ci90": [
-    0.007892857142857139,
-    0.07570714285714286
+    0.009067857142857141,
+    0.07453214285714285
    ],
    "equivalent": false
   }
@@ -166,12 +166,127 @@
    ],
    "poly_sec_removed": 0.0007559161625294047,
    "poly_sec_nonrel": 0.0007549507723685829
+  },
+  "SweRankEmbed-all-ap": {
+   "mono": 0.4151052140076398,
+   "poly_prim_removed": 0.38875666468835257,
+   "poly_prim_removed_minus_mono_ci": [
+    -0.07510365598922847,
+    0.022926887844120048
+   ],
+   "poly_prim_nonrel": 0.38875666468835257,
+   "poly_prim_nonrel_minus_mono_ci": [
+    -0.0757091997369501,
+    0.020821331294679286
+   ],
+   "poly_sec_removed": 0.0007559161625294047,
+   "poly_sec_nonrel": 0.0007549507723685829
+  },
+  "SweRankEmbedAll-all-ap": {
+   "mono": 0.49662900044233177,
+   "poly_prim_removed": 0.43485723827114187,
+   "poly_prim_removed_minus_mono_ci": [
+    -0.11655801876982962,
+    -0.008337467357111319
+   ],
+   "poly_prim_nonrel": 0.42105037761531544,
+   "poly_prim_nonrel_minus_mono_ci": [
+    -0.12738025697501368,
+    -0.022639119933571237
+   ],
+   "poly_sec_removed": 0.252013265328388,
+   "poly_sec_nonrel": 0.19841410311495972
+  },
+  "SweRankAll-all-ap": {
+   "mono": 0.5829856932301413,
+   "poly_prim_removed": 0.5552409169745998,
+   "poly_prim_removed_minus_mono_ci": [
+    -0.08017608949645767,
+    0.028038921780839172
+   ],
+   "poly_prim_nonrel": 0.5431561584524583,
+   "poly_prim_nonrel_minus_mono_ci": [
+    -0.09121551893361445,
+    0.013750340442200037
+   ],
+   "poly_sec_removed": 0.2573191864824331,
+   "poly_sec_nonrel": 0.17977105511740313
+  },
+  "HybridFLIM-all-ap": {
+   "mono": 0.348660324119223,
+   "poly_prim_removed": 0.34342962100309826,
+   "poly_prim_removed_minus_mono_ci": [
+    -0.04260868571224114,
+    0.03175801853961257
+   ],
+   "poly_prim_nonrel": 0.33545158581227746,
+   "poly_prim_nonrel_minus_mono_ci": [
+    -0.05009180437704749,
+    0.02189738473138871
+   ],
+   "poly_sec_removed": 0.1401963472128444,
+   "poly_sec_nonrel": 0.12827893123284068
+  },
+  "HybridSweRank-all-ap": {
+   "mono": 0.5093385510368021,
+   "poly_prim_removed": 0.5099649488050555,
+   "poly_prim_removed_minus_mono_ci": [
+    -0.04908438642228926,
+    0.04727622794987865
+   ],
+   "poly_prim_nonrel": 0.504518167344231,
+   "poly_prim_nonrel_minus_mono_ci": [
+    -0.05548200960318779,
+    0.046614631682143685
+   ],
+   "poly_sec_removed": 0.12785165067388907,
+   "poly_sec_nonrel": 0.09773975682735082
+  },
+  "HybridLocAgent-all-ap10": {
+   "mono": 0.4881789403934684,
+   "poly_prim_removed": 0.47775039620642357,
+   "poly_prim_removed_minus_mono_ci": [
+    -0.0583237987751716,
+    0.04095808960045073
+   ],
+   "poly_prim_nonrel": 0.47082510906838954,
+   "poly_prim_nonrel_minus_mono_ci": [
+    -0.06717720233346218,
+    0.03437287865277486
+   ],
+   "poly_sec_removed": 0.12339466126378335,
+   "poly_sec_nonrel": 0.088926393273336
+  },
+  "BM25-all-ap10": {
+   "mono": 0.2901741176328575,
+   "poly_prim_removed": 0.2691197485347207,
+   "poly_prim_removed_minus_mono_ci": [
+    -0.0626165762679598,
+    0.020259183765282324
+   ],
+   "poly_prim_nonrel": 0.25375068160543485,
+   "poly_prim_nonrel_minus_mono_ci": [
+    -0.07455888689305233,
+    0.0012815228185998266
+   ],
+   "poly_sec_removed": 0.18942152618623206,
+   "poly_sec_nonrel": 0.1516514939309057
+  },
+  "BM25-all-ap-py": {
+   "mono": 0.36443216247286897,
+   "poly_prim_removed": 0.3525028020574377,
+   "poly_sec_removed": 0.22608000392348923
+  },
+  "BM25-all-ap10-py": {
+   "mono": 0.3421935474807207,
+   "poly_prim_removed": 0.33112306116787116,
+   "poly_sec_removed": 0.2131017434296123
   }
  },
  "fdr": {
-  "n_class_tests": 832,
-  "n_interaction_tests": 380,
-  "n_pooled_paired_tests": 760,
+  "n_class_tests": 1408,
+  "n_interaction_tests": 860,
+  "n_pooled_paired_tests": 1720,
   "class_effects": [
    {
     "tech": "BLAZE",
@@ -179,7 +294,7 @@
     "outcome": "ap",
     "class_effect_poly": -0.0213,
     "p": 0.2711,
-    "q": 0.3639
+    "q": 0.3805
    },
    {
     "tech": "BLAZE",
@@ -195,7 +310,7 @@
     "outcome": "ap",
     "class_effect_poly": -0.0307,
     "p": 0.2692,
-    "q": 0.3636
+    "q": 0.3794
    },
    {
     "tech": "BLAZE_ALL",
@@ -211,7 +326,7 @@
     "outcome": "ap",
     "class_effect_poly": -0.026,
     "p": 0.2254,
-    "q": 0.3196
+    "q": 0.3354
    },
    {
     "tech": "BM25",
@@ -238,6 +353,54 @@
     "q": 0.0
    },
    {
+    "tech": "HybridFLIM",
+    "view": "all",
+    "outcome": "ap",
+    "class_effect_poly": -0.0499,
+    "p": 0.0173,
+    "q": 0.0397
+   },
+   {
+    "tech": "HybridFLIM",
+    "view": "parse",
+    "outcome": "ap",
+    "class_effect_poly": -0.1335,
+    "p": 0.0,
+    "q": 0.0
+   },
+   {
+    "tech": "HybridLocAgent",
+    "view": "all",
+    "outcome": "ap10",
+    "class_effect_poly": -0.1007,
+    "p": 0.0002,
+    "q": 0.0007
+   },
+   {
+    "tech": "HybridLocAgent",
+    "view": "parse",
+    "outcome": "ap10",
+    "class_effect_poly": -0.1696,
+    "p": 0.0,
+    "q": 0.0
+   },
+   {
+    "tech": "HybridSweRank",
+    "view": "all",
+    "outcome": "ap",
+    "class_effect_poly": -0.1099,
+    "p": 0.0001,
+    "q": 0.0003
+   },
+   {
+    "tech": "HybridSweRank",
+    "view": "parse",
+    "outcome": "ap",
+    "class_effect_poly": -0.186,
+    "p": 0.0,
+    "q": 0.0
+   },
+   {
     "tech": "LocAgent",
     "view": "all",
     "outcome": "ap10",
@@ -259,7 +422,7 @@
     "outcome": "ap",
     "class_effect_poly": -0.2864,
     "p": 0.0004,
-    "q": 0.0012
+    "q": 0.0013
    },
    {
     "tech": "LocAgentRep",
@@ -267,7 +430,7 @@
     "outcome": "ap",
     "class_effect_poly": -0.2907,
     "p": 0.0003,
-    "q": 0.0009
+    "q": 0.001
    },
    {
     "tech": "SweRank",
@@ -302,6 +465,38 @@
     "q": 0.0
    },
    {
+    "tech": "SweRankAll",
+    "view": "all",
+    "outcome": "ap",
+    "class_effect_poly": -0.0445,
+    "p": 0.1291,
+    "q": 0.2187
+   },
+   {
+    "tech": "SweRankAll",
+    "view": "all",
+    "outcome": "ap10",
+    "class_effect_poly": -0.0467,
+    "p": 0.1207,
+    "q": 0.2073
+   },
+   {
+    "tech": "SweRankAll",
+    "view": "parse",
+    "outcome": "ap",
+    "class_effect_poly": -0.1958,
+    "p": 0.0,
+    "q": 0.0
+   },
+   {
+    "tech": "SweRankAll",
+    "view": "parse",
+    "outcome": "ap10",
+    "class_effect_poly": -0.1811,
+    "p": 0.0,
+    "q": 0.0
+   },
+   {
     "tech": "SweRankEmbed",
     "view": "all",
     "outcome": "ap",
@@ -332,6 +527,38 @@
     "class_effect_poly": -0.1653,
     "p": 0.0,
     "q": 0.0
+   },
+   {
+    "tech": "SweRankEmbedAll",
+    "view": "all",
+    "outcome": "ap",
+    "class_effect_poly": -0.0632,
+    "p": 0.0323,
+    "q": 0.0676
+   },
+   {
+    "tech": "SweRankEmbedAll",
+    "view": "all",
+    "outcome": "ap10",
+    "class_effect_poly": -0.0687,
+    "p": 0.0246,
+    "q": 0.0532
+   },
+   {
+    "tech": "SweRankEmbedAll",
+    "view": "parse",
+    "outcome": "ap",
+    "class_effect_poly": -0.2075,
+    "p": 0.0,
+    "q": 0.0
+   },
+   {
+    "tech": "SweRankEmbedAll",
+    "view": "parse",
+    "outcome": "ap10",
+    "class_effect_poly": -0.1913,
+    "p": 0.0,
+    "q": 0.0
    }
   ],
   "interactions": [
@@ -347,14 +574,14 @@
     "outcome": "ap",
     "interaction_poly": 0.0788,
     "p": 0.0001,
-    "q": 0.0007
+    "q": 0.0006
    },
    {
     "pair": "BM25-parse vs FLIM-strict (control)",
     "outcome": "ap",
     "interaction_poly": 0.0043,
     "p": 0.8294,
-    "q": 0.9013
+    "q": 0.911
    },
    {
     "pair": "BM25 vs LocAgent",
@@ -382,14 +609,84 @@
     "outcome": "ap",
     "interaction_poly": 0.0012,
     "p": 0.9269,
-    "q": 0.9571
+    "q": 0.9621
+   },
+   {
+    "pair": "HybridFLIM vs FLIM-strict",
+    "outcome": "ap",
+    "interaction_poly": 0.0818,
+    "p": 0.0,
+    "q": 0.0
+   },
+   {
+    "pair": "HybridSweRank vs SweRank",
+    "outcome": "ap",
+    "interaction_poly": 0.0588,
+    "p": 0.0001,
+    "q": 0.0006
+   },
+   {
+    "pair": "HybridLocAgent vs LocAgent",
+    "outcome": "ap10",
+    "interaction_poly": 0.0615,
+    "p": 0.0001,
+    "q": 0.0006
+   },
+   {
+    "pair": "BM25 vs HybridFLIM",
+    "outcome": "ap",
+    "interaction_poly": 0.0296,
+    "p": 0.1441,
+    "q": 0.2779
+   },
+   {
+    "pair": "BM25 vs HybridSweRank",
+    "outcome": "ap",
+    "interaction_poly": 0.0848,
+    "p": 0.0012,
+    "q": 0.0055
+   },
+   {
+    "pair": "BM25 vs HybridLocAgent",
+    "outcome": "ap10",
+    "interaction_poly": 0.0748,
+    "p": 0.0026,
+    "q": 0.0109
+   },
+   {
+    "pair": "BM25 vs SweRankEmbedAll",
+    "outcome": "ap",
+    "interaction_poly": 0.0328,
+    "p": 0.2669,
+    "q": 0.4319
+   },
+   {
+    "pair": "SweRankEmbed vs SweRankEmbedAll (corpus extension)",
+    "outcome": "ap",
+    "interaction_poly": 0.1081,
+    "p": 0.0,
+    "q": 0.0
+   },
+   {
+    "pair": "BM25 vs SweRankAll",
+    "outcome": "ap",
+    "interaction_poly": 0.0149,
+    "p": 0.6113,
+    "q": 0.7535
+   },
+   {
+    "pair": "SweRankAll vs SweRank (corpus extension, reranked)",
+    "outcome": "ap",
+    "interaction_poly": 0.126,
+    "p": 0.0,
+    "q": 0.0
    },
    {
     "pair": "BLAZE_ALL vs BLAZE (ablation)",
     "outcome": "ap",
     "interaction_poly": 0.0009,
     "p": 0.9711,
-    "q": 0.9762
+    "q": 0.9837
    }
   ],
   "pooled_paired": [
@@ -407,7 +704,7 @@
     "outcome": "ap",
     "mean_diff_A_minus_B": 0.0289,
     "wilcoxon_p": 0.0163,
-    "q": 0.0256
+    "q": 0.022
    },
    {
     "pair": "BM25 vs FLIM-fallback",
@@ -423,7 +720,7 @@
     "outcome": "ap",
     "mean_diff_A_minus_B": 0.0024,
     "wilcoxon_p": 0.9766,
-    "q": 0.9831
+    "q": 0.9823
    },
    {
     "pair": "BM25-parse vs FLIM-strict (control)",
@@ -431,7 +728,7 @@
     "outcome": "ap",
     "mean_diff_A_minus_B": -0.0093,
     "wilcoxon_p": 0.0576,
-    "q": 0.0818
+    "q": 0.0736
    },
    {
     "pair": "BM25-parse vs FLIM-strict (control)",
@@ -439,7 +736,7 @@
     "outcome": "ap",
     "mean_diff_A_minus_B": -0.0258,
     "wilcoxon_p": 0.015,
-    "q": 0.0238
+    "q": 0.0204
    },
    {
     "pair": "BM25 vs LocAgent",
@@ -455,7 +752,7 @@
     "outcome": "ap10",
     "mean_diff_A_minus_B": 0.0365,
     "wilcoxon_p": 0.1926,
-    "q": 0.2489
+    "q": 0.2288
    },
    {
     "pair": "BM25 vs SweRank",
@@ -471,7 +768,7 @@
     "outcome": "ap",
     "mean_diff_A_minus_B": 0.0418,
     "wilcoxon_p": 0.1349,
-    "q": 0.1792
+    "q": 0.1629
    },
    {
     "pair": "BM25 vs SweRank (top-10)",
@@ -487,7 +784,7 @@
     "outcome": "ap10",
     "mean_diff_A_minus_B": 0.0173,
     "wilcoxon_p": 0.9237,
-    "q": 0.9566
+    "q": 0.9431
    },
    {
     "pair": "SweRankEmbed vs SweRank (reranker effect)",
@@ -506,12 +803,172 @@
     "q": 0.0
    },
    {
+    "pair": "HybridFLIM vs FLIM-strict",
+    "class": "Mono-fix",
+    "outcome": "ap",
+    "mean_diff_A_minus_B": -0.0209,
+    "wilcoxon_p": 0.0,
+    "q": 0.0
+   },
+   {
+    "pair": "HybridFLIM vs FLIM-strict",
+    "class": "Poly-fix",
+    "outcome": "ap",
+    "mean_diff_A_minus_B": 0.0513,
+    "wilcoxon_p": 0.0,
+    "q": 0.0
+   },
+   {
+    "pair": "HybridSweRank vs SweRank",
+    "class": "Mono-fix",
+    "outcome": "ap",
+    "mean_diff_A_minus_B": 0.0318,
+    "wilcoxon_p": 0.0,
+    "q": 0.0
+   },
+   {
+    "pair": "HybridSweRank vs SweRank",
+    "class": "Poly-fix",
+    "outcome": "ap",
+    "mean_diff_A_minus_B": 0.1031,
+    "wilcoxon_p": 0.0,
+    "q": 0.0
+   },
+   {
+    "pair": "HybridLocAgent vs LocAgent",
+    "class": "Mono-fix",
+    "outcome": "ap10",
+    "mean_diff_A_minus_B": 0.0319,
+    "wilcoxon_p": 0.0003,
+    "q": 0.0005
+   },
+   {
+    "pair": "HybridLocAgent vs LocAgent",
+    "class": "Poly-fix",
+    "outcome": "ap10",
+    "mean_diff_A_minus_B": 0.0956,
+    "wilcoxon_p": 0.0,
+    "q": 0.0
+   },
+   {
+    "pair": "BM25 vs HybridFLIM",
+    "class": "Mono-fix",
+    "outcome": "ap",
+    "mean_diff_A_minus_B": -0.0377,
+    "wilcoxon_p": 0.0,
+    "q": 0.0
+   },
+   {
+    "pair": "BM25 vs HybridFLIM",
+    "class": "Poly-fix",
+    "outcome": "ap",
+    "mean_diff_A_minus_B": -0.0224,
+    "wilcoxon_p": 0.0189,
+    "q": 0.0253
+   },
+   {
+    "pair": "BM25 vs HybridSweRank",
+    "class": "Mono-fix",
+    "outcome": "ap",
+    "mean_diff_A_minus_B": -0.1449,
+    "wilcoxon_p": 0.0,
+    "q": 0.0
+   },
+   {
+    "pair": "BM25 vs HybridSweRank",
+    "class": "Poly-fix",
+    "outcome": "ap",
+    "mean_diff_A_minus_B": -0.0613,
+    "wilcoxon_p": 0.0,
+    "q": 0.0
+   },
+   {
+    "pair": "BM25 vs HybridLocAgent",
+    "class": "Mono-fix",
+    "outcome": "ap10",
+    "mean_diff_A_minus_B": -0.146,
+    "wilcoxon_p": 0.0,
+    "q": 0.0
+   },
+   {
+    "pair": "BM25 vs HybridLocAgent",
+    "class": "Poly-fix",
+    "outcome": "ap10",
+    "mean_diff_A_minus_B": -0.0592,
+    "wilcoxon_p": 0.0,
+    "q": 0.0
+   },
+   {
+    "pair": "BM25 vs SweRankEmbedAll",
+    "class": "Mono-fix",
+    "outcome": "ap",
+    "mean_diff_A_minus_B": -0.1322,
+    "wilcoxon_p": 0.0,
+    "q": 0.0
+   },
+   {
+    "pair": "BM25 vs SweRankEmbedAll",
+    "class": "Poly-fix",
+    "outcome": "ap",
+    "mean_diff_A_minus_B": -0.0759,
+    "wilcoxon_p": 0.0,
+    "q": 0.0
+   },
+   {
+    "pair": "SweRankEmbed vs SweRankEmbedAll (corpus extension)",
+    "class": "Mono-fix",
+    "outcome": "ap",
+    "mean_diff_A_minus_B": 0.0815,
+    "wilcoxon_p": 0.0,
+    "q": 0.0
+   },
+   {
+    "pair": "SweRankEmbed vs SweRankEmbedAll (corpus extension)",
+    "class": "Poly-fix",
+    "outcome": "ap",
+    "mean_diff_A_minus_B": 0.168,
+    "wilcoxon_p": 0.0,
+    "q": 0.0
+   },
+   {
+    "pair": "BM25 vs SweRankAll",
+    "class": "Mono-fix",
+    "outcome": "ap",
+    "mean_diff_A_minus_B": -0.2186,
+    "wilcoxon_p": 0.0,
+    "q": 0.0
+   },
+   {
+    "pair": "BM25 vs SweRankAll",
+    "class": "Poly-fix",
+    "outcome": "ap",
+    "mean_diff_A_minus_B": -0.1563,
+    "wilcoxon_p": 0.0,
+    "q": 0.0
+   },
+   {
+    "pair": "SweRankAll vs SweRank (corpus extension, reranked)",
+    "class": "Mono-fix",
+    "outcome": "ap",
+    "mean_diff_A_minus_B": 0.1055,
+    "wilcoxon_p": 0.0,
+    "q": 0.0
+   },
+   {
+    "pair": "SweRankAll vs SweRank (corpus extension, reranked)",
+    "class": "Poly-fix",
+    "outcome": "ap",
+    "mean_diff_A_minus_B": 0.1981,
+    "wilcoxon_p": 0.0,
+    "q": 0.0
+   },
+   {
     "pair": "BLAZE_ALL vs BLAZE (ablation)",
     "class": "Mono-fix",
     "outcome": "ap",
     "mean_diff_A_minus_B": -0.0104,
     "wilcoxon_p": 0.9458,
-    "q": 0.9597
+    "q": 0.9564
    },
    {
     "pair": "BLAZE_ALL vs BLAZE (ablation)",
@@ -519,7 +976,7 @@
     "outcome": "ap",
     "mean_diff_A_minus_B": -0.0061,
     "wilcoxon_p": 0.3007,
-    "q": 0.371
+    "q": 0.3457
    }
   ]
  },
@@ -527,8 +984,8 @@
   "BM25-all-ap": {
    "stratified_diff": -0.023872184363340543,
    "ci": [
-    -0.061401780528468924,
-    0.011802664672097994
+    -0.06295973443802094,
+    0.009471628748451628
    ],
    "unadjusted": -0.03733351787064043,
    "per_stratum": {
@@ -562,8 +1019,8 @@
   "BLAZE-all-ap": {
    "stratified_diff": -0.006597271964895855,
    "ci": [
-    -0.03793889428346444,
-    0.024515248733703286
+    -0.03682451095952057,
+    0.022520352166984357
    ],
    "unadjusted": -0.011185494301085869,
    "per_stratum": {
@@ -597,8 +1054,8 @@
   "FLIM-all-ap": {
    "stratified_diff": -0.07348026131607548,
    "ci": [
-    -0.10512629094988087,
-    -0.040525920047585574
+    -0.10849348743867049,
+    -0.04037366562893292
    ],
    "unadjusted": -0.09372368895307259,
    "per_stratum": {
@@ -632,8 +1089,8 @@
   "FLIM-parse-ap": {
    "stratified_diff": -0.10240855627090394,
    "ci": [
-    -0.13576850764538906,
-    -0.07182481393209622
+    -0.13444100943919066,
+    -0.07157059553763476
    ],
    "unadjusted": -0.12481545022438295,
    "per_stratum": {
@@ -667,8 +1124,8 @@
   "LocAgent-all-ap10": {
    "stratified_diff": -0.11257417211021789,
    "ci": [
-    -0.15014681160726165,
-    -0.07689603676367887
+    -0.1460787029719225,
+    -0.07402187129956643
    ],
    "unadjusted": -0.20322029527951674,
    "per_stratum": {
@@ -702,8 +1159,8 @@
   "SweRank-all-ap": {
    "stratified_diff": -0.10941886036748646,
    "ci": [
-    -0.14593262718388522,
-    -0.07123367228160925
+    -0.14683911965113383,
+    -0.07522661963244527
    ],
    "unadjusted": -0.20025237870002366,
    "per_stratum": {
@@ -793,10 +1250,10 @@
   }
  },
  "hc3_fallback": {
-  "class_models": 49,
-  "class_models_total": 832,
-  "interaction_models": 97,
-  "interaction_total": 380,
+  "class_models": 112,
+  "class_models_total": 1408,
+  "interaction_models": 209,
+  "interaction_total": 860,
   "primary_ap_class": [
    {
     "tech": "BLAZE",
@@ -839,6 +1296,36 @@
     "model": "mixedlm_powell"
    },
    {
+    "tech": "HybridFLIM",
+    "view": "all",
+    "model": "mixedlm_powell"
+   },
+   {
+    "tech": "HybridFLIM",
+    "view": "parse",
+    "model": "mixedlm_powell"
+   },
+   {
+    "tech": "HybridLocAgent",
+    "view": "all",
+    "model": "mixedlm_powell"
+   },
+   {
+    "tech": "HybridLocAgent",
+    "view": "parse",
+    "model": "mixedlm_powell"
+   },
+   {
+    "tech": "HybridSweRank",
+    "view": "all",
+    "model": "mixedlm_powell"
+   },
+   {
+    "tech": "HybridSweRank",
+    "view": "parse",
+    "model": "mixedlm_powell"
+   },
+   {
     "tech": "LocAgent",
     "view": "all",
     "model": "mixedlm_powell"
@@ -879,6 +1366,26 @@
     "model": "mixedlm_powell"
    },
    {
+    "tech": "SweRankAll",
+    "view": "all",
+    "model": "mixedlm_powell"
+   },
+   {
+    "tech": "SweRankAll",
+    "view": "all",
+    "model": "mixedlm_powell"
+   },
+   {
+    "tech": "SweRankAll",
+    "view": "parse",
+    "model": "mixedlm_powell"
+   },
+   {
+    "tech": "SweRankAll",
+    "view": "parse",
+    "model": "mixedlm_lbfgs"
+   },
+   {
     "tech": "SweRankEmbed",
     "view": "all",
     "model": "mixedlm_powell"
@@ -895,6 +1402,26 @@
    },
    {
     "tech": "SweRankEmbed",
+    "view": "parse",
+    "model": "mixedlm_powell"
+   },
+   {
+    "tech": "SweRankEmbedAll",
+    "view": "all",
+    "model": "mixedlm_powell"
+   },
+   {
+    "tech": "SweRankEmbedAll",
+    "view": "all",
+    "model": "mixedlm_powell"
+   },
+   {
+    "tech": "SweRankEmbedAll",
+    "view": "parse",
+    "model": "mixedlm_powell"
+   },
+   {
+    "tech": "SweRankEmbedAll",
     "view": "parse",
     "model": "mixedlm_powell"
    }
@@ -927,6 +1454,46 @@
    {
     "pair": "SweRankEmbed vs SweRank (reranker effect)",
     "model": "ols_project_fe_hc3"
+   },
+   {
+    "pair": "HybridFLIM vs FLIM-strict",
+    "model": "mixedlm_powell"
+   },
+   {
+    "pair": "HybridSweRank vs SweRank",
+    "model": "mixedlm_powell"
+   },
+   {
+    "pair": "HybridLocAgent vs LocAgent",
+    "model": "mixedlm_powell"
+   },
+   {
+    "pair": "BM25 vs HybridFLIM",
+    "model": "mixedlm_powell"
+   },
+   {
+    "pair": "BM25 vs HybridSweRank",
+    "model": "mixedlm_powell"
+   },
+   {
+    "pair": "BM25 vs HybridLocAgent",
+    "model": "mixedlm_powell"
+   },
+   {
+    "pair": "BM25 vs SweRankEmbedAll",
+    "model": "mixedlm_powell"
+   },
+   {
+    "pair": "SweRankEmbed vs SweRankEmbedAll (corpus extension)",
+    "model": "mixedlm_powell"
+   },
+   {
+    "pair": "BM25 vs SweRankAll",
+    "model": "mixedlm_powell"
+   },
+   {
+    "pair": "SweRankAll vs SweRank (corpus extension, reranked)",
+    "model": "mixedlm_powell"
    },
    {
     "pair": "BLAZE_ALL vs BLAZE (ablation)",

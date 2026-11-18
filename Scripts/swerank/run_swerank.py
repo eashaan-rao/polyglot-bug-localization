@@ -262,8 +262,8 @@ def rerank_many(agent, results):
 
 
 def rerank(a):
-    src = os.path.join(DATA, "retrieval", f"fold{a.fold}")
-    out = os.path.join(DATA, "rerank", f"fold{a.fold}")
+    src = os.path.join(DATA, a.src_name, f"fold{a.fold}")
+    out = os.path.join(DATA, a.out_name, f"fold{a.fold}")
     os.makedirs(out, exist_ok=True)
     insts = {i["instance_id"]: i for i in load_instances(a.fold)}
     todo = [iid for iid in insts if os.path.exists(os.path.join(src, iid + ".json.gz"))
@@ -390,6 +390,8 @@ def main():
     ap.add_argument("--verify-only", action="store_true")
     ap.add_argument("--determinism", type=int, default=3, help="rerank: re-run the first N bugs and compare")
     ap.add_argument("--rerun", type=int, default=0, help="rerank: re-run N random finished bugs into rerun/")
+    ap.add_argument("--src-name", default="retrieval", help="rerank: retrieval output folder under data/obj2/swerank")
+    ap.add_argument("--out-name", default="rerank", help="rerank: output folder under data/obj2/swerank")
     ap.add_argument("--per-project", type=int, default=0, help="retrieve: only the first N bugs per project")
     a = ap.parse_args()
     {"retrieve": retrieve, "rerank": rerank, "scores": scores}[a.stage](a)

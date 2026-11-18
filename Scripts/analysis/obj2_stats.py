@@ -83,6 +83,18 @@ PAIRS = [
     ("BM25 vs SweRank", "BM25", "all", "SweRank", "all", OUTCOMES),
     ("BM25 vs SweRank (top-10)", "BM25", "all", "SweRank", "all", TOPK_OUTCOMES),
     ("SweRankEmbed vs SweRank (reranker effect)", "SweRankEmbed", "all", "SweRank", "all", OUTCOMES),
+    # Hybrids (review P1, 2026-11-16): technique for the files it can represent, BM25 for the rest,
+    # merged by reciprocal rank fusion (Scripts/analysis/hybrid_fusion.py)
+    ("HybridFLIM vs FLIM-strict", "HybridFLIM", "all", "FLIM", "parse", OUTCOMES),
+    ("HybridSweRank vs SweRank", "HybridSweRank", "all", "SweRank", "all", OUTCOMES),
+    ("HybridLocAgent vs LocAgent", "HybridLocAgent", "all", "LocAgent", "all", TOPK_OUTCOMES),
+    ("BM25 vs HybridFLIM", "BM25", "all", "HybridFLIM", "all", OUTCOMES),
+    ("BM25 vs HybridSweRank", "BM25", "all", "HybridSweRank", "all", OUTCOMES),
+    ("BM25 vs HybridLocAgent", "BM25", "all", "HybridLocAgent", "all", TOPK_OUTCOMES),
+    ("BM25 vs SweRankEmbedAll", "BM25", "all", "SweRankEmbedAll", "all", OUTCOMES),
+    ("SweRankEmbed vs SweRankEmbedAll (corpus extension)", "SweRankEmbedAll", "all", "SweRankEmbed", "all", OUTCOMES),
+    ("BM25 vs SweRankAll", "BM25", "all", "SweRankAll", "all", OUTCOMES),
+    ("SweRankAll vs SweRank (corpus extension, reranked)", "SweRankAll", "all", "SweRank", "all", OUTCOMES),
     # ablation (fold 1, seed 13): does training BLAZE on all fix files help?
     ("BLAZE_ALL vs BLAZE (ablation)", "BLAZE_ALL", "all", "BLAZE", "all", OUTCOMES),
 ]
@@ -198,7 +210,7 @@ def condition(b, name):
 def rq3(x, cond):
     rows, models = [], []
     for (tech, view), g in x.groupby(["tech", "view"]):
-        outs = (TOPK_OUTCOMES if tech == "LocAgent" else
+        outs = (TOPK_OUTCOMES if tech in ("LocAgent", "HybridLocAgent") else
                 OUTCOMES + ["ap10", "rr10"] if tech.startswith("SweRank") else OUTCOMES)
         for y in outs:
             groups = list(g.groupby("project")) + ([("POOLED", g)] if g.project.nunique() > 1 else [])

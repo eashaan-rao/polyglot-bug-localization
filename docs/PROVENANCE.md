@@ -155,3 +155,27 @@ outcome was identical for 21/21 and MAP was 0.569 vs 0.567
 Training-data overlap: SweLoc excludes SWE-bench and LocBench repositories;
 ansible is in LocBench (1 of 560 instances), airflow and localstack are not, and
 SweLoc is not released.
+
+## Diagnostic variants: reach or understanding (2026-11-16 to 2026-11-18)
+
+Requested by the internal review (P1): what do the parser-dependent techniques
+do with the files they cannot represent? Not proposed as techniques; untuned.
+- Hybrids (`Scripts/analysis/hybrid_fusion.py`): the technique's ranking for
+  the files it represents, BM25 for the rest, reciprocal rank fusion, k = 60.
+  HybridFLIM (every FLIM seed), HybridSweRank, HybridLocAgent. Evaluated with
+  `Scripts/analysis/append_eval.py`-style appending (only these rows replaced).
+- SweRank on all text files (`Scripts/swerank/extend_corpus.py`): SweRank's
+  own function documents + 50-line chunks of every other candidate file
+  (universe R text files, `list_candidates.py`), at most 40 chunks per file.
+  Retriever only (SweRankEmbedAll) and with SweRank's reranker on the top 100
+  documents (SweRankAll; sequential path, same settings as the main run).
+  Embedding batch 8-16 on the shared GPU (padding only).
+- Reranker run: first attempt (2026-11-17 00:15) failed at vLLM start-up
+  because vLLM 0.8.5 counts other processes' GPU memory against
+  gpu_memory_utilization; the placeholder scores it left were removed from the
+  evaluation (6,282 per-bug rows). Restart with share = (others + 20 GiB)/total;
+  fold 1 done, fold 2 restarted once by the watchdog after the GPU was full for
+  ~1.5 h; finished 2026-11-17 23:21 (1,047 bugs).
+- Contamination probe extended to all Python test bugs (LocAgent model,
+  closed-book, issue title only): hit@10 Mono-fix 7.1% / 6.6%, Poly-fix
+  3.3% / 0.8% (folds 1 / 2); `results/obj2/locagent/contamination_probe_all_fold*.csv`.

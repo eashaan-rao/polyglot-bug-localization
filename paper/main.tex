@@ -85,8 +85,12 @@ software; without test files in the ground truth it narrows to a smaller lead
 for the parser-dependent techniques. When a fix spans two programming
 languages, every technique does worse, BM25 included. Mean reciprocal rank and
 Top-$k$ accuracy, the metrics most often reported, weaken these effects and
-show no reversal, because they reward only the first fixed file found. We
-release the classification, the score files and the analysis scripts.
+show no reversal, because they reward only the first fixed file found.
+Diagnostic variants show that for a modern technique the limit is reach, not
+understanding: given every text file, SweRank ranks configuration, data and
+test files as well as BM25, its Poly-fix penalty shrinks from 0.17 to a
+non-significant 0.04, and it outperforms BM25 on both kinds of bug. We release
+the classification, the score files and the analysis scripts.
 \end{abstract}
 
 \begin{keywords}
@@ -192,6 +196,13 @@ that can see them rank them well, how large the penalty is next to the
 advantage parser-dependent techniques show elsewhere, and which metrics reveal
 it.
 
+To separate the two limits of the opening paragraphs, we also run diagnostic
+variants of the parser-dependent techniques: each combined with BM25 for the
+files it cannot represent, and SweRank given every text file. They are not
+proposed as techniques. They show that the penalty is mostly a matter of
+reach: SweRank ranks the secondary files as well as BM25 once it can see them,
+and its Poly-fix penalty then largely disappears.
+
 \noindent The contributions are:
 \begin{itemize}[itemsep=1pt]
 \item A classification of bug fixes by the languages of the files they change
@@ -200,7 +211,8 @@ it.
 \item A per-file account of which fixed files each technique can read, and a
   measurement of how well it ranks the files it can read, which separates a
   technique that cannot see a file from one that sees it but ranks it poorly
-  (RQ2, RQ3).
+  (RQ2, RQ3); diagnostic variants confirm that for a modern technique the
+  penalty comes from reach rather than understanding.
 \item A comparison of five techniques that differ in what they can read, on a
   time-ordered split of each project, with every file of the project ranked
   and one evaluator for all techniques (RQ3, RQ4).
@@ -317,7 +329,7 @@ run only where a specific comparison calls for one. The four questions are
 answered independently, so a null result at any step is reported as a result.
 Figure~\ref{fig:design} summarises the pipeline.
 
-\begin{figure*}[t]
+\begin{figure*}[pos=t]
 \centering
 \includegraphics[width=\textwidth]{figures/study_design.pdf}
 \caption{Study design. Blue: data preparation; orange: evaluation. Every technique scores every candidate file of the pre-fix snapshot; one evaluator computes all metrics.}
@@ -515,7 +527,10 @@ secondary languages. The object of study is how existing techniques behave on
 fixes that span languages; an adapted technique would be a new technique.
 FLIM-fallback and BLAZE-all are diagnostic variants, labelled as ours, used
 only to separate what the architecture prevents from what training could
-change.
+change. Two further kinds of diagnostic variant (Section~\ref{sec:evaluation})
+separate reach from understanding: hybrids with BM25, and SweRank with its
+corpus extended to every text file. None of them is proposed as a technique;
+they are untuned and reported separately from the techniques as published.
 
 \paragraph{Why these five.} FLIM is parser-dependent by architecture: it
 cannot form its semantic features without the function list, and 13 of its
@@ -665,6 +680,24 @@ trains nothing and decodes greedily, so it is run once; because greedy
 decoding on a GPU is not guaranteed to be bit-identical between runs, we re-run
 it on a random subset of fold-1 bugs (20, plus one bug that differed in an
 earlier check) to measure the variation.
+
+\paragraph{Diagnostic variants: reach or understanding.} Two kinds of variant
+ask what the parser-dependent techniques would do with the files they cannot
+represent. A \emph{hybrid} ranks the files a technique can represent by the
+technique's own ranking and every other file by BM25, and merges the two
+lists by reciprocal rank fusion with the standard constant $k{=}60$
+\citep{cormack2009rrf}: a file at rank $r$ in its list scores $1/(60+r)$. We
+build hybrids of FLIM-strict, LocAgent and SweRank from the stored score files.
+\emph{SweRank on all text files} keeps SweRank's own function documents and
+adds every other candidate file of the snapshot---non-Python files, Python
+test files and Python files without a function---as chunks of 50 lines in
+SweRank's document format (path, then text), at most 40 chunks per file. We
+run its retriever on this corpus and then its reranker on the top 100
+documents, with the settings of the main run; a file's position is that of its
+best document. Neither variant is tuned: the constant, the chunk length and the
+cap were fixed before the runs. They are compared with the original technique
+and with BM25 on the same bugs, with the same paired tests and interaction
+models as in RQ4.
 
 \paragraph{Training budget and hyper-parameters.} Every hyper-parameter comes
 from the authors' released code except the learning rate. The neural
@@ -970,7 +1003,7 @@ also skips test files, sees every ground-truth file of only 3.7\% of the
 \poly bugs. No failure comes from our tooling (no \texttt{parse\_error}).
 \end{tcolorbox}
 
-\begin{figure*}[t]
+\begin{figure*}[pos=t]
 \centering
 \includegraphics[width=\textwidth]{figures/fig_effects.pdf}
 \caption{(a) RQ3: adjusted class effect (Poly-fix minus Mono-fix) per technique, on AP and on RR; techniques above the dashed line read every file. (b) RQ4: interaction of BM25 with each parser-dependent technique (BM25's gain on Poly-fix bugs minus its gain on Mono-fix bugs). Linear mixed models with $n_{\mathrm{gt}}$, $\log n_{\mathrm{cand}}$, report length, fold and a project random intercept; 95\% confidence intervals. All outcomes are in Tables~\ref{tab:rq3models} and~\ref{tab:rq4}.}
@@ -1034,7 +1067,7 @@ Mono-fix bug's. What differs is the rest of the fix: complete-fix recall@10
 falls by 0.178 for FLIM-strict and by 0.190 for SweRank, and does not fall
 significantly for BM25 or BLAZE.
 
-\begin{figure}[t]
+\begin{figure}[pos=t]
 \centering
 \includegraphics[width=\linewidth]{figures/fig_decomp.pdf}
 \caption{Where the Poly-fix penalty comes from (both folds): MAP on the files of Mono-fix bugs, and on the primary-language and the secondary-language ground-truth files of Poly-fix bugs. For each of the two Poly-fix bars the other ground-truth files of the bug are removed from the ranking, so each subset is ranked as if it were the whole ground truth. Error bars: 95\% bootstrap interval of the difference between the primary-language bar and the Mono-fix bar. FLIM-strict cannot rank secondary files. $^{\dagger}$Python projects, AP@10.}
@@ -1190,6 +1223,13 @@ distinguishable from 0 without test files in the ground truth ($+0.062$
 $[-0.005, 0.129]$), at the strict grain, or in fold~2 alone
 (Figure~\ref{fig:sens}).
 
+\begin{figure*}[pos=t]
+\centering
+\includegraphics[width=\textwidth]{figures/fig_sensitivity.pdf}
+\caption{RQ4 interaction (BM25's gain over technique X on Poly-fix bugs minus its gain on Mono-fix bugs, AP) under each sensitivity condition, with 95\% confidence intervals. The control compares BM25 restricted to parseable files with FLIM-strict. The RQ3 class effects under the same conditions are in Table~\ref{tab:sens}.}
+\label{fig:sens}
+\end{figure*}
+
 \paragraph{BM25 against SweRank.} On the same 781 bugs, now with full
 rankings, SweRank outperforms BM25 on Mono-fix bugs by 0.113 MAP (0.477
 against 0.364), more than any other technique, and loses that lead on
@@ -1220,6 +1260,56 @@ return a non-Python file, show the same interaction: LocAgent ($+0.14$ AP@10)
 and SweRank, the strongest technique on \mono bugs ($+0.14$ MAP), lose their
 lead on \poly bugs without falling significantly behind BM25. On RR and
 Top-10 all three parser-dependent techniques lead BM25 on both classes.
+\end{tcolorbox}
+
+\subsection{Reach or understanding: diagnostic variants}\label{sec:variants}
+
+The results so far leave open whether the parser-dependent techniques lose the
+secondary files only because they cannot see them (reach) or would also rank
+them poorly if they could (understanding). The variants of
+Section~\ref{sec:evaluation} answer this (Table~\ref{tab:variants}).
+
+\input{tables/tab_variants}
+
+\paragraph{Given every file, SweRank ranks the secondary files well.} With its
+corpus extended to all text files, SweRank's retriever ranks the
+secondary-language files of Poly-fix bugs at a MAP of 0.252, against 0.226 for
+BM25 on the same bugs and 0.001 with Python functions only. Its reranker,
+trained on Python functions alone, keeps them there (0.257) while raising both
+classes. Full
+SweRank on all text files reaches a MAP of 0.583 on Mono-fix and 0.475 on
+Poly-fix bugs, against 0.478 and 0.277 as published; it gains 0.106 on
+Mono-fix and 0.198 on Poly-fix bugs, an interaction of $+0.126$
+$[0.084, 0.168]$. Its adjusted class effect shrinks from $-0.172$ to $-0.044$
+$[-0.102, 0.013]$, and without test files in the ground truth it vanishes
+($+0.002$). It outperforms BM25 on both classes (by 0.219 and 0.156), and the
+interaction with BM25 is no longer distinguishable from 0 ($+0.015$
+$[-0.042, 0.072]$). For SweRank, therefore, the Poly-fix penalty is almost
+entirely a matter of reach. The older learned techniques differ: FLIM-fallback
+and BLAZE also see the secondary files but rank them well below BM25
+(Figure~\ref{fig:decomp}), so for them the representation of non-source files
+is a limit as well.
+
+\paragraph{A hybrid with BM25 recovers part of the loss.} Letting BM25 rank the
+files a technique cannot represent raises every technique on Poly-fix bugs:
+FLIM-strict by 0.051, LocAgent by 0.096 (AP@10) and SweRank by 0.103 (all
+interactions with the original technique exclude 0). It narrows their class
+effects to $-0.050$, $-0.101$ and $-0.110$. On Mono-fix bugs the hybrid costs
+FLIM-strict 0.021 but raises LocAgent and SweRank by 0.032, because it returns
+the test files they skip. All three hybrids outperform BM25 on Poly-fix bugs,
+but they recover less than extending SweRank's corpus: fusing two lists ranks
+the secondary files by lexical similarity alone and interleaves them with files
+the technique ranks better, so they reach a lower MAP on those files (0.128 for
+the SweRank hybrid, against 0.226 for BM25 alone).
+
+\begin{tcolorbox}[title=Reach or understanding]
+For the newest technique, the penalty is reach: given every text file,
+SweRank ranks configuration, data and test files as well as BM25, its \poly
+penalty becomes small and non-significant, and it outperforms BM25 on both
+classes. For FLIM and BLAZE, which can already see these files, the
+representation of non-source files limits their ranking too. A simple hybrid
+with BM25 recovers part of the loss for every parser-dependent technique.
+These are diagnostic variants, not proposed techniques.
 \end{tcolorbox}
 
 \subsection{Filter-excluded and no-primary bugs}\label{sec:removed}
@@ -1257,12 +1347,6 @@ SweRank still leads BM25 (0.378 against 0.340), by less than on the primary-anch
 
 \subsection{Sensitivity}
 
-\begin{figure*}[t]
-\centering
-\includegraphics[width=\textwidth]{figures/fig_sensitivity.pdf}
-\caption{RQ4 interaction (BM25's gain over technique X on Poly-fix bugs minus its gain on Mono-fix bugs, AP) under each sensitivity condition, with 95\% confidence intervals. The control compares BM25 restricted to parseable files with FLIM-strict. The RQ3 class effects under the same conditions are in Table~\ref{tab:sens}.}
-\label{fig:sens}
-\end{figure*}
 \input{tables/tab_sensitivity}
 
 Figure~\ref{fig:sens} shows the RQ4 interaction under each condition, and
@@ -1310,27 +1394,29 @@ technique's parser.
 
 \subsection{For technique design}
 
-Giving FLIM the text of the files it cannot parse closed about a quarter of its
-Poly-fix penalty, but its ranking of those files stayed far below BM25's (MAP
-0.055 against 0.203). A text fallback is not enough when the learned and
-structural features of a technique are defined on parser output. Training data
-alone did not help a language-agnostic technique either: BLAZE trained on
-every fix file ranked secondary files no better. Our results therefore point
-to the representation of non-source files, not only to reaching them, as the
-open problem. A hybrid that ranks parser-less files with lexical retrieval and
-merges the two lists is a natural next step, but we have not tested it, and
-merging two rankings has its own costs.
+For a modern technique, what a parser-dependent tool loses is mainly reach.
+Given every text file, SweRank ranked configuration, data and test files as
+well as BM25, without any change to its models, and its Poly-fix penalty
+largely disappeared (Section~\ref{sec:variants}). The choice that cost it the
+secondary files is not in the model but in the corpus: which files the parser
+and the path filter let through. LocAgent's graph and keyword index make the
+same choice, which is why its tools cannot return a YAML or JSON file however
+the model reasons.
 
-Techniques built on LLMs inherit the same limit through the index they
-search. LocAgent's graph and keyword index contain Python files only, so its
-tools cannot return a YAML or JSON file however the model reasons. In our runs
-it returned such a file for almost no bug, and its AP@10 on Poly-fix bugs fell to BM25's level (0.253 against 0.290, not significantly different) although it led BM25 by 0.11 on Mono-fix bugs. In SweRank the
-files are lost before its language model runs, because the reranker only
-reorders what the retriever passes on; a stronger reranker cannot change that
-by design. In both techniques the corpus is built from the Python parser's
-output. Extending it to configuration and data files would let the model see
-them; whether it would then rank them well is open, since the learned
-techniques that can see such files rank them below BM25.
+For older learned techniques the picture is different. Giving FLIM the text of
+the files it cannot parse closed about a quarter of its Poly-fix penalty, but
+its ranking of those files stayed far below BM25's (MAP 0.055 against 0.203),
+because its learned and structural features are defined on parser output; and
+BLAZE trained on every fix file ranked secondary files no better. Where the
+model itself cannot represent non-source files well, reach alone is not
+enough.
+
+Two cheap directions follow, neither of which we propose as a technique here.
+Building the index from every text file rather than from parser output
+recovered most of the loss for SweRank. Where that is not possible, merging the
+technique's ranking with BM25 for the files it cannot represent recovered part
+of it for every technique we tried. Both are untuned diagnostics; developing
+and evaluating them properly is future work.
 
 \subsection{For benchmark construction}
 
@@ -1395,10 +1481,13 @@ with three seeds on three projects only; the seed SD (0.012--0.030 MAP) is
 small against the effects reported, but was not measured on the other three
 projects. LocAgent samples at temperature 1.0 and was run once per bug, with
 two repeats on a subset (Table~\ref{tab:seeds}). The pre-trained encoders and
-the LLM may have seen these public repositories; a closed-book probe in which
-the LocAgent model names files without repository access found a correct file
-in its first ten for 2 of 87 localstack test bugs (none of the Poly-fix
-ones); the probe covered one project and one model. SweRank's training data was mined from popular Python repositories,
+the LLM may have seen these public repositories. In a closed-book probe, the
+LocAgent model was given only the repository name and the issue title, without
+repository access, and asked which files the fix changed. Over the test bugs
+of all three Python projects it named a correct file among ten for 7.1\% and
+6.6\% of the Mono-fix bugs of folds~1 and~2 and for 3.3\% and 0.8\% of the
+Poly-fix bugs, against 82\% Top-10 for LocAgent with repository access.
+SweRank's models rank code they are shown and cannot be probed this way. SweRank's training data was mined from popular Python repositories,
 excluding those in SWE-bench and LocBench; ansible is in LocBench and so was
 excluded, but airflow and localstack may have been included, and the training
 set is not released, so we cannot check. SweRank was run once per bug;
@@ -1429,8 +1518,11 @@ dropped feature its design is language-independent, so a Python parser
 reproduces it, whereas the LLM-based techniques depend on models trained on
 Python only. Other parser-dependent techniques may degrade differently, but
 the three span four years and three designs and show the same interaction.
-Because every LLM-based technique we ran is also parser-dependent, the study
-cannot say how an LLM ranks secondary files it can see. The title's
+The LLM-based techniques as published are also parser-dependent; only the
+diagnostic SweRank variant shows how an LLM ranks secondary files it can see,
+and an agent that searches every file (for example with shell tools) was not
+run. The diagnostic variants are untuned, so their gains are lower bounds of
+what such designs could reach, not estimates of a technique's performance. The title's
 ``localizability'' is measured by ranking performance; we do not analyse which
 report content points to a secondary file. The 50-bug agreement check of the
 classification \pending{human two-person round; Cohen's $\kappa$}; a first
@@ -1455,10 +1547,13 @@ language model improves both kinds of bug equally. The pattern is strongest
 where the extra files are read by the software, narrows without test files in
 the ground truth, and turns into a penalty for every technique when a fix
 spans two programming languages. The first-hit metrics the field reports most
-often weaken these effects and show no reversal. Benchmarks and evaluations
-that keep only source files of the project language therefore report the
-performance of parser-dependent techniques on the part of the task they can
-read. We release the classification, the per-file parse status, the score
+often weaken these effects and show no reversal. For the newest technique the
+penalty is a matter of reach rather than understanding: given every text file,
+SweRank ranks the extra files as well as BM25 and outperforms it on both kinds
+of bug. Benchmarks and evaluations that keep only source files of the project
+language therefore report the performance of parser-dependent techniques on
+the part of the task they can read, and the techniques themselves lose the
+rest at the indexing step, before their models run. We release the classification, the per-file parse status, the score
 files and the analysis scripts so that other techniques can be placed on the
 same footing.
 
