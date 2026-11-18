@@ -373,18 +373,21 @@ def variants(T):
         ("All six projects (AP)", [
             ("BM25", "BM25", "all", "ap", False, "BM25-all-ap"),
             ("FLIM-strict", "FLIM", "parse", "ap", False, "FLIM-parse-ap"),
-            ("Hybrid: FLIM-strict + BM25", "HybridFLIM", "all", "ap", False, "HybridFLIM-all-ap")]),
+            ("Hybrid: FLIM-strict + BM25", "HybridFLIM", "all", "ap", False, "HybridFLIM-all-ap"),
+            ("Co-change: FLIM-strict + history", "CoChangeFLIM", "all", "ap", False, "CoChangeFLIM-all-ap")]),
         ("Python projects (AP@10)", [
             ("BM25", "BM25", "all", "ap10", True, "BM25-all-ap10-py"),
             ("LocAgent", "LocAgent", "all", "ap10", False, "LocAgent-all-ap10"),
-            ("Hybrid: LocAgent + BM25", "HybridLocAgent", "all", "ap10", False, "HybridLocAgent-all-ap10")]),
+            ("Hybrid: LocAgent + BM25", "HybridLocAgent", "all", "ap10", False, "HybridLocAgent-all-ap10"),
+            ("Co-change: LocAgent + history", "CoChangeLocAgent", "all", "ap10", False, "CoChangeLocAgent-all-ap10")]),
         ("Python projects (AP)", [
             ("BM25", "BM25", "all", "ap", True, "BM25-all-ap-py"),
             ("SweRank retriever (Python functions)", "SweRankEmbed", "all", "ap", False, "SweRankEmbed-all-ap"),
             ("SweRank retriever, all text files", "SweRankEmbedAll", "all", "ap", False, "SweRankEmbedAll-all-ap"),
             ("SweRank (Python functions, as published)", "SweRank", "all", "ap", False, "SweRank-all-ap"),
             ("SweRank, all text files", "SweRankAll", "all", "ap", False, "SweRankAll-all-ap"),
-            ("Hybrid: SweRank + BM25", "HybridSweRank", "all", "ap", False, "HybridSweRank-all-ap")]),
+            ("Hybrid: SweRank + BM25", "HybridSweRank", "all", "ap", False, "HybridSweRank-all-ap"),
+            ("Co-change: SweRank + history", "CoChangeSweRank", "all", "ap", False, "CoChangeSweRank-all-ap")]),
     ]
     rows = []
     for gname, specs in groups:
@@ -399,7 +402,7 @@ def variants(T):
                 ce = ci(m["class_effect_poly"], m["ci_lo"], m["ci_hi"])
             rows.append(" & ".join([r"\quad " + lab, str(n), f(mo), f(po), sec, ce]) + r" \\")
     body = r"""\begin{table*}[pos=t]
-\caption{Reach or understanding: diagnostic variants of the parser-dependent techniques (ours, untuned; not proposed as techniques). A hybrid ranks the files the technique can represent by its own ranking and every other file by BM25, merged by reciprocal rank fusion ($k{=}60$). ``All text files'' gives SweRank every candidate file: its own function documents plus 50-line chunks of all other files. MAP of Mono-fix and Poly-fix bugs, MAP on the secondary-language files of Poly-fix bugs (other ground-truth files removed from the ranking), and the adjusted class effect as in Table~\ref{tab:rq3models} ($^{*}$: 95\% CI excludes 0).}
+\caption{Reach or understanding: diagnostic variants of the parser-dependent techniques (ours, untuned; not proposed as techniques). A hybrid ranks the files the technique can represent by its own ranking and every other file by BM25, merged by reciprocal rank fusion ($k{=}60$); a co-change variant ranks the other files instead by how often they changed together with the technique's top five files before the report. ``All text files'' gives SweRank every candidate file: its own function documents plus 50-line chunks of all other files. MAP of Mono-fix and Poly-fix bugs, MAP on the secondary-language files of Poly-fix bugs (other ground-truth files removed from the ranking), and the adjusted class effect as in Table~\ref{tab:rq3models} ($^{*}$: 95\% CI excludes 0).}
 \label{tab:variants}
 \footnotesize
 \begin{tabular}{lrrrrl}

@@ -30,24 +30,24 @@
   "poly_diff BM25 vs FLIM-strict": {
    "est": 0.0289,
    "ci95": [
-    0.005,
-    0.0543
+    0.0038,
+    0.0535
    ],
    "ci90": [
-    0.008211607142857139,
-    0.04958839285714286
+    0.008043749999999995,
+    0.04975625
    ],
    "equivalent": true
   },
   "poly_diff BM25 vs FLIM-fallback": {
    "est": 0.0024,
    "ci95": [
-    -0.0219,
-    0.0256
+    -0.0208,
+    0.0263
    ],
    "ci90": [
-    -0.017533035714285713,
-    0.02233303571428571
+    -0.017365178571428577,
+    0.022165178571428575
    ],
    "equivalent": true
   },
@@ -55,23 +55,23 @@
    "est": 0.0365,
    "ci95": [
     -0.0038,
-    0.0796
+    0.0775
    ],
    "ci90": [
-    0.0015017857142857055,
-    0.07149821428571429
+    0.0023830357142857125,
+    0.07061696428571429
    ],
    "equivalent": false
   },
   "poly_diff BM25 vs SweRank": {
    "est": 0.0418,
    "ci95": [
-    0.003,
-    0.081
+    0.0034,
+    0.0811
    ],
    "ci90": [
-    0.009067857142857141,
-    0.07453214285714285
+    0.009193749999999994,
+    0.07440625000000001
    ],
    "equivalent": false
   }
@@ -91,6 +91,11 @@
    ],
    "poly_sec_removed": 0.20327392104219624,
    "poly_sec_nonrel": 0.16693764771922984
+  },
+  "BM25-all-ap-py": {
+   "mono": 0.36443216247286897,
+   "poly_prim_removed": 0.3525028020574377,
+   "poly_sec_removed": 0.22608000392348923
   },
   "BLAZE-all-ap": {
    "mono": 0.2548422454077776,
@@ -272,21 +277,61 @@
    "poly_sec_removed": 0.18942152618623206,
    "poly_sec_nonrel": 0.1516514939309057
   },
-  "BM25-all-ap-py": {
-   "mono": 0.36443216247286897,
-   "poly_prim_removed": 0.3525028020574377,
-   "poly_sec_removed": 0.22608000392348923
-  },
   "BM25-all-ap10-py": {
    "mono": 0.3421935474807207,
    "poly_prim_removed": 0.33112306116787116,
    "poly_sec_removed": 0.2131017434296123
+  },
+  "CoChangeFLIM-all-ap": {
+   "mono": 0.3242975201588952,
+   "poly_prim_removed": 0.33243622034157566,
+   "poly_prim_removed_minus_mono_ci": [
+    -0.028937666076350496,
+    0.044952919618121895
+   ],
+   "poly_prim_nonrel": 0.3216600882717433,
+   "poly_prim_nonrel_minus_mono_ci": [
+    -0.037965535653284234,
+    0.03351369547623071
+   ],
+   "poly_sec_removed": 0.17007237358449742,
+   "poly_sec_nonrel": 0.15014172956650482
+  },
+  "CoChangeSweRank-all-ap": {
+   "mono": 0.49850573820096944,
+   "poly_prim_removed": 0.494321340048531,
+   "poly_prim_removed_minus_mono_ci": [
+    -0.05132027944436971,
+    0.044600242160757884
+   ],
+   "poly_prim_nonrel": 0.48961680147791964,
+   "poly_prim_nonrel_minus_mono_ci": [
+    -0.05527016967016502,
+    0.03768815249955514
+   ],
+   "poly_sec_removed": 0.161771820575738,
+   "poly_sec_nonrel": 0.12234999681498247
+  },
+  "CoChangeLocAgent-all-ap10": {
+   "mono": 0.44891623705106154,
+   "poly_prim_removed": 0.4228265987995657,
+   "poly_prim_removed_minus_mono_ci": [
+    -0.07412045726994249,
+    0.019975626491937057
+   ],
+   "poly_prim_nonrel": 0.41854186256442305,
+   "poly_prim_nonrel_minus_mono_ci": [
+    -0.07468300434177297,
+    0.018842169460054858
+   ],
+   "poly_sec_removed": 0.10073086563698716,
+   "poly_sec_nonrel": 0.06656263963392002
   }
  },
  "fdr": {
-  "n_class_tests": 1408,
-  "n_interaction_tests": 860,
-  "n_pooled_paired_tests": 1720,
+  "n_class_tests": 1696,
+  "n_interaction_tests": 1148,
+  "n_pooled_paired_tests": 2296,
   "class_effects": [
    {
     "tech": "BLAZE",
@@ -294,7 +339,7 @@
     "outcome": "ap",
     "class_effect_poly": -0.0213,
     "p": 0.2711,
-    "q": 0.3805
+    "q": 0.3812
    },
    {
     "tech": "BLAZE",
@@ -310,7 +355,7 @@
     "outcome": "ap",
     "class_effect_poly": -0.0307,
     "p": 0.2692,
-    "q": 0.3794
+    "q": 0.3798
    },
    {
     "tech": "BLAZE_ALL",
@@ -318,7 +363,7 @@
     "outcome": "ap",
     "class_effect_poly": -0.1081,
     "p": 0.0001,
-    "q": 0.0003
+    "q": 0.0004
    },
    {
     "tech": "BM25",
@@ -326,13 +371,61 @@
     "outcome": "ap",
     "class_effect_poly": -0.026,
     "p": 0.2254,
-    "q": 0.3354
+    "q": 0.3356
    },
    {
     "tech": "BM25",
     "view": "parse",
     "outcome": "ap",
     "class_effect_poly": -0.1293,
+    "p": 0.0,
+    "q": 0.0
+   },
+   {
+    "tech": "CoChangeFLIM",
+    "view": "all",
+    "outcome": "ap",
+    "class_effect_poly": -0.0247,
+    "p": 0.2236,
+    "q": 0.3347
+   },
+   {
+    "tech": "CoChangeFLIM",
+    "view": "parse",
+    "outcome": "ap",
+    "class_effect_poly": -0.1335,
+    "p": 0.0,
+    "q": 0.0
+   },
+   {
+    "tech": "CoChangeLocAgent",
+    "view": "all",
+    "outcome": "ap10",
+    "class_effect_poly": -0.0934,
+    "p": 0.0006,
+    "q": 0.0019
+   },
+   {
+    "tech": "CoChangeLocAgent",
+    "view": "parse",
+    "outcome": "ap10",
+    "class_effect_poly": -0.1562,
+    "p": 0.0,
+    "q": 0.0
+   },
+   {
+    "tech": "CoChangeSweRank",
+    "view": "all",
+    "outcome": "ap",
+    "class_effect_poly": -0.0815,
+    "p": 0.0026,
+    "q": 0.0072
+   },
+   {
+    "tech": "CoChangeSweRank",
+    "view": "parse",
+    "outcome": "ap",
+    "class_effect_poly": -0.1877,
     "p": 0.0,
     "q": 0.0
    },
@@ -358,7 +451,7 @@
     "outcome": "ap",
     "class_effect_poly": -0.0499,
     "p": 0.0173,
-    "q": 0.0397
+    "q": 0.0399
    },
    {
     "tech": "HybridFLIM",
@@ -390,7 +483,7 @@
     "outcome": "ap",
     "class_effect_poly": -0.1099,
     "p": 0.0001,
-    "q": 0.0003
+    "q": 0.0004
    },
    {
     "tech": "HybridSweRank",
@@ -470,7 +563,7 @@
     "outcome": "ap",
     "class_effect_poly": -0.0445,
     "p": 0.1291,
-    "q": 0.2187
+    "q": 0.2181
    },
    {
     "tech": "SweRankAll",
@@ -478,7 +571,7 @@
     "outcome": "ap10",
     "class_effect_poly": -0.0467,
     "p": 0.1207,
-    "q": 0.2073
+    "q": 0.2072
    },
    {
     "tech": "SweRankAll",
@@ -534,7 +627,7 @@
     "outcome": "ap",
     "class_effect_poly": -0.0632,
     "p": 0.0323,
-    "q": 0.0676
+    "q": 0.0677
    },
    {
     "tech": "SweRankEmbedAll",
@@ -542,7 +635,7 @@
     "outcome": "ap10",
     "class_effect_poly": -0.0687,
     "p": 0.0246,
-    "q": 0.0532
+    "q": 0.0533
    },
    {
     "tech": "SweRankEmbedAll",
@@ -581,7 +674,7 @@
     "outcome": "ap",
     "interaction_poly": 0.0043,
     "p": 0.8294,
-    "q": 0.911
+    "q": 0.9059
    },
    {
     "pair": "BM25 vs LocAgent",
@@ -609,7 +702,7 @@
     "outcome": "ap",
     "interaction_poly": 0.0012,
     "p": 0.9269,
-    "q": 0.9621
+    "q": 0.96
    },
    {
     "pair": "HybridFLIM vs FLIM-strict",
@@ -637,28 +730,28 @@
     "outcome": "ap",
     "interaction_poly": 0.0296,
     "p": 0.1441,
-    "q": 0.2779
+    "q": 0.2818
    },
    {
     "pair": "BM25 vs HybridSweRank",
     "outcome": "ap",
     "interaction_poly": 0.0848,
     "p": 0.0012,
-    "q": 0.0055
+    "q": 0.0056
    },
    {
     "pair": "BM25 vs HybridLocAgent",
     "outcome": "ap10",
     "interaction_poly": 0.0748,
     "p": 0.0026,
-    "q": 0.0109
+    "q": 0.011
    },
    {
     "pair": "BM25 vs SweRankEmbedAll",
     "outcome": "ap",
     "interaction_poly": 0.0328,
     "p": 0.2669,
-    "q": 0.4319
+    "q": 0.4316
    },
    {
     "pair": "SweRankEmbed vs SweRankEmbedAll (corpus extension)",
@@ -672,7 +765,49 @@
     "outcome": "ap",
     "interaction_poly": 0.0149,
     "p": 0.6113,
-    "q": 0.7535
+    "q": 0.7495
+   },
+   {
+    "pair": "CoChangeFLIM vs FLIM-strict",
+    "outcome": "ap",
+    "interaction_poly": 0.1081,
+    "p": 0.0,
+    "q": 0.0
+   },
+   {
+    "pair": "CoChangeSweRank vs SweRank",
+    "outcome": "ap",
+    "interaction_poly": 0.0911,
+    "p": 0.0,
+    "q": 0.0
+   },
+   {
+    "pair": "CoChangeLocAgent vs LocAgent",
+    "outcome": "ap10",
+    "interaction_poly": 0.0712,
+    "p": 0.0003,
+    "q": 0.0017
+   },
+   {
+    "pair": "BM25 vs CoChangeFLIM",
+    "outcome": "ap",
+    "interaction_poly": -0.0032,
+    "p": 0.8701,
+    "q": 0.9335
+   },
+   {
+    "pair": "BM25 vs CoChangeSweRank",
+    "outcome": "ap",
+    "interaction_poly": 0.055,
+    "p": 0.0779,
+    "q": 0.1799
+   },
+   {
+    "pair": "BM25 vs CoChangeLocAgent",
+    "outcome": "ap10",
+    "interaction_poly": 0.0827,
+    "p": 0.0173,
+    "q": 0.0556
    },
    {
     "pair": "SweRankAll vs SweRank (corpus extension, reranked)",
@@ -686,7 +821,7 @@
     "outcome": "ap",
     "interaction_poly": 0.0009,
     "p": 0.9711,
-    "q": 0.9837
+    "q": 0.984
    }
   ],
   "pooled_paired": [
@@ -704,7 +839,7 @@
     "outcome": "ap",
     "mean_diff_A_minus_B": 0.0289,
     "wilcoxon_p": 0.0163,
-    "q": 0.022
+    "q": 0.0223
    },
    {
     "pair": "BM25 vs FLIM-fallback",
@@ -720,7 +855,7 @@
     "outcome": "ap",
     "mean_diff_A_minus_B": 0.0024,
     "wilcoxon_p": 0.9766,
-    "q": 0.9823
+    "q": 0.9822
    },
    {
     "pair": "BM25-parse vs FLIM-strict (control)",
@@ -728,7 +863,7 @@
     "outcome": "ap",
     "mean_diff_A_minus_B": -0.0093,
     "wilcoxon_p": 0.0576,
-    "q": 0.0736
+    "q": 0.0737
    },
    {
     "pair": "BM25-parse vs FLIM-strict (control)",
@@ -736,7 +871,7 @@
     "outcome": "ap",
     "mean_diff_A_minus_B": -0.0258,
     "wilcoxon_p": 0.015,
-    "q": 0.0204
+    "q": 0.0206
    },
    {
     "pair": "BM25 vs LocAgent",
@@ -752,7 +887,7 @@
     "outcome": "ap10",
     "mean_diff_A_minus_B": 0.0365,
     "wilcoxon_p": 0.1926,
-    "q": 0.2288
+    "q": 0.2278
    },
    {
     "pair": "BM25 vs SweRank",
@@ -768,7 +903,7 @@
     "outcome": "ap",
     "mean_diff_A_minus_B": 0.0418,
     "wilcoxon_p": 0.1349,
-    "q": 0.1629
+    "q": 0.1628
    },
    {
     "pair": "BM25 vs SweRank (top-10)",
@@ -784,7 +919,7 @@
     "outcome": "ap10",
     "mean_diff_A_minus_B": 0.0173,
     "wilcoxon_p": 0.9237,
-    "q": 0.9431
+    "q": 0.9428
    },
    {
     "pair": "SweRankEmbed vs SweRank (reranker effect)",
@@ -864,7 +999,7 @@
     "outcome": "ap",
     "mean_diff_A_minus_B": -0.0224,
     "wilcoxon_p": 0.0189,
-    "q": 0.0253
+    "q": 0.0255
    },
    {
     "pair": "BM25 vs HybridSweRank",
@@ -947,6 +1082,102 @@
     "q": 0.0
    },
    {
+    "pair": "CoChangeFLIM vs FLIM-strict",
+    "class": "Mono-fix",
+    "outcome": "ap",
+    "mean_diff_A_minus_B": -0.0453,
+    "wilcoxon_p": 0.0,
+    "q": 0.0
+   },
+   {
+    "pair": "CoChangeFLIM vs FLIM-strict",
+    "class": "Poly-fix",
+    "outcome": "ap",
+    "mean_diff_A_minus_B": 0.0616,
+    "wilcoxon_p": 0.0,
+    "q": 0.0
+   },
+   {
+    "pair": "CoChangeSweRank vs SweRank",
+    "class": "Mono-fix",
+    "outcome": "ap",
+    "mean_diff_A_minus_B": 0.021,
+    "wilcoxon_p": 0.9279,
+    "q": 0.9444
+   },
+   {
+    "pair": "CoChangeSweRank vs SweRank",
+    "class": "Poly-fix",
+    "outcome": "ap",
+    "mean_diff_A_minus_B": 0.1226,
+    "wilcoxon_p": 0.0,
+    "q": 0.0
+   },
+   {
+    "pair": "CoChangeLocAgent vs LocAgent",
+    "class": "Mono-fix",
+    "outcome": "ap10",
+    "mean_diff_A_minus_B": -0.0073,
+    "wilcoxon_p": 0.0172,
+    "q": 0.0234
+   },
+   {
+    "pair": "CoChangeLocAgent vs LocAgent",
+    "class": "Poly-fix",
+    "outcome": "ap10",
+    "mean_diff_A_minus_B": 0.0607,
+    "wilcoxon_p": 0.0236,
+    "q": 0.0316
+   },
+   {
+    "pair": "BM25 vs CoChangeFLIM",
+    "class": "Mono-fix",
+    "outcome": "ap",
+    "mean_diff_A_minus_B": -0.0133,
+    "wilcoxon_p": 0.0241,
+    "q": 0.0321
+   },
+   {
+    "pair": "BM25 vs CoChangeFLIM",
+    "class": "Poly-fix",
+    "outcome": "ap",
+    "mean_diff_A_minus_B": -0.0327,
+    "wilcoxon_p": 0.0123,
+    "q": 0.0171
+   },
+   {
+    "pair": "BM25 vs CoChangeSweRank",
+    "class": "Mono-fix",
+    "outcome": "ap",
+    "mean_diff_A_minus_B": -0.1341,
+    "wilcoxon_p": 0.0,
+    "q": 0.0
+   },
+   {
+    "pair": "BM25 vs CoChangeSweRank",
+    "class": "Poly-fix",
+    "outcome": "ap",
+    "mean_diff_A_minus_B": -0.0809,
+    "wilcoxon_p": 0.0,
+    "q": 0.0
+   },
+   {
+    "pair": "BM25 vs CoChangeLocAgent",
+    "class": "Mono-fix",
+    "outcome": "ap10",
+    "mean_diff_A_minus_B": -0.1067,
+    "wilcoxon_p": 0.0,
+    "q": 0.0
+   },
+   {
+    "pair": "BM25 vs CoChangeLocAgent",
+    "class": "Poly-fix",
+    "outcome": "ap10",
+    "mean_diff_A_minus_B": -0.0243,
+    "wilcoxon_p": 0.0829,
+    "q": 0.1036
+   },
+   {
     "pair": "SweRankAll vs SweRank (corpus extension, reranked)",
     "class": "Mono-fix",
     "outcome": "ap",
@@ -968,7 +1199,7 @@
     "outcome": "ap",
     "mean_diff_A_minus_B": -0.0104,
     "wilcoxon_p": 0.9458,
-    "q": 0.9564
+    "q": 0.955
    },
    {
     "pair": "BLAZE_ALL vs BLAZE (ablation)",
@@ -976,7 +1207,7 @@
     "outcome": "ap",
     "mean_diff_A_minus_B": -0.0061,
     "wilcoxon_p": 0.3007,
-    "q": 0.3457
+    "q": 0.3449
    }
   ]
  },
@@ -984,8 +1215,8 @@
   "BM25-all-ap": {
    "stratified_diff": -0.023872184363340543,
    "ci": [
-    -0.06295973443802094,
-    0.009471628748451628
+    -0.057607760164402826,
+    0.011155359143673384
    ],
    "unadjusted": -0.03733351787064043,
    "per_stratum": {
@@ -1019,8 +1250,8 @@
   "BLAZE-all-ap": {
    "stratified_diff": -0.006597271964895855,
    "ci": [
-    -0.03682451095952057,
-    0.022520352166984357
+    -0.03873492412067639,
+    0.026659918240417073
    ],
    "unadjusted": -0.011185494301085869,
    "per_stratum": {
@@ -1054,8 +1285,8 @@
   "FLIM-all-ap": {
    "stratified_diff": -0.07348026131607548,
    "ci": [
-    -0.10849348743867049,
-    -0.04037366562893292
+    -0.1068504747471866,
+    -0.04081722665665614
    ],
    "unadjusted": -0.09372368895307259,
    "per_stratum": {
@@ -1089,8 +1320,8 @@
   "FLIM-parse-ap": {
    "stratified_diff": -0.10240855627090394,
    "ci": [
-    -0.13444100943919066,
-    -0.07157059553763476
+    -0.1338569520692937,
+    -0.0706405493155578
    ],
    "unadjusted": -0.12481545022438295,
    "per_stratum": {
@@ -1124,8 +1355,8 @@
   "LocAgent-all-ap10": {
    "stratified_diff": -0.11257417211021789,
    "ci": [
-    -0.1460787029719225,
-    -0.07402187129956643
+    -0.14990617987002638,
+    -0.07567054079333438
    ],
    "unadjusted": -0.20322029527951674,
    "per_stratum": {
@@ -1159,8 +1390,8 @@
   "SweRank-all-ap": {
    "stratified_diff": -0.10941886036748646,
    "ci": [
-    -0.14683911965113383,
-    -0.07522661963244527
+    -0.1469130165218258,
+    -0.0706241652674214
    ],
    "unadjusted": -0.20025237870002366,
    "per_stratum": {
@@ -1250,10 +1481,10 @@
   }
  },
  "hc3_fallback": {
-  "class_models": 112,
-  "class_models_total": 1408,
-  "interaction_models": 209,
-  "interaction_total": 860,
+  "class_models": 177,
+  "class_models_total": 1696,
+  "interaction_models": 270,
+  "interaction_total": 1148,
   "primary_ap_class": [
    {
     "tech": "BLAZE",
@@ -1284,6 +1515,36 @@
     "tech": "BM25",
     "view": "parse",
     "model": "mixedlm_powell"
+   },
+   {
+    "tech": "CoChangeFLIM",
+    "view": "all",
+    "model": "mixedlm_powell"
+   },
+   {
+    "tech": "CoChangeFLIM",
+    "view": "parse",
+    "model": "mixedlm_powell"
+   },
+   {
+    "tech": "CoChangeLocAgent",
+    "view": "all",
+    "model": "mixedlm_powell"
+   },
+   {
+    "tech": "CoChangeLocAgent",
+    "view": "parse",
+    "model": "mixedlm_powell"
+   },
+   {
+    "tech": "CoChangeSweRank",
+    "view": "all",
+    "model": "ols_project_fe_hc3"
+   },
+   {
+    "tech": "CoChangeSweRank",
+    "view": "parse",
+    "model": "ols_project_fe_hc3"
    },
    {
     "tech": "FLIM",
@@ -1489,6 +1750,30 @@
    },
    {
     "pair": "BM25 vs SweRankAll",
+    "model": "mixedlm_powell"
+   },
+   {
+    "pair": "CoChangeFLIM vs FLIM-strict",
+    "model": "mixedlm_powell"
+   },
+   {
+    "pair": "CoChangeSweRank vs SweRank",
+    "model": "mixedlm_powell"
+   },
+   {
+    "pair": "CoChangeLocAgent vs LocAgent",
+    "model": "mixedlm_powell"
+   },
+   {
+    "pair": "BM25 vs CoChangeFLIM",
+    "model": "ols_project_fe_hc3"
+   },
+   {
+    "pair": "BM25 vs CoChangeSweRank",
+    "model": "ols_project_fe_hc3"
+   },
+   {
+    "pair": "BM25 vs CoChangeLocAgent",
     "model": "mixedlm_powell"
    },
    {

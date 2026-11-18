@@ -37,7 +37,8 @@ TECHS = [("BM25", "all", "ap"), ("BLAZE", "all", "ap"), ("FLIM", "all", "ap"), (
 # diagnostic variants (2026-11-17/18): decomposition only
 VARIANTS = [("SweRankEmbed", "all", "ap"), ("SweRankEmbedAll", "all", "ap"), ("SweRankAll", "all", "ap"),
             ("HybridFLIM", "all", "ap"), ("HybridSweRank", "all", "ap"), ("HybridLocAgent", "all", "ap10"),
-            ("BM25", "all", "ap10")]
+            ("BM25", "all", "ap10"), ("CoChangeFLIM", "all", "ap"), ("CoChangeSweRank", "all", "ap"),
+            ("CoChangeLocAgent", "all", "ap10")]
 OUT = {}
 
 

@@ -29,6 +29,36 @@ primary,BM25,parse,cfr10,mixedlm_lbfgs,1399,-0.1566,-0.207,-0.1063,0.0
 primary,BM25,parse,rr,mixedlm_lbfgs,1399,-0.0496,-0.1036,0.0045,0.0721
 primary,BM25,parse,top10,mixedlm_powell,1399,-0.0514,-0.1119,0.0091,0.0962
 primary,BM25,parse,"top10 (logit, log-odds)",logit_project_fe,1399,-0.2689,-0.5643,0.0264,0.0743
+primary,CoChangeFLIM,all,ap,mixedlm_powell,1399,-0.0247,-0.0645,0.0151,0.2236
+primary,CoChangeFLIM,all,cfr10,mixedlm_powell,1399,-0.0546,-0.1058,-0.0034,0.0366
+primary,CoChangeFLIM,all,rr,mixedlm_powell,1399,-0.023,-0.0715,0.0254,0.3511
+primary,CoChangeFLIM,all,top10,mixedlm_powell,1399,-0.0173,-0.0756,0.0409,0.5593
+primary,CoChangeFLIM,all,"top10 (logit, log-odds)",logit_project_fe,1399,-0.0776,-0.3867,0.2316,0.6228
+primary,CoChangeFLIM,parse,ap,mixedlm_powell,1399,-0.1335,-0.1743,-0.0928,0.0
+primary,CoChangeFLIM,parse,cfr10,mixedlm_powell,1399,-0.1781,-0.2268,-0.1293,0.0
+primary,CoChangeFLIM,parse,rr,mixedlm_lbfgs,1399,-0.033,-0.0861,0.02,0.222
+primary,CoChangeFLIM,parse,top10,mixedlm_lbfgs,1399,-0.0665,-0.1234,-0.0097,0.0218
+primary,CoChangeFLIM,parse,"top10 (logit, log-odds)",logit_project_fe,1399,-0.3753,-0.6915,-0.0591,0.02
+primary,CoChangeLocAgent,all,ap10,mixedlm_powell,781,-0.0934,-0.1466,-0.0401,0.0006
+primary,CoChangeLocAgent,all,cfr10,ols_project_fe_hc3,781,-0.1325,-0.1946,-0.0704,0.0
+primary,CoChangeLocAgent,all,top10,ols_project_fe_hc3,781,-0.0323,-0.1048,0.0402,0.382
+primary,CoChangeLocAgent,all,rr10,mixedlm_powell,781,-0.0097,-0.0626,0.0431,0.7178
+primary,CoChangeLocAgent,all,"top10 (logit, log-odds)",logit_project_fe,781,-0.283,-0.7806,0.2146,0.2649
+primary,CoChangeLocAgent,parse,ap10,mixedlm_powell,781,-0.1562,-0.2078,-0.1046,0.0
+primary,CoChangeLocAgent,parse,cfr10,ols_project_fe_hc3,781,-0.2212,-0.2771,-0.1653,0.0
+primary,CoChangeLocAgent,parse,top10,mixedlm_powell,781,-0.0297,-0.0913,0.0318,0.3437
+primary,CoChangeLocAgent,parse,rr10,mixedlm_powell,781,-0.0166,-0.069,0.0359,0.5359
+primary,CoChangeLocAgent,parse,"top10 (logit, log-odds)",logit_project_fe,781,-0.2862,-0.7797,0.2073,0.2557
+primary,CoChangeSweRank,all,ap,ols_project_fe_hc3,781,-0.0815,-0.1346,-0.0285,0.0026
+primary,CoChangeSweRank,all,cfr10,ols_project_fe_hc3,781,-0.078,-0.1412,-0.0147,0.0157
+primary,CoChangeSweRank,all,rr,mixedlm_powell,781,-0.0049,-0.0582,0.0483,0.8563
+primary,CoChangeSweRank,all,top10,ols_project_fe_hc3,781,0.0058,-0.0677,0.0792,0.8778
+primary,CoChangeSweRank,all,"top10 (logit, log-odds)",logit_project_fe,781,0.0016,-0.5197,0.523,0.9951
+primary,CoChangeSweRank,parse,ap,ols_project_fe_hc3,781,-0.1877,-0.2375,-0.1379,0.0
+primary,CoChangeSweRank,parse,cfr10,ols_project_fe_hc3,781,-0.233,-0.2885,-0.1775,0.0
+primary,CoChangeSweRank,parse,rr,mixedlm_powell,781,-0.0068,-0.0639,0.0503,0.8148
+primary,CoChangeSweRank,parse,top10,mixedlm_powell,781,-0.0202,-0.0814,0.041,0.5176
+primary,CoChangeSweRank,parse,"top10 (logit, log-odds)",logit_project_fe,781,-0.3192,-0.8336,0.1952,0.224
 primary,FLIM,all,ap,mixedlm_powell,1399,-0.1033,-0.1446,-0.0619,0.0
 primary,FLIM,all,cfr10,mixedlm_powell,1399,-0.1359,-0.1861,-0.0857,0.0
 primary,FLIM,all,rr,mixedlm_powell,1399,-0.027,-0.08,0.0261,0.3197
@@ -175,6 +205,36 @@ S1_no_tests,BM25,parse,cfr10,mixedlm_powell,1317,-0.0706,-0.1255,-0.0157,0.0117
 S1_no_tests,BM25,parse,rr,mixedlm_lbfgs,1317,-0.0501,-0.1004,0.0002,0.0508
 S1_no_tests,BM25,parse,top10,mixedlm_powell,1317,-0.0392,-0.0994,0.021,0.2019
 S1_no_tests,BM25,parse,"top10 (logit, log-odds)",logit_project_fe,1317,-0.1825,-0.4583,0.0933,0.1946
+S1_no_tests,CoChangeFLIM,all,ap,mixedlm_powell,1317,-0.0445,-0.0831,-0.0058,0.0243
+S1_no_tests,CoChangeFLIM,all,cfr10,mixedlm_powell,1317,-0.0331,-0.0865,0.0204,0.2256
+S1_no_tests,CoChangeFLIM,all,rr,mixedlm_powell,1317,-0.038,-0.0825,0.0066,0.0948
+S1_no_tests,CoChangeFLIM,all,top10,mixedlm_powell,1317,-0.0046,-0.0632,0.0539,0.8766
+S1_no_tests,CoChangeFLIM,all,"top10 (logit, log-odds)",logit_project_fe,1317,0.027,-0.2578,0.3117,0.8528
+S1_no_tests,CoChangeFLIM,parse,ap,mixedlm_lbfgs,1317,-0.0804,-0.1225,-0.0383,0.0002
+S1_no_tests,CoChangeFLIM,parse,cfr10,mixedlm_lbfgs,1317,-0.0828,-0.1351,-0.0305,0.0019
+S1_no_tests,CoChangeFLIM,parse,rr,mixedlm_powell,1317,-0.0625,-0.1112,-0.0139,0.0117
+S1_no_tests,CoChangeFLIM,parse,top10,mixedlm_powell,1317,-0.0504,-0.1074,0.0066,0.0831
+S1_no_tests,CoChangeFLIM,parse,"top10 (logit, log-odds)",logit_project_fe,1317,-0.2212,-0.5154,0.073,0.1406
+S1_no_tests,CoChangeLocAgent,all,ap10,mixedlm_powell,760,-0.0512,-0.097,-0.0054,0.0283
+S1_no_tests,CoChangeLocAgent,all,cfr10,mixedlm_powell,760,-0.0754,-0.1329,-0.018,0.0101
+S1_no_tests,CoChangeLocAgent,all,top10,mixedlm_powell,760,-0.0471,-0.1039,0.0097,0.1041
+S1_no_tests,CoChangeLocAgent,all,rr10,mixedlm_powell,760,-0.0401,-0.0883,0.008,0.1019
+S1_no_tests,CoChangeLocAgent,all,"top10 (logit, log-odds)",logit_project_fe,760,-0.4338,-0.9364,0.0688,0.0907
+S1_no_tests,CoChangeLocAgent,parse,ap10,mixedlm_powell,760,-0.0659,-0.1133,-0.0184,0.0065
+S1_no_tests,CoChangeLocAgent,parse,cfr10,mixedlm_lbfgs,760,-0.1056,-0.1629,-0.0484,0.0003
+S1_no_tests,CoChangeLocAgent,parse,top10,mixedlm_powell,760,-0.0539,-0.1108,0.003,0.0635
+S1_no_tests,CoChangeLocAgent,parse,rr10,mixedlm_powell,760,-0.0396,-0.0899,0.0107,0.1229
+S1_no_tests,CoChangeLocAgent,parse,"top10 (logit, log-odds)",logit_project_fe,760,-0.4876,-0.9888,0.0136,0.0566
+S1_no_tests,CoChangeSweRank,all,ap,mixedlm_powell,760,-0.0475,-0.0969,0.0018,0.0591
+S1_no_tests,CoChangeSweRank,all,cfr10,mixedlm_powell,760,-0.0078,-0.0675,0.052,0.7988
+S1_no_tests,CoChangeSweRank,all,rr,mixedlm_powell,760,-0.0281,-0.0807,0.0245,0.2955
+S1_no_tests,CoChangeSweRank,all,top10,mixedlm_lbfgs,760,0.0141,-0.0458,0.0741,0.6435
+S1_no_tests,CoChangeSweRank,all,"top10 (logit, log-odds)",logit_project_fe,760,0.0491,-0.443,0.5413,0.8449
+S1_no_tests,CoChangeSweRank,parse,ap,mixedlm_lbfgs,760,-0.06,-0.1123,-0.0077,0.0246
+S1_no_tests,CoChangeSweRank,parse,cfr10,mixedlm_powell,760,-0.0715,-0.1309,-0.0121,0.0184
+S1_no_tests,CoChangeSweRank,parse,rr,mixedlm_powell,760,-0.0227,-0.0786,0.0331,0.4251
+S1_no_tests,CoChangeSweRank,parse,top10,mixedlm_powell,760,-0.0303,-0.0905,0.0298,0.3226
+S1_no_tests,CoChangeSweRank,parse,"top10 (logit, log-odds)",logit_project_fe,760,-0.3159,-0.8063,0.1745,0.2067
 S1_no_tests,FLIM,all,ap,mixedlm_powell,1317,-0.0752,-0.1175,-0.033,0.0005
 S1_no_tests,FLIM,all,cfr10,mixedlm_lbfgs,1317,-0.0851,-0.1384,-0.0318,0.0017
 S1_no_tests,FLIM,all,rr,mixedlm_lbfgs,1317,-0.058,-0.1069,-0.0092,0.0198
@@ -321,6 +381,36 @@ S2_headline,BM25,parse,cfr10,mixedlm_lbfgs,1329,-0.1551,-0.2093,-0.1008,0.0
 S2_headline,BM25,parse,rr,mixedlm_powell,1329,-0.0395,-0.0974,0.0183,0.1806
 S2_headline,BM25,parse,top10,mixedlm_lbfgs,1329,-0.04,-0.1044,0.0245,0.2242
 S2_headline,BM25,parse,"top10 (logit, log-odds)",logit_project_fe,1329,-0.2307,-0.5505,0.0891,0.1574
+S2_headline,CoChangeFLIM,all,ap,mixedlm_powell,1329,-0.0062,-0.0493,0.0368,0.7762
+S2_headline,CoChangeFLIM,all,cfr10,mixedlm_powell,1329,-0.0244,-0.0797,0.0309,0.388
+S2_headline,CoChangeFLIM,all,rr,mixedlm_powell,1329,0.0002,-0.0517,0.0522,0.9932
+S2_headline,CoChangeFLIM,all,top10,mixedlm_powell,1329,0.015,-0.0469,0.077,0.6347
+S2_headline,CoChangeFLIM,all,"top10 (logit, log-odds)",logit_project_fe,1329,0.1002,-0.2394,0.4399,0.563
+S2_headline,CoChangeFLIM,parse,ap,mixedlm_powell,1329,-0.1255,-0.1697,-0.0814,0.0
+S2_headline,CoChangeFLIM,parse,cfr10,mixedlm_lbfgs,1329,-0.1638,-0.2165,-0.111,0.0
+S2_headline,CoChangeFLIM,parse,rr,mixedlm_powell,1329,-0.0071,-0.064,0.0498,0.8063
+S2_headline,CoChangeFLIM,parse,top10,mixedlm_powell,1329,-0.0372,-0.0975,0.0232,0.2274
+S2_headline,CoChangeFLIM,parse,"top10 (logit, log-odds)",logit_project_fe,1329,-0.22,-0.5657,0.1257,0.2124
+S2_headline,CoChangeLocAgent,all,ap10,mixedlm_powell,754,-0.0761,-0.1323,-0.02,0.0079
+S2_headline,CoChangeLocAgent,all,cfr10,ols_project_fe_hc3,754,-0.1034,-0.1691,-0.0377,0.002
+S2_headline,CoChangeLocAgent,all,top10,mixedlm_powell,754,-0.0065,-0.0777,0.0646,0.8573
+S2_headline,CoChangeLocAgent,all,rr10,mixedlm_lbfgs,754,-0.0016,-0.056,0.0528,0.9546
+S2_headline,CoChangeLocAgent,all,"top10 (logit, log-odds)",logit_project_fe,754,-0.1145,-0.6514,0.4224,0.6759
+S2_headline,CoChangeLocAgent,parse,ap10,mixedlm_powell,754,-0.1461,-0.2006,-0.0916,0.0
+S2_headline,CoChangeLocAgent,parse,cfr10,ols_project_fe_hc3,754,-0.2042,-0.2626,-0.1458,0.0
+S2_headline,CoChangeLocAgent,parse,top10,mixedlm_powell,754,-0.0127,-0.0754,0.0501,0.6923
+S2_headline,CoChangeLocAgent,parse,rr10,mixedlm_lbfgs,754,-0.0063,-0.0611,0.0484,0.8211
+S2_headline,CoChangeLocAgent,parse,"top10 (logit, log-odds)",logit_project_fe,754,-0.1225,-0.6538,0.4089,0.6515
+S2_headline,CoChangeSweRank,all,ap,ols_project_fe_hc3,754,-0.0538,-0.1097,0.002,0.059
+S2_headline,CoChangeSweRank,all,cfr10,ols_project_fe_hc3,754,-0.0377,-0.1035,0.0281,0.2619
+S2_headline,CoChangeSweRank,all,rr,mixedlm_powell,754,0.014,-0.0416,0.0695,0.6219
+S2_headline,CoChangeSweRank,all,top10,ols_project_fe_hc3,754,0.0325,-0.043,0.108,0.3993
+S2_headline,CoChangeSweRank,all,"top10 (logit, log-odds)",logit_project_fe,754,0.2601,-0.3065,0.8266,0.3683
+S2_headline,CoChangeSweRank,parse,ap,mixedlm_powell,754,-0.1701,-0.2271,-0.1131,0.0
+S2_headline,CoChangeSweRank,parse,cfr10,ols_project_fe_hc3,754,-0.2129,-0.2704,-0.1553,0.0
+S2_headline,CoChangeSweRank,parse,rr,mixedlm_powell,754,0.0131,-0.0464,0.0726,0.6656
+S2_headline,CoChangeSweRank,parse,top10,mixedlm_powell,754,0.0018,-0.0614,0.0651,0.9546
+S2_headline,CoChangeSweRank,parse,"top10 (logit, log-odds)",logit_project_fe,754,-0.1173,-0.6719,0.4374,0.6786
 S2_headline,FLIM,all,ap,mixedlm_powell,1329,-0.0894,-0.1344,-0.0445,0.0001
 S2_headline,FLIM,all,cfr10,mixedlm_powell,1329,-0.1162,-0.1705,-0.0618,0.0
 S2_headline,FLIM,all,rr,mixedlm_powell,1329,0.0017,-0.0554,0.0587,0.9544
@@ -467,6 +557,36 @@ S2_strict,BM25,parse,cfr10,mixedlm_powell,1096,-0.227,-0.3144,-0.1395,0.0
 S2_strict,BM25,parse,rr,mixedlm_powell,1096,-0.1112,-0.1992,-0.0232,0.0133
 S2_strict,BM25,parse,top10,mixedlm_powell,1096,-0.1733,-0.2729,-0.0737,0.0006
 S2_strict,BM25,parse,"top10 (logit, log-odds)",logit_project_fe,1096,-0.8167,-1.2841,-0.3493,0.0006
+S2_strict,CoChangeFLIM,all,ap,mixedlm_powell,1096,-0.1173,-0.1833,-0.0513,0.0005
+S2_strict,CoChangeFLIM,all,cfr10,mixedlm_powell,1096,-0.1533,-0.24,-0.0666,0.0005
+S2_strict,CoChangeFLIM,all,rr,mixedlm_powell,1096,-0.1217,-0.2008,-0.0426,0.0026
+S2_strict,CoChangeFLIM,all,top10,mixedlm_powell,1096,-0.0965,-0.1937,0.0007,0.0516
+S2_strict,CoChangeFLIM,all,"top10 (logit, log-odds)",logit_project_fe,1096,-0.485,-0.9729,0.003,0.0514
+S2_strict,CoChangeFLIM,parse,ap,mixedlm_powell,1096,-0.2015,-0.2723,-0.1306,0.0
+S2_strict,CoChangeFLIM,parse,cfr10,mixedlm_lbfgs,1096,-0.2235,-0.3087,-0.1383,0.0
+S2_strict,CoChangeFLIM,parse,rr,mixedlm_powell,1096,-0.164,-0.2489,-0.0791,0.0002
+S2_strict,CoChangeFLIM,parse,top10,mixedlm_powell,1096,-0.1092,-0.2038,-0.0146,0.0236
+S2_strict,CoChangeFLIM,parse,"top10 (logit, log-odds)",logit_project_fe,1096,-0.603,-1.1054,-0.1006,0.0186
+S2_strict,CoChangeLocAgent,all,ap10,mixedlm_powell,575,-0.182,-0.2702,-0.0939,0.0001
+S2_strict,CoChangeLocAgent,all,cfr10,ols_project_fe_hc3,575,-0.2469,-0.3365,-0.1574,0.0
+S2_strict,CoChangeLocAgent,all,top10,mixedlm_powell,575,-0.0775,-0.1804,0.0253,0.1396
+S2_strict,CoChangeLocAgent,all,rr10,ols_project_fe_hc3,575,-0.0704,-0.1576,0.0168,0.1137
+S2_strict,CoChangeLocAgent,all,"top10 (logit, log-odds)",logit_project_fe,575,-0.4775,-1.2307,0.2757,0.214
+S2_strict,CoChangeLocAgent,parse,ap10,mixedlm_powell,575,-0.2141,-0.3038,-0.1244,0.0
+S2_strict,CoChangeLocAgent,parse,cfr10,mixedlm_powell,575,-0.2824,-0.3852,-0.1795,0.0
+S2_strict,CoChangeLocAgent,parse,top10,ols_project_fe_hc3,575,-0.0661,-0.1812,0.049,0.2607
+S2_strict,CoChangeLocAgent,parse,rr10,mixedlm_powell,575,-0.079,-0.1652,0.0072,0.0725
+S2_strict,CoChangeLocAgent,parse,"top10 (logit, log-odds)",logit_project_fe,575,-0.4765,-1.2294,0.2765,0.2149
+S2_strict,CoChangeSweRank,all,ap,ols_project_fe_hc3,575,-0.1716,-0.246,-0.0972,0.0
+S2_strict,CoChangeSweRank,all,cfr10,ols_project_fe_hc3,575,-0.1594,-0.2515,-0.0672,0.0007
+S2_strict,CoChangeSweRank,all,rr,mixedlm_powell,575,-0.0415,-0.1296,0.0466,0.3558
+S2_strict,CoChangeSweRank,all,top10,ols_project_fe_hc3,575,0.0132,-0.097,0.1234,0.8144
+S2_strict,CoChangeSweRank,all,"top10 (logit, log-odds)",logit_project_fe,575,0.0903,-0.7681,0.9487,0.8367
+S2_strict,CoChangeSweRank,parse,ap,mixedlm_powell,575,-0.2576,-0.3509,-0.1643,0.0
+S2_strict,CoChangeSweRank,parse,cfr10,mixedlm_lbfgs,575,-0.2722,-0.3716,-0.1727,0.0
+S2_strict,CoChangeSweRank,parse,rr,mixedlm_powell,575,-0.0568,-0.1485,0.0349,0.2247
+S2_strict,CoChangeSweRank,parse,top10,mixedlm_powell,575,0.0035,-0.098,0.105,0.9459
+S2_strict,CoChangeSweRank,parse,"top10 (logit, log-odds)",logit_project_fe,575,-0.062,-0.9259,0.8019,0.8881
 S2_strict,FLIM,all,ap,mixedlm_powell,1096,-0.1775,-0.2486,-0.1065,0.0
 S2_strict,FLIM,all,cfr10,mixedlm_powell,1096,-0.2119,-0.2978,-0.126,0.0
 S2_strict,FLIM,all,rr,mixedlm_powell,1096,-0.1484,-0.2335,-0.0633,0.0006
@@ -603,6 +723,36 @@ S3_universe_T,BM25,parse,cfr10,mixedlm_powell,1399,-0.1567,-0.207,-0.1063,0.0
 S3_universe_T,BM25,parse,rr,mixedlm_powell,1399,-0.0496,-0.1037,0.0044,0.0719
 S3_universe_T,BM25,parse,top10,mixedlm_powell,1399,-0.0515,-0.112,0.0091,0.0958
 S3_universe_T,BM25,parse,"top10 (logit, log-odds)",logit_project_fe,1399,-0.2686,-0.5639,0.0267,0.0746
+S3_universe_T,CoChangeFLIM,all,ap,mixedlm_powell,1399,-0.0049,-0.0419,0.0321,0.7961
+S3_universe_T,CoChangeFLIM,all,cfr10,mixedlm_lbfgs,1399,-0.0467,-0.0978,0.0045,0.0737
+S3_universe_T,CoChangeFLIM,all,rr,mixedlm_powell,1399,-0.0027,-0.0481,0.0428,0.9089
+S3_universe_T,CoChangeFLIM,all,top10,mixedlm_powell,1399,-0.0082,-0.0674,0.0511,0.7867
+S3_universe_T,CoChangeFLIM,all,"top10 (logit, log-odds)",logit_project_fe,1399,-0.0137,-0.3162,0.2888,0.9292
+S3_universe_T,CoChangeFLIM,parse,ap,mixedlm_powell,1399,-0.1334,-0.1742,-0.0927,0.0
+S3_universe_T,CoChangeFLIM,parse,cfr10,mixedlm_powell,1399,-0.1781,-0.2269,-0.1294,0.0
+S3_universe_T,CoChangeFLIM,parse,rr,mixedlm_powell,1399,-0.0331,-0.0861,0.02,0.2216
+S3_universe_T,CoChangeFLIM,parse,top10,mixedlm_powell,1399,-0.0666,-0.1234,-0.0097,0.0217
+S3_universe_T,CoChangeFLIM,parse,"top10 (logit, log-odds)",logit_project_fe,1399,-0.3751,-0.6913,-0.0589,0.0201
+S3_universe_T,CoChangeLocAgent,all,ap10,mixedlm_powell,781,-0.0931,-0.1462,-0.04,0.0006
+S3_universe_T,CoChangeLocAgent,all,cfr10,ols_project_fe_hc3,781,-0.1385,-0.2,-0.0769,0.0
+S3_universe_T,CoChangeLocAgent,all,top10,mixedlm_powell,781,-0.025,-0.1062,0.0562,0.5464
+S3_universe_T,CoChangeLocAgent,all,rr10,mixedlm_powell,781,-0.0062,-0.0581,0.0456,0.8131
+S3_universe_T,CoChangeLocAgent,all,"top10 (logit, log-odds)",logit_project_fe,781,-0.2826,-0.7779,0.2128,0.2635
+S3_universe_T,CoChangeLocAgent,parse,ap10,mixedlm_powell,781,-0.1562,-0.2077,-0.1046,0.0
+S3_universe_T,CoChangeLocAgent,parse,cfr10,ols_project_fe_hc3,781,-0.2212,-0.277,-0.1653,0.0
+S3_universe_T,CoChangeLocAgent,parse,top10,mixedlm_powell,781,-0.0297,-0.0913,0.0318,0.3439
+S3_universe_T,CoChangeLocAgent,parse,rr10,mixedlm_powell,781,-0.0166,-0.069,0.0359,0.536
+S3_universe_T,CoChangeLocAgent,parse,"top10 (logit, log-odds)",logit_project_fe,781,-0.2862,-0.7797,0.2073,0.2557
+S3_universe_T,CoChangeSweRank,all,ap,ols_project_fe_hc3,781,-0.0703,-0.1214,-0.0191,0.0071
+S3_universe_T,CoChangeSweRank,all,cfr10,ols_project_fe_hc3,781,-0.0855,-0.149,-0.0221,0.0083
+S3_universe_T,CoChangeSweRank,all,rr,mixedlm_powell,781,0.0017,-0.0488,0.0523,0.9463
+S3_universe_T,CoChangeSweRank,all,top10,mixedlm_powell,781,0.0063,-0.0645,0.0771,0.8613
+S3_universe_T,CoChangeSweRank,all,"top10 (logit, log-odds)",logit_project_fe,781,-0.0996,-0.6145,0.4152,0.7045
+S3_universe_T,CoChangeSweRank,parse,ap,ols_project_fe_hc3,781,-0.1877,-0.2375,-0.1379,0.0
+S3_universe_T,CoChangeSweRank,parse,cfr10,ols_project_fe_hc3,781,-0.233,-0.2885,-0.1775,0.0
+S3_universe_T,CoChangeSweRank,parse,rr,mixedlm_powell,781,-0.0068,-0.0639,0.0503,0.8146
+S3_universe_T,CoChangeSweRank,parse,top10,mixedlm_powell,781,-0.0202,-0.0814,0.041,0.5176
+S3_universe_T,CoChangeSweRank,parse,"top10 (logit, log-odds)",logit_project_fe,781,-0.3192,-0.8336,0.1952,0.224
 S3_universe_T,FLIM,all,ap,mixedlm_powell,1399,-0.1053,-0.1467,-0.0639,0.0
 S3_universe_T,FLIM,all,cfr10,mixedlm_powell,1399,-0.1395,-0.1899,-0.0892,0.0
 S3_universe_T,FLIM,all,rr,mixedlm_powell,1399,-0.0308,-0.084,0.0225,0.2574
@@ -749,6 +899,36 @@ S4_untangled,BM25,parse,cfr10,mixedlm_powell,1394,-0.1549,-0.2053,-0.1044,0.0
 S4_untangled,BM25,parse,rr,mixedlm_lbfgs,1394,-0.0481,-0.1023,0.0061,0.082
 S4_untangled,BM25,parse,top10,mixedlm_powell,1394,-0.0483,-0.1089,0.0124,0.1187
 S4_untangled,BM25,parse,"top10 (logit, log-odds)",logit_project_fe,1394,-0.2552,-0.5516,0.0412,0.0915
+S4_untangled,CoChangeFLIM,all,ap,mixedlm_powell,1394,-0.0242,-0.0642,0.0157,0.2341
+S4_untangled,CoChangeFLIM,all,cfr10,mixedlm_powell,1394,-0.0543,-0.1056,-0.003,0.038
+S4_untangled,CoChangeFLIM,all,rr,mixedlm_powell,1394,-0.0212,-0.0698,0.0273,0.3913
+S4_untangled,CoChangeFLIM,all,top10,mixedlm_powell,1394,-0.0152,-0.0735,0.0431,0.6102
+S4_untangled,CoChangeFLIM,all,"top10 (logit, log-odds)",logit_project_fe,1394,-0.0691,-0.3795,0.2414,0.6627
+S4_untangled,CoChangeFLIM,parse,ap,mixedlm_powell,1394,-0.1335,-0.1744,-0.0926,0.0
+S4_untangled,CoChangeFLIM,parse,cfr10,mixedlm_powell,1394,-0.1792,-0.2281,-0.1304,0.0
+S4_untangled,CoChangeFLIM,parse,rr,mixedlm_powell,1394,-0.0314,-0.0845,0.0218,0.2478
+S4_untangled,CoChangeFLIM,parse,top10,mixedlm_powell,1394,-0.0671,-0.124,-0.0102,0.0208
+S4_untangled,CoChangeFLIM,parse,"top10 (logit, log-odds)",logit_project_fe,1394,-0.3812,-0.6987,-0.0637,0.0186
+S4_untangled,CoChangeLocAgent,all,ap10,mixedlm_powell,781,-0.0934,-0.1466,-0.0401,0.0006
+S4_untangled,CoChangeLocAgent,all,cfr10,ols_project_fe_hc3,781,-0.1325,-0.1946,-0.0704,0.0
+S4_untangled,CoChangeLocAgent,all,top10,ols_project_fe_hc3,781,-0.0323,-0.1048,0.0402,0.382
+S4_untangled,CoChangeLocAgent,all,rr10,mixedlm_powell,781,-0.0097,-0.0626,0.0431,0.7178
+S4_untangled,CoChangeLocAgent,all,"top10 (logit, log-odds)",logit_project_fe,781,-0.283,-0.7806,0.2146,0.2649
+S4_untangled,CoChangeLocAgent,parse,ap10,mixedlm_powell,781,-0.1562,-0.2078,-0.1046,0.0
+S4_untangled,CoChangeLocAgent,parse,cfr10,ols_project_fe_hc3,781,-0.2212,-0.2771,-0.1653,0.0
+S4_untangled,CoChangeLocAgent,parse,top10,mixedlm_powell,781,-0.0297,-0.0913,0.0318,0.3437
+S4_untangled,CoChangeLocAgent,parse,rr10,mixedlm_powell,781,-0.0166,-0.069,0.0359,0.5359
+S4_untangled,CoChangeLocAgent,parse,"top10 (logit, log-odds)",logit_project_fe,781,-0.2862,-0.7797,0.2073,0.2557
+S4_untangled,CoChangeSweRank,all,ap,ols_project_fe_hc3,781,-0.0815,-0.1346,-0.0285,0.0026
+S4_untangled,CoChangeSweRank,all,cfr10,ols_project_fe_hc3,781,-0.078,-0.1412,-0.0147,0.0157
+S4_untangled,CoChangeSweRank,all,rr,mixedlm_powell,781,-0.0049,-0.0582,0.0483,0.8563
+S4_untangled,CoChangeSweRank,all,top10,ols_project_fe_hc3,781,0.0058,-0.0677,0.0792,0.8778
+S4_untangled,CoChangeSweRank,all,"top10 (logit, log-odds)",logit_project_fe,781,0.0016,-0.5197,0.523,0.9951
+S4_untangled,CoChangeSweRank,parse,ap,ols_project_fe_hc3,781,-0.1877,-0.2375,-0.1379,0.0
+S4_untangled,CoChangeSweRank,parse,cfr10,ols_project_fe_hc3,781,-0.233,-0.2885,-0.1775,0.0
+S4_untangled,CoChangeSweRank,parse,rr,mixedlm_powell,781,-0.0068,-0.0639,0.0503,0.8148
+S4_untangled,CoChangeSweRank,parse,top10,mixedlm_powell,781,-0.0202,-0.0814,0.041,0.5176
+S4_untangled,CoChangeSweRank,parse,"top10 (logit, log-odds)",logit_project_fe,781,-0.3192,-0.8336,0.1952,0.224
 S4_untangled,FLIM,all,ap,mixedlm_powell,1394,-0.1031,-0.1446,-0.0616,0.0
 S4_untangled,FLIM,all,cfr10,mixedlm_powell,1394,-0.1367,-0.187,-0.0864,0.0
 S4_untangled,FLIM,all,rr,mixedlm_powell,1394,-0.0251,-0.0783,0.0281,0.3546
@@ -895,6 +1075,36 @@ S5_fold1,BM25,parse,cfr10,mixedlm_powell,691,-0.1724,-0.2455,-0.0992,0.0
 S5_fold1,BM25,parse,rr,mixedlm_powell,691,-0.0773,-0.1564,0.0019,0.0558
 S5_fold1,BM25,parse,top10,mixedlm_lbfgs,691,-0.0509,-0.138,0.0362,0.252
 S5_fold1,BM25,parse,"top10 (logit, log-odds)",logit_project_fe,691,-0.2434,-0.6802,0.1934,0.2747
+S5_fold1,CoChangeFLIM,all,ap,mixedlm_powell,691,-0.0039,-0.063,0.0551,0.8962
+S5_fold1,CoChangeFLIM,all,cfr10,mixedlm_powell,691,-0.003,-0.0776,0.0716,0.9373
+S5_fold1,CoChangeFLIM,all,rr,mixedlm_powell,691,0.0022,-0.0676,0.0721,0.9504
+S5_fold1,CoChangeFLIM,all,top10,mixedlm_powell,691,0.065,-0.0178,0.1477,0.1239
+S5_fold1,CoChangeFLIM,all,"top10 (logit, log-odds)",logit_project_fe,691,0.424,-0.041,0.889,0.0739
+S5_fold1,CoChangeFLIM,parse,ap,mixedlm_powell,691,-0.1269,-0.1863,-0.0675,0.0
+S5_fold1,CoChangeFLIM,parse,cfr10,mixedlm_powell,691,-0.1542,-0.2243,-0.0841,0.0
+S5_fold1,CoChangeFLIM,parse,rr,mixedlm_powell,691,0.0141,-0.0632,0.0914,0.7201
+S5_fold1,CoChangeFLIM,parse,top10,mixedlm_powell,691,0.0038,-0.0769,0.0845,0.926
+S5_fold1,CoChangeFLIM,parse,"top10 (logit, log-odds)",logit_project_fe,691,0.056,-0.4197,0.5317,0.8176
+S5_fold1,CoChangeLocAgent,all,ap10,mixedlm_lbfgs,390,-0.1483,-0.2183,-0.0782,0.0
+S5_fold1,CoChangeLocAgent,all,cfr10,mixedlm_lbfgs,390,-0.2329,-0.3134,-0.1523,0.0
+S5_fold1,CoChangeLocAgent,all,top10,mixedlm_powell,390,-0.141,-0.2559,-0.0261,0.0162
+S5_fold1,CoChangeLocAgent,all,rr10,mixedlm_powell,390,-0.0617,-0.1413,0.0179,0.1286
+S5_fold1,CoChangeLocAgent,all,"top10 (logit, log-odds)",logit_project_fe,390,-1.2138,-1.9416,-0.486,0.0011
+S5_fold1,CoChangeLocAgent,parse,ap10,mixedlm_lbfgs,390,-0.2146,-0.2827,-0.1465,0.0
+S5_fold1,CoChangeLocAgent,parse,cfr10,mixedlm_lbfgs,390,-0.3232,-0.398,-0.2484,0.0
+S5_fold1,CoChangeLocAgent,parse,top10,ols_project_fe_hc3,390,-0.1494,-0.2546,-0.0442,0.0054
+S5_fold1,CoChangeLocAgent,parse,rr10,mixedlm_powell,390,-0.0756,-0.1519,0.0008,0.0525
+S5_fold1,CoChangeLocAgent,parse,"top10 (logit, log-odds)",logit_project_fe,390,-1.2282,-1.957,-0.4993,0.001
+S5_fold1,CoChangeSweRank,all,ap,mixedlm_powell,390,-0.0938,-0.1817,-0.0058,0.0366
+S5_fold1,CoChangeSweRank,all,cfr10,mixedlm_powell,390,-0.0895,-0.1749,-0.0041,0.0399
+S5_fold1,CoChangeSweRank,all,rr,mixedlm_lbfgs,390,0.0022,-0.0741,0.0784,0.9559
+S5_fold1,CoChangeSweRank,all,top10,mixedlm_powell,390,0.0229,-0.1606,0.2064,0.807
+S5_fold1,CoChangeSweRank,all,"top10 (logit, log-odds)",logit_project_fe,390,0.075,-0.6766,0.8266,0.8449
+S5_fold1,CoChangeSweRank,parse,ap,mixedlm_powell,390,-0.2123,-0.2864,-0.1382,0.0
+S5_fold1,CoChangeSweRank,parse,cfr10,mixedlm_lbfgs,390,-0.2762,-0.354,-0.1984,0.0
+S5_fold1,CoChangeSweRank,parse,rr,mixedlm_powell,390,-0.0024,-0.0838,0.079,0.9543
+S5_fold1,CoChangeSweRank,parse,top10,mixedlm_powell,390,-0.0608,-0.1469,0.0254,0.1669
+S5_fold1,CoChangeSweRank,parse,"top10 (logit, log-odds)",logit_project_fe,390,-0.6129,-1.3548,0.129,0.1054
 S5_fold1,FLIM,all,ap,mixedlm_powell,691,-0.0912,-0.1525,-0.0299,0.0035
 S5_fold1,FLIM,all,cfr10,mixedlm_powell,691,-0.0918,-0.1647,-0.019,0.0135
 S5_fold1,FLIM,all,rr,mixedlm_powell,691,0.0177,-0.0592,0.0946,0.6523
@@ -1031,6 +1241,36 @@ S5_fold2,BM25,parse,cfr10,mixedlm_powell,708,-0.1427,-0.2124,-0.0731,0.0001
 S5_fold2,BM25,parse,rr,mixedlm_powell,708,-0.0245,-0.0985,0.0495,0.5167
 S5_fold2,BM25,parse,top10,mixedlm_powell,708,-0.0545,-0.139,0.03,0.206
 S5_fold2,BM25,parse,"top10 (logit, log-odds)",logit_project_fe,708,-0.272,-0.68,0.136,0.1914
+S5_fold2,CoChangeFLIM,all,ap,mixedlm_powell,708,-0.0418,-0.0959,0.0123,0.1301
+S5_fold2,CoChangeFLIM,all,cfr10,mixedlm_powell,708,-0.0952,-0.1659,-0.0244,0.0084
+S5_fold2,CoChangeFLIM,all,rr,mixedlm_powell,708,-0.0393,-0.1068,0.0283,0.2545
+S5_fold2,CoChangeFLIM,all,top10,mixedlm_lbfgs,708,-0.0811,-0.163,0.0008,0.0522
+S5_fold2,CoChangeFLIM,all,"top10 (logit, log-odds)",logit_project_fe,708,-0.4715,-0.9016,-0.0414,0.0317
+S5_fold2,CoChangeFLIM,parse,ap,mixedlm_powell,708,-0.1347,-0.1904,-0.079,0.0
+S5_fold2,CoChangeFLIM,parse,cfr10,mixedlm_powell,708,-0.1958,-0.2637,-0.1278,0.0
+S5_fold2,CoChangeFLIM,parse,rr,mixedlm_powell,708,-0.0734,-0.1463,-0.0005,0.0484
+S5_fold2,CoChangeFLIM,parse,top10,mixedlm_powell,708,-0.1265,-0.2066,-0.0463,0.002
+S5_fold2,CoChangeFLIM,parse,"top10 (logit, log-odds)",logit_project_fe,708,-0.7215,-1.159,-0.2839,0.0012
+S5_fold2,CoChangeLocAgent,all,ap10,mixedlm_powell,391,-0.0541,-0.1381,0.0299,0.2067
+S5_fold2,CoChangeLocAgent,all,cfr10,ols_project_fe_hc3,391,-0.0466,-0.1323,0.039,0.2857
+S5_fold2,CoChangeLocAgent,all,top10,ols_project_fe_hc3,391,0.0792,-0.0177,0.1762,0.1091
+S5_fold2,CoChangeLocAgent,all,rr10,ols_project_fe_hc3,391,0.0398,-0.0375,0.117,0.3132
+S5_fold2,CoChangeLocAgent,all,"top10 (logit, log-odds)",logit_project_fe,391,0.6878,-0.0942,1.4697,0.0847
+S5_fold2,CoChangeLocAgent,parse,ap10,mixedlm_powell,391,-0.1109,-0.1879,-0.0338,0.0048
+S5_fold2,CoChangeLocAgent,parse,cfr10,ols_project_fe_hc3,391,-0.1334,-0.2121,-0.0548,0.0009
+S5_fold2,CoChangeLocAgent,parse,top10,ols_project_fe_hc3,391,0.0758,-0.0207,0.1723,0.1235
+S5_fold2,CoChangeLocAgent,parse,rr10,mixedlm_powell,391,0.0399,-0.0341,0.1138,0.2906
+S5_fold2,CoChangeLocAgent,parse,"top10 (logit, log-odds)",logit_project_fe,391,0.6348,-0.125,1.3947,0.1015
+S5_fold2,CoChangeSweRank,all,ap,ols_project_fe_hc3,391,-0.0716,-0.1473,0.0041,0.0637
+S5_fold2,CoChangeSweRank,all,cfr10,ols_project_fe_hc3,391,-0.0743,-0.1634,0.0148,0.1022
+S5_fold2,CoChangeSweRank,all,rr,mixedlm_powell,391,0.0031,-0.0773,0.0834,0.9399
+S5_fold2,CoChangeSweRank,all,top10,ols_project_fe_hc3,391,0.0047,-0.094,0.1035,0.9249
+S5_fold2,CoChangeSweRank,all,"top10 (logit, log-odds)",logit_project_fe,391,-0.0518,-0.7797,0.6761,0.889
+S5_fold2,CoChangeSweRank,parse,ap,ols_project_fe_hc3,391,-0.1698,-0.2401,-0.0995,0.0
+S5_fold2,CoChangeSweRank,parse,cfr10,ols_project_fe_hc3,391,-0.1974,-0.276,-0.1189,0.0
+S5_fold2,CoChangeSweRank,parse,rr,mixedlm_powell,391,-0.0071,-0.0874,0.0732,0.8626
+S5_fold2,CoChangeSweRank,parse,top10,ols_project_fe_hc3,391,0.0056,-0.093,0.1041,0.9121
+S5_fold2,CoChangeSweRank,parse,"top10 (logit, log-odds)",logit_project_fe,391,-0.0445,-0.7714,0.6824,0.9045
 S5_fold2,FLIM,all,ap,mixedlm_powell,708,-0.1084,-0.1648,-0.0521,0.0002
 S5_fold2,FLIM,all,cfr10,mixedlm_powell,708,-0.1724,-0.2418,-0.1029,0.0
 S5_fold2,FLIM,all,rr,mixedlm_lbfgs,708,-0.062,-0.1351,0.0112,0.0969
@@ -1167,6 +1407,36 @@ S6_removed,BM25,parse,cfr10,mixedlm_powell,432,-0.2299,-0.3414,-0.1183,0.0001
 S6_removed,BM25,parse,rr,mixedlm_powell,432,-0.0046,-0.1189,0.1098,0.9378
 S6_removed,BM25,parse,top10,mixedlm_powell,432,-0.0412,-0.1628,0.0804,0.5066
 S6_removed,BM25,parse,"top10 (logit, log-odds)",logit_project_fe,432,-0.1467,-0.9436,0.6501,0.7181
+S6_removed,CoChangeFLIM,all,ap,mixedlm_powell,432,-0.0099,-0.1075,0.0877,0.8421
+S6_removed,CoChangeFLIM,all,cfr10,mixedlm_powell,432,-0.0395,-0.145,0.066,0.4626
+S6_removed,CoChangeFLIM,all,rr,mixedlm_powell,432,-0.022,-0.1535,0.1095,0.7427
+S6_removed,CoChangeFLIM,all,top10,mixedlm_powell,432,-0.0776,-0.1937,0.0386,0.1907
+S6_removed,CoChangeFLIM,all,"top10 (logit, log-odds)",logit_project_fe,432,-0.3968,-1.1582,0.3647,0.3071
+S6_removed,CoChangeFLIM,parse,ap,mixedlm_lbfgs,432,-0.1253,-0.2266,-0.024,0.0153
+S6_removed,CoChangeFLIM,parse,cfr10,mixedlm_powell,432,-0.2356,-0.3324,-0.1389,0.0
+S6_removed,CoChangeFLIM,parse,rr,mixedlm_powell,432,-0.0208,-0.1436,0.1019,0.7394
+S6_removed,CoChangeFLIM,parse,top10,mixedlm_powell,432,-0.101,-0.206,0.004,0.0595
+S6_removed,CoChangeFLIM,parse,"top10 (logit, log-odds)",logit_project_fe,432,-0.6959,-1.4811,0.0894,0.0824
+S6_removed,CoChangeLocAgent,all,ap10,mixedlm_powell,255,-0.1775,-0.2692,-0.0859,0.0001
+S6_removed,CoChangeLocAgent,all,cfr10,mixedlm_powell,255,-0.2253,-0.3215,-0.1291,0.0
+S6_removed,CoChangeLocAgent,all,top10,mixedlm_powell,255,-0.1122,-0.2114,-0.0131,0.0265
+S6_removed,CoChangeLocAgent,all,rr10,mixedlm_powell,255,-0.1221,-0.2065,-0.0376,0.0046
+S6_removed,CoChangeLocAgent,all,"top10 (logit, log-odds)",logit_project_fe,255,-0.9253,-1.9531,0.1024,0.0776
+S6_removed,CoChangeLocAgent,parse,ap10,mixedlm_powell,255,-0.2433,-0.3359,-0.1506,0.0
+S6_removed,CoChangeLocAgent,parse,cfr10,mixedlm_powell,255,-0.3169,-0.4061,-0.2276,0.0
+S6_removed,CoChangeLocAgent,parse,top10,mixedlm_powell,255,-0.1382,-0.235,-0.0414,0.0052
+S6_removed,CoChangeLocAgent,parse,rr10,mixedlm_powell,255,-0.1086,-0.201,-0.0162,0.0212
+S6_removed,CoChangeLocAgent,parse,"top10 (logit, log-odds)",logit_project_fe,255,-1.1663,-2.197,-0.1356,0.0266
+S6_removed,CoChangeSweRank,all,ap,mixedlm_powell,255,-0.1399,-0.243,-0.0369,0.0078
+S6_removed,CoChangeSweRank,all,cfr10,mixedlm_powell,255,-0.1981,-0.3018,-0.0945,0.0002
+S6_removed,CoChangeSweRank,all,rr,ols_project_fe_hc3,255,-0.0192,-0.1385,0.1,0.7518
+S6_removed,CoChangeSweRank,all,top10,mixedlm_lbfgs,255,-0.0652,-0.1698,0.0395,0.2222
+S6_removed,CoChangeSweRank,all,"top10 (logit, log-odds)",logit_project_fe,255,-0.4618,-1.4683,0.5447,0.3685
+S6_removed,CoChangeSweRank,parse,ap,mixedlm_powell,255,-0.229,-0.3321,-0.1258,0.0
+S6_removed,CoChangeSweRank,parse,cfr10,mixedlm_powell,255,-0.2996,-0.3972,-0.2019,0.0
+S6_removed,CoChangeSweRank,parse,rr,mixedlm_lbfgs,255,0.0052,-0.108,0.1185,0.928
+S6_removed,CoChangeSweRank,parse,top10,mixedlm_powell,255,-0.0889,-0.1938,0.0159,0.0965
+S6_removed,CoChangeSweRank,parse,"top10 (logit, log-odds)",logit_project_fe,255,-0.6918,-1.6757,0.2921,0.1682
 S6_removed,FLIM,all,ap,mixedlm_powell,432,-0.0766,-0.1776,0.0243,0.1368
 S6_removed,FLIM,all,cfr10,mixedlm_powell,432,-0.1623,-0.2604,-0.0641,0.0012
 S6_removed,FLIM,all,rr,ols_project_fe_hc3,432,-0.0114,-0.1292,0.1064,0.8495
@@ -1303,6 +1573,36 @@ S6_kept+removed,BM25,parse,cfr10,mixedlm_powell,1831,-0.1733,-0.2196,-0.127,0.0
 S6_kept+removed,BM25,parse,rr,mixedlm_powell,1831,-0.0477,-0.0967,0.0014,0.0569
 S6_kept+removed,BM25,parse,top10,mixedlm_powell,1831,-0.0552,-0.1094,-0.001,0.046
 S6_kept+removed,BM25,parse,"top10 (logit, log-odds)",logit_project_fe,1831,-0.2987,-0.572,-0.0253,0.0322
+S6_kept+removed,CoChangeFLIM,all,ap,mixedlm_powell,1831,-0.0279,-0.0658,0.01,0.149
+S6_kept+removed,CoChangeFLIM,all,cfr10,mixedlm_powell,1831,-0.0593,-0.1058,-0.0128,0.0125
+S6_kept+removed,CoChangeFLIM,all,rr,mixedlm_powell,1831,-0.0336,-0.0788,0.0115,0.1442
+S6_kept+removed,CoChangeFLIM,all,top10,mixedlm_powell,1831,-0.0357,-0.0875,0.0162,0.178
+S6_kept+removed,CoChangeFLIM,all,"top10 (logit, log-odds)",logit_project_fe,1831,-0.1738,-0.4586,0.1109,0.2314
+S6_kept+removed,CoChangeFLIM,parse,ap,mixedlm_powell,1831,-0.1384,-0.1772,-0.0996,0.0
+S6_kept+removed,CoChangeFLIM,parse,cfr10,mixedlm_powell,1831,-0.1944,-0.2386,-0.1502,0.0
+S6_kept+removed,CoChangeFLIM,parse,rr,mixedlm_powell,1831,-0.0428,-0.0916,0.0061,0.0861
+S6_kept+removed,CoChangeFLIM,parse,top10,mixedlm_powell,1831,-0.0812,-0.1317,-0.0307,0.0016
+S6_kept+removed,CoChangeFLIM,parse,"top10 (logit, log-odds)",logit_project_fe,1831,-0.4689,-0.7594,-0.1784,0.0016
+S6_kept+removed,CoChangeLocAgent,all,ap10,mixedlm_powell,1036,-0.112,-0.1584,-0.0655,0.0
+S6_kept+removed,CoChangeLocAgent,all,cfr10,mixedlm_powell,1036,-0.1561,-0.2087,-0.1034,0.0
+S6_kept+removed,CoChangeLocAgent,all,top10,ols_project_fe_hc3,1036,-0.0467,-0.1116,0.0182,0.1587
+S6_kept+removed,CoChangeLocAgent,all,rr10,ols_project_fe_hc3,1036,-0.0388,-0.0878,0.0103,0.1213
+S6_kept+removed,CoChangeLocAgent,all,"top10 (logit, log-odds)",logit_project_fe,1036,-0.4072,-0.856,0.0416,0.0754
+S6_kept+removed,CoChangeLocAgent,parse,ap10,mixedlm_lbfgs,1036,-0.1764,-0.2219,-0.1309,0.0
+S6_kept+removed,CoChangeLocAgent,parse,cfr10,mixedlm_powell,1036,-0.2445,-0.294,-0.195,0.0
+S6_kept+removed,CoChangeLocAgent,parse,top10,ols_project_fe_hc3,1036,-0.0536,-0.1183,0.0111,0.1046
+S6_kept+removed,CoChangeLocAgent,parse,rr10,mixedlm_lbfgs,1036,-0.0406,-0.0865,0.0054,0.0834
+S6_kept+removed,CoChangeLocAgent,parse,"top10 (logit, log-odds)",logit_project_fe,1036,-0.4546,-0.8999,-0.0094,0.0454
+S6_kept+removed,CoChangeSweRank,all,ap,mixedlm_powell,1036,-0.1037,-0.1532,-0.0542,0.0
+S6_kept+removed,CoChangeSweRank,all,cfr10,mixedlm_powell,1036,-0.1119,-0.1664,-0.0573,0.0001
+S6_kept+removed,CoChangeSweRank,all,rr,mixedlm_lbfgs,1036,-0.0116,-0.058,0.0349,0.6253
+S6_kept+removed,CoChangeSweRank,all,top10,ols_project_fe_hc3,1036,-0.0055,-0.0703,0.0593,0.8678
+S6_kept+removed,CoChangeSweRank,all,"top10 (logit, log-odds)",logit_project_fe,1036,-0.0734,-0.5359,0.3891,0.7557
+S6_kept+removed,CoChangeSweRank,parse,ap,ols_project_fe_hc3,1036,-0.1982,-0.2421,-0.1542,0.0
+S6_kept+removed,CoChangeSweRank,parse,cfr10,mixedlm_powell,1036,-0.2541,-0.3036,-0.2046,0.0
+S6_kept+removed,CoChangeSweRank,parse,rr,mixedlm_powell,1036,-0.0099,-0.0601,0.0402,0.6977
+S6_kept+removed,CoChangeSweRank,parse,top10,ols_project_fe_hc3,1036,-0.0397,-0.1064,0.0271,0.2441
+S6_kept+removed,CoChangeSweRank,parse,"top10 (logit, log-odds)",logit_project_fe,1036,-0.3741,-0.8302,0.0821,0.108
 S6_kept+removed,FLIM,all,ap,mixedlm_lbfgs,1831,-0.1053,-0.1446,-0.066,0.0
 S6_kept+removed,FLIM,all,cfr10,mixedlm_lbfgs,1831,-0.1473,-0.1926,-0.1021,0.0
 S6_kept+removed,FLIM,all,rr,mixedlm_powell,1831,-0.034,-0.0829,0.0149,0.1729
@@ -1449,6 +1749,36 @@ P_behavioural,BM25,parse,cfr10,mixedlm_powell,1123,-0.1878,-0.2662,-0.1093,0.0
 P_behavioural,BM25,parse,rr,mixedlm_powell,1123,-0.0888,-0.1686,-0.009,0.0292
 P_behavioural,BM25,parse,top10,mixedlm_powell,1123,-0.1217,-0.2112,-0.0321,0.0077
 P_behavioural,BM25,parse,"top10 (logit, log-odds)",logit_project_fe,1123,-0.6307,-1.065,-0.1964,0.0044
+P_behavioural,CoChangeFLIM,all,ap,mixedlm_powell,1123,-0.0476,-0.1071,0.0118,0.1165
+P_behavioural,CoChangeFLIM,all,cfr10,mixedlm_powell,1123,-0.0583,-0.136,0.0193,0.141
+P_behavioural,CoChangeFLIM,all,rr,mixedlm_powell,1123,-0.0813,-0.1531,-0.0095,0.0264
+P_behavioural,CoChangeFLIM,all,top10,mixedlm_powell,1123,-0.0647,-0.1519,0.0226,0.1466
+P_behavioural,CoChangeFLIM,all,"top10 (logit, log-odds)",logit_project_fe,1123,-0.293,-0.7415,0.1554,0.2003
+P_behavioural,CoChangeFLIM,parse,ap,mixedlm_powell,1123,-0.1555,-0.219,-0.092,0.0
+P_behavioural,CoChangeFLIM,parse,cfr10,mixedlm_powell,1123,-0.2044,-0.2806,-0.1282,0.0
+P_behavioural,CoChangeFLIM,parse,rr,mixedlm_lbfgs,1123,-0.1098,-0.1877,-0.0319,0.0057
+P_behavioural,CoChangeFLIM,parse,top10,mixedlm_powell,1123,-0.1578,-0.2428,-0.0729,0.0003
+P_behavioural,CoChangeFLIM,parse,"top10 (logit, log-odds)",logit_project_fe,1123,-0.8221,-1.2713,-0.3729,0.0003
+P_behavioural,CoChangeLocAgent,all,ap10,mixedlm_powell,581,-0.1532,-0.2401,-0.0663,0.0005
+P_behavioural,CoChangeLocAgent,all,cfr10,ols_project_fe_hc3,581,-0.2196,-0.3204,-0.1188,0.0
+P_behavioural,CoChangeLocAgent,all,top10,ols_project_fe_hc3,581,-0.1838,-0.3017,-0.0658,0.0023
+P_behavioural,CoChangeLocAgent,all,rr10,ols_project_fe_hc3,581,-0.096,-0.1846,-0.0075,0.0336
+P_behavioural,CoChangeLocAgent,all,"top10 (logit, log-odds)",logit_project_fe,581,-1.2885,-1.9629,-0.6141,0.0002
+P_behavioural,CoChangeLocAgent,parse,ap10,ols_project_fe_hc3,581,-0.2169,-0.2853,-0.1485,0.0
+P_behavioural,CoChangeLocAgent,parse,cfr10,mixedlm_powell,581,-0.3018,-0.3946,-0.209,0.0
+P_behavioural,CoChangeLocAgent,parse,top10,mixedlm_lbfgs,581,-0.1832,-0.2789,-0.0874,0.0002
+P_behavioural,CoChangeLocAgent,parse,rr10,mixedlm_lbfgs,581,-0.1047,-0.1858,-0.0237,0.0113
+P_behavioural,CoChangeLocAgent,parse,"top10 (logit, log-odds)",logit_project_fe,581,-1.2872,-1.9616,-0.6128,0.0002
+P_behavioural,CoChangeSweRank,all,ap,mixedlm_lbfgs,581,-0.1366,-0.2236,-0.0497,0.0021
+P_behavioural,CoChangeSweRank,all,cfr10,ols_project_fe_hc3,581,-0.1676,-0.27,-0.0652,0.0013
+P_behavioural,CoChangeSweRank,all,rr,mixedlm_powell,581,-0.0565,-0.1389,0.0258,0.1782
+P_behavioural,CoChangeSweRank,all,top10,ols_project_fe_hc3,581,-0.1374,-0.2562,-0.0186,0.0234
+P_behavioural,CoChangeSweRank,all,"top10 (logit, log-odds)",logit_project_fe,581,-1.0241,-1.7025,-0.3456,0.0031
+P_behavioural,CoChangeSweRank,parse,ap,mixedlm_powell,581,-0.2391,-0.3266,-0.1515,0.0
+P_behavioural,CoChangeSweRank,parse,cfr10,mixedlm_powell,581,-0.3115,-0.4053,-0.2177,0.0
+P_behavioural,CoChangeSweRank,parse,rr,mixedlm_lbfgs,581,-0.0937,-0.1806,-0.0069,0.0344
+P_behavioural,CoChangeSweRank,parse,top10,mixedlm_lbfgs,581,-0.1904,-0.2889,-0.092,0.0002
+P_behavioural,CoChangeSweRank,parse,"top10 (logit, log-odds)",logit_project_fe,581,-1.3541,-2.02,-0.6882,0.0001
 P_behavioural,FLIM,all,ap,mixedlm_powell,1123,-0.1282,-0.1921,-0.0642,0.0001
 P_behavioural,FLIM,all,cfr10,mixedlm_powell,1123,-0.1637,-0.2409,-0.0864,0.0
 P_behavioural,FLIM,all,rr,mixedlm_powell,1123,-0.0901,-0.1683,-0.0119,0.024
@@ -1595,6 +1925,36 @@ P_test_only,BM25,parse,cfr10,mixedlm_powell,1257,-0.1301,-0.193,-0.0673,0.0
 P_test_only,BM25,parse,rr,mixedlm_powell,1257,-0.0251,-0.0905,0.0402,0.4513
 P_test_only,BM25,parse,top10,mixedlm_lbfgs,1257,-0.0066,-0.08,0.0669,0.861
 P_test_only,BM25,parse,"top10 (logit, log-odds)",logit_project_fe,1257,-0.0434,-0.4015,0.3148,0.8124
+P_test_only,CoChangeFLIM,all,ap,mixedlm_lbfgs,1257,-0.0039,-0.0535,0.0457,0.8767
+P_test_only,CoChangeFLIM,all,cfr10,mixedlm_lbfgs,1257,-0.0386,-0.102,0.0248,0.2332
+P_test_only,CoChangeFLIM,all,rr,mixedlm_powell,1257,0.0148,-0.0446,0.0742,0.625
+P_test_only,CoChangeFLIM,all,top10,mixedlm_lbfgs,1257,0.0216,-0.0492,0.0925,0.5492
+P_test_only,CoChangeFLIM,all,"top10 (logit, log-odds)",logit_project_fe,1257,0.1095,-0.2693,0.4883,0.571
+P_test_only,CoChangeFLIM,parse,ap,mixedlm_lbfgs,1257,-0.1131,-0.1642,-0.062,0.0
+P_test_only,CoChangeFLIM,parse,cfr10,mixedlm_lbfgs,1257,-0.1464,-0.2072,-0.0855,0.0
+P_test_only,CoChangeFLIM,parse,rr,mixedlm_powell,1257,0.0178,-0.0465,0.0821,0.5869
+P_test_only,CoChangeFLIM,parse,top10,mixedlm_powell,1257,0.0005,-0.0682,0.0693,0.9875
+P_test_only,CoChangeFLIM,parse,"top10 (logit, log-odds)",logit_project_fe,1257,-0.0257,-0.4158,0.3644,0.8973
+P_test_only,CoChangeLocAgent,all,ap10,mixedlm_powell,710,-0.0434,-0.1069,0.02,0.1798
+P_test_only,CoChangeLocAgent,all,cfr10,mixedlm_powell,710,-0.0742,-0.1503,0.0018,0.0558
+P_test_only,CoChangeLocAgent,all,top10,mixedlm_powell,710,0.0455,-0.0278,0.1188,0.2239
+P_test_only,CoChangeLocAgent,all,rr10,ols_project_fe_hc3,710,0.0364,-0.0256,0.0984,0.25
+P_test_only,CoChangeLocAgent,all,"top10 (logit, log-odds)",logit_project_fe,710,0.4867,-0.115,1.0884,0.1129
+P_test_only,CoChangeLocAgent,parse,ap10,mixedlm_powell,710,-0.1056,-0.168,-0.0432,0.0009
+P_test_only,CoChangeLocAgent,parse,cfr10,ols_project_fe_hc3,710,-0.1516,-0.2155,-0.0876,0.0
+P_test_only,CoChangeLocAgent,parse,top10,ols_project_fe_hc3,710,0.0612,-0.015,0.1374,0.1154
+P_test_only,CoChangeLocAgent,parse,rr10,mixedlm_lbfgs,710,0.0304,-0.0299,0.0908,0.3228
+P_test_only,CoChangeLocAgent,parse,"top10 (logit, log-odds)",logit_project_fe,710,0.4594,-0.1337,1.0525,0.129
+P_test_only,CoChangeSweRank,all,ap,mixedlm_lbfgs,710,-0.0515,-0.1859,0.0829,0.4529
+P_test_only,CoChangeSweRank,all,cfr10,mixedlm_lbfgs,710,-0.0257,-0.1047,0.0532,0.5233
+P_test_only,CoChangeSweRank,all,rr,mixedlm_powell,710,0.0374,-0.0254,0.1002,0.2431
+P_test_only,CoChangeSweRank,all,top10,mixedlm_powell,710,0.09,0.0175,0.1625,0.0149
+P_test_only,CoChangeSweRank,all,"top10 (logit, log-odds)",logit_project_fe,710,0.9039,0.2361,1.5717,0.008
+P_test_only,CoChangeSweRank,parse,ap,ols_project_fe_hc3,710,-0.1407,-0.2008,-0.0806,0.0
+P_test_only,CoChangeSweRank,parse,cfr10,ols_project_fe_hc3,710,-0.1603,-0.2237,-0.0968,0.0
+P_test_only,CoChangeSweRank,parse,rr,mixedlm_powell,710,0.06,-0.0074,0.1273,0.0809
+P_test_only,CoChangeSweRank,parse,top10,ols_project_fe_hc3,710,0.0837,0.008,0.1595,0.0302
+P_test_only,CoChangeSweRank,parse,"top10 (logit, log-odds)",logit_project_fe,710,0.7192,0.0568,1.3817,0.0333
 P_test_only,FLIM,all,ap,mixedlm_lbfgs,1257,-0.0799,-0.1316,-0.0281,0.0025
 P_test_only,FLIM,all,cfr10,mixedlm_powell,1257,-0.1045,-0.1669,-0.0421,0.001
 P_test_only,FLIM,all,rr,mixedlm_lbfgs,1257,0.0156,-0.0487,0.0798,0.6346

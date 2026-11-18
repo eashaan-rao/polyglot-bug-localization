@@ -94,6 +94,13 @@ PAIRS = [
     ("BM25 vs SweRankEmbedAll", "BM25", "all", "SweRankEmbedAll", "all", OUTCOMES),
     ("SweRankEmbed vs SweRankEmbedAll (corpus extension)", "SweRankEmbedAll", "all", "SweRankEmbed", "all", OUTCOMES),
     ("BM25 vs SweRankAll", "BM25", "all", "SweRankAll", "all", OUTCOMES),
+    # co-change baseline (Scripts/analysis/cochange.py, 2026-11-18)
+    ("CoChangeFLIM vs FLIM-strict", "CoChangeFLIM", "all", "FLIM", "parse", OUTCOMES),
+    ("CoChangeSweRank vs SweRank", "CoChangeSweRank", "all", "SweRank", "all", OUTCOMES),
+    ("CoChangeLocAgent vs LocAgent", "CoChangeLocAgent", "all", "LocAgent", "all", TOPK_OUTCOMES),
+    ("BM25 vs CoChangeFLIM", "BM25", "all", "CoChangeFLIM", "all", OUTCOMES),
+    ("BM25 vs CoChangeSweRank", "BM25", "all", "CoChangeSweRank", "all", OUTCOMES),
+    ("BM25 vs CoChangeLocAgent", "BM25", "all", "CoChangeLocAgent", "all", TOPK_OUTCOMES),
     ("SweRankAll vs SweRank (corpus extension, reranked)", "SweRankAll", "all", "SweRank", "all", OUTCOMES),
     # ablation (fold 1, seed 13): does training BLAZE on all fix files help?
     ("BLAZE_ALL vs BLAZE (ablation)", "BLAZE_ALL", "all", "BLAZE", "all", OUTCOMES),
@@ -210,7 +217,7 @@ def condition(b, name):
 def rq3(x, cond):
     rows, models = [], []
     for (tech, view), g in x.groupby(["tech", "view"]):
-        outs = (TOPK_OUTCOMES if tech in ("LocAgent", "HybridLocAgent") else
+        outs = (TOPK_OUTCOMES if tech in ("LocAgent", "HybridLocAgent", "CoChangeLocAgent") else
                 OUTCOMES + ["ap10", "rr10"] if tech.startswith("SweRank") else OUTCOMES)
         for y in outs:
             groups = list(g.groupby("project")) + ([("POOLED", g)] if g.project.nunique() > 1 else [])

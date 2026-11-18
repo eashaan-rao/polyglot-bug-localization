@@ -179,3 +179,10 @@ do with the files they cannot represent? Not proposed as techniques; untuned.
 - Contamination probe extended to all Python test bugs (LocAgent model,
   closed-book, issue title only): hit@10 Mono-fix 7.1% / 6.6%, Poly-fix
   3.3% / 0.8% (folds 1 / 2); `results/obj2/locagent/contamination_probe_all_fold*.csv`.
+- Co-change baseline (`Scripts/analysis/cochange.py`, 2026-11-18): history before
+  each report (no merges, no fix commit, commits <= 30 files); the technique's
+  top five files propose co-changed files that it does not rank itself; merged
+  by RRF (k = 60). A first version merged overlapping lists, which let files in
+  both lists overtake the technique's best files (SweRank MAP .478 -> .065);
+  its outputs were deleted before any use and the run repeated with disjoint
+  lists.
