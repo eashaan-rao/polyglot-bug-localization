@@ -38,7 +38,8 @@ TECHS = [("BM25", "all", "ap"), ("BLAZE", "all", "ap"), ("FLIM", "all", "ap"), (
 VARIANTS = [("SweRankEmbed", "all", "ap"), ("SweRankEmbedAll", "all", "ap"), ("SweRankAll", "all", "ap"),
             ("HybridFLIM", "all", "ap"), ("HybridSweRank", "all", "ap"), ("HybridLocAgent", "all", "ap10"),
             ("BM25", "all", "ap10"), ("CoChangeFLIM", "all", "ap"), ("CoChangeSweRank", "all", "ap"),
-            ("CoChangeLocAgent", "all", "ap10")]
+            ("CoChangeLocAgent", "all", "ap10"), ("SweRankEmbedNonPy", "all", "ap"),
+            ("SweRankEmbedPyTest", "all", "ap"), ("SweRankEmbedAllCap10", "all", "ap")]
 OUT = {}
 
 

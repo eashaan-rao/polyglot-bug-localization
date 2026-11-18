@@ -143,8 +143,10 @@ def rq3_python(T):
     rows.append(" & ".join(cells) + r" \\")
     adj = ["Adjusted class effect", ""]
     for _, tech, view, out in spec:
-        if tech == "BM25":
-            adj.append(r"\multicolumn{3}{c}{--}")
+        if tech == "BM25":      # Python-subset model from review_checks2.py
+            m = json.load(open(os.path.join(ST, "review_checks2.json")))["bm25_python_class_effect"]["ap"]
+            star = "$^{*}$" if (m["ci"][0] > 0 or m["ci"][1] < 0) else ""
+            adj.append(r"\multicolumn{3}{c}{" + f(m["est"]) + star + "}")
             continue
         m = one(T["m"], condition="primary", tech=tech, view=view, outcome=out)
         star = "$^{*}$" if (m["ci_lo"] > 0 or m["ci_hi"] < 0) else ""
@@ -202,30 +204,35 @@ Technique (view) & Bugs & AP & Complete-fix recall@10 & RR & Top-10 \\
 
 # ---------------------------------------------------------------- decomposition
 def decomposition(T):
-    spec = [("BM25", "BM25", "all"), ("FLIM-strict", "FLIM", "parse"), ("FLIM-fallback", "FLIM", "all"),
-            ("BLAZE", "BLAZE", "all"), ("LocAgent$^{a}$", "LocAgent", "all"),
-            ("SweRank$^{b}$", "SweRank", "all"), ("SweRank, retriever only$^{b}$", "SweRankEmbed", "all")]
+    """One convention throughout the paper: the other ground-truth files of a bug are
+    removed from the ranking when a subset is evaluated (review_checks.json)."""
+    rc = json.load(open(os.path.join(ST, "review_checks.json")))["decomposition"]
+    spec = [("BM25", "BM25", "all", "BM25-all-ap"), ("FLIM-strict", "FLIM", "parse", "FLIM-parse-ap"),
+            ("FLIM-fallback", "FLIM", "all", "FLIM-all-ap"), ("BLAZE", "BLAZE", "all", "BLAZE-all-ap"),
+            ("LocAgent$^{a}$", "LocAgent", "all", "LocAgent-all-ap10"), ("SweRank$^{b}$", "SweRank", "all", "SweRank-all-ap"),
+            ("SweRank, retriever only$^{b}$", "SweRankEmbed", "all", "SweRankEmbed-all-ap")]
     rows = []
-    for lab, tech, view in spec:
+    for lab, tech, view, key in spec:
         mo = one(T["dec"], condition="primary", tech=tech, view=view, **{"class": "Mono-fix"})
         po = one(T["dec"], condition="primary", tech=tech, view=view, **{"class": "Poly-fix"})
-        rows.append(" & ".join([lab, f(mo["MRR"]), f(po["MRR"]), f(mo["MAP"]), f(po["MAP"]),
-                                f(po["MAP_primary_gt"]), f(po["MAP_secondary_gt"]),
-                                f(po["MRR_secondary_gt"])]) + r" \\")
+        r = rc[key]
+        sec = "n/a" if key == "FLIM-parse-ap" else f(r["poly_sec_removed"])
+        out = "ap10" if tech == "LocAgent" else "ap"
+        mono_map = one(T["pp"], condition="primary", tech=tech, view=view, outcome=out, project="POOLED")["mean_mono"]
+        rows.append(" & ".join([lab, f(mo["MRR"]), f(po["MRR"]), f(mono_map), f(r["poly_prim_removed"]), sec]) + r" \\")
     r0 = one(T["dec"], condition="primary", tech="BM25", view="all", **{"class": "Poly-fix"})
     r1 = one(T["dec"], condition="primary", tech="BM25", view="all", **{"class": "Mono-fix"})
-    rows.append(" & ".join(["Random ranking", f(r1["random_MRR"]), f(r0["random_MRR"]),
-                            "", "", "", "", ""]) + r" \\")
-    body = r"""\begin{table}[t]
-\caption{Where the Poly-fix penalty comes from (both folds). MAP on the primary-language and on the secondary-language ground-truth files of Poly-fix bugs. In this table the other ground-truth files of a bug stay in the ranking as non-relevant files; the decomposition figure removes them (Scripts/analysis/review\_checks.py), which raises BM25's primary-file MAP from .277 to .291 and its secondary-file MAP from .167 to .203.}
+    rows.append(" & ".join(["Random ranking", f(r1["random_MRR"]), f(r0["random_MRR"]), "", "", ""]) + r" \\")
+    body = r"""\begin{table}[pos=t]
+\caption{Where the Poly-fix penalty comes from (both folds). MRR of Mono-fix and Poly-fix bugs; MAP of Mono-fix bugs and of the primary-language and the secondary-language ground-truth files of Poly-fix bugs, each subset ranked with the other ground-truth files of the bug removed (the convention of Figure~\ref{fig:decomp}).}
 \label{tab:decomp}
 \footnotesize
 \setlength{\tabcolsep}{2.4pt}
-\begin{tabular}{lrrrrrrr}
+\begin{tabular}{lrrrrr}
 \toprule
- & \multicolumn{2}{c}{MRR} & \multicolumn{2}{c}{MAP} & \multicolumn{3}{c}{Poly-fix, by GT file} \\
-\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-8}
-Technique & Mono & Poly & Mono & Poly & MAP prim. & MAP sec. & MRR sec. \\
+ & \multicolumn{2}{c}{MRR} & & \multicolumn{2}{c}{MAP, Poly-fix} \\
+\cmidrule(lr){2-3}\cmidrule(lr){5-6}
+Technique & Mono & Poly & MAP Mono & primary & secondary \\
 \midrule
 """ + "\n".join(rows) + r"""
 \bottomrule
@@ -383,31 +390,52 @@ def variants(T):
         ("Python projects (AP)", [
             ("BM25", "BM25", "all", "ap", True, "BM25-all-ap-py"),
             ("SweRank retriever (Python functions)", "SweRankEmbed", "all", "ap", False, "SweRankEmbed-all-ap"),
+            ("\\quad + non-Python files only", "SweRankEmbedNonPy", "all", "ap", False, "SweRankEmbedNonPy-all-ap"),
+            ("\\quad + Python test files only", "SweRankEmbedPyTest", "all", "ap", False, "SweRankEmbedPyTest-all-ap"),
             ("SweRank retriever, all text files", "SweRankEmbedAll", "all", "ap", False, "SweRankEmbedAll-all-ap"),
+            ("\\quad at most 10 chunks per file", "SweRankEmbedAllCap10", "all", "ap", False, "SweRankEmbedAllCap10-all-ap"),
             ("SweRank (Python functions, as published)", "SweRank", "all", "ap", False, "SweRank-all-ap"),
             ("SweRank, all text files", "SweRankAll", "all", "ap", False, "SweRankAll-all-ap"),
             ("Hybrid: SweRank + BM25", "HybridSweRank", "all", "ap", False, "HybridSweRank-all-ap"),
             ("Co-change: SweRank + history", "CoChangeSweRank", "all", "ap", False, "CoChangeSweRank-all-ap")]),
     ]
+    rc2 = json.load(open(os.path.join(ST, "review_checks2.json")))
+
+    def overall(tech, view, out, pyonly, mo, po):
+        """MAP over Mono-fix and Poly-fix bugs together (weighted by bugs)."""
+        if tech == "BM25" and pyonly and out == "ap10":
+            d = sel(T["pair"], condition="primary", pair="BM25 vs LocAgent", outcome="ap10", project="POOLED")
+            nm, npo = d[d["class"] == "Mono-fix"].iloc[0].n_bugs, d[d["class"] == "Poly-fix"].iloc[0].n_bugs
+        elif tech == "BM25" and pyonly:
+            d = sel(T["pp"], condition="primary", tech="BM25", view="all", outcome=out)
+            d = d[d.project.isin(py)]
+            nm, npo = d.n_mono.sum(), d.n_poly.sum()
+        else:
+            r = one(T["pp"], condition="primary", tech=tech, view=view, outcome=out, project="POOLED")
+            nm, npo = r.n_mono, r.n_poly
+        return (mo * nm + po * npo) / (nm + npo)
+
     rows = []
     for gname, specs in groups:
-        rows.append(r"\multicolumn{6}{l}{\emph{" + gname + r"}} \\")
+        rows.append(r"\multicolumn{7}{l}{\emph{" + gname + r"}} \\")
         for lab, tech, view, out, pyonly, key in specs:
             mo, po, n = pooled(tech, view, out, pyonly)
             sec = "--" if key is None else ("n/a" if key == "FLIM-parse-ap" else f(rc[key]["poly_sec_removed"]))
-            if tech == "BM25" and pyonly:
-                ce = "--"
+            if tech == "BM25" and pyonly:   # adjusted class effect on the Python subset (review_checks2.py)
+                m = rc2["bm25_python_class_effect"][out]
+                ce = ci(m["est"], m["ci"][0], m["ci"][1])
             else:
                 m = one(T["m"], condition="primary", tech=tech, view=view, outcome=out)
                 ce = ci(m["class_effect_poly"], m["ci_lo"], m["ci_hi"])
-            rows.append(" & ".join([r"\quad " + lab, str(n), f(mo), f(po), sec, ce]) + r" \\")
+            allmap = overall(tech, view, out, pyonly, mo, po)
+            rows.append(" & ".join([r"\quad " + lab, str(n), f(mo), f(po), f(allmap), sec, ce]) + r" \\")
     body = r"""\begin{table*}[pos=t]
-\caption{Reach or understanding: diagnostic variants of the parser-dependent techniques (ours, untuned; not proposed as techniques). A hybrid ranks the files the technique can represent by its own ranking and every other file by BM25, merged by reciprocal rank fusion ($k{=}60$); a co-change variant ranks the other files instead by how often they changed together with the technique's top five files before the report. ``All text files'' gives SweRank every candidate file: its own function documents plus 50-line chunks of all other files. MAP of Mono-fix and Poly-fix bugs, MAP on the secondary-language files of Poly-fix bugs (other ground-truth files removed from the ranking), and the adjusted class effect as in Table~\ref{tab:rq3models} ($^{*}$: 95\% CI excludes 0).}
+\caption{RQ5, reach or representation: diagnostic variants of the parser-dependent techniques (ours, untuned; not proposed as techniques). A hybrid ranks the files the technique can represent by its own ranking and every other file by BM25, merged by reciprocal rank fusion ($k{=}60$); a co-change variant ranks the other files instead by how often they changed together with the technique's top five files before the report. ``All text files'' gives SweRank every candidate file: its own function documents plus 50-line chunks (at most 40 per file) of all other files; the indented rows add only the non-Python files, only the Python test files, or all files with at most 10 chunks each. MAP of Mono-fix and Poly-fix bugs and of both together, MAP on the secondary-language files of Poly-fix bugs (other ground-truth files removed from the ranking), and the adjusted class effect as in Table~\ref{tab:rq3models} ($^{*}$: 95\% CI excludes 0).}
 \label{tab:variants}
 \footnotesize
-\begin{tabular}{lrrrrl}
+\begin{tabular}{lrrrrrl}
 \toprule
-Technique & Bugs & MAP Mono & MAP Poly & MAP sec. & Class effect [95\% CI] \\
+Technique & Bugs & MAP Mono & MAP Poly & MAP all & MAP sec. & Class effect [95\% CI] \\
 \midrule
 """ + "\n".join(rows) + r"""
 \bottomrule

@@ -186,3 +186,28 @@ do with the files they cannot represent? Not proposed as techniques; untuned.
   both lists overtake the technique's best files (SweRank MAP .478 -> .065);
   its outputs were deleted before any use and the run repeated with disjoint
   lists.
+
+## Second internal review, 2026-11-18
+
+- RQ1 over all 13 eligible BeetleBox projects (`Scripts/rq1_all_projects.py`):
+  the 7 unselected projects cloned blobless into `data/repos_extra/` (gitignored);
+  fix files from `git diff-tree -r --no-renames` against the first parent; the
+  classifier fallback of `classify_bugs.py`. Method check: the 6 study projects
+  re-classified this way agree with `bug_classification.parquet` for all 4,995
+  bugs (class, keep, broad grain). Outputs `results/obj2/rq1_all13_*.csv`, table
+  `paper/tables/tab_rq1_all13.tex` (`Scripts/analysis/table_rq1all.py`).
+- Isolating ablation of SweRank's extended corpus, retriever only
+  (`Scripts/swerank/run_ablation.sh`, `extend_corpus.py` with SWERANK_ADD and
+  SWERANK_MAX_CHUNKS): SweRankEmbedNonPy (non-Python files only),
+  SweRankEmbedPyTest (Python test files only), SweRankEmbedAllCap10 (all files,
+  at most 10 chunks). Both folds, finished 2026-11-18 ~11:00.
+- BLAZE on the no-primary test bugs (`Scripts/blaze_noprimary.py`): the stored
+  seed-13 BLAZE models of each project and fold, no retraining; technique
+  BLAZE_NP, 287 bugs, evaluated with `append_eval.py BLAZE_NP`. Finished 12:52.
+- `obj2_stats.py`, `review_checks.py` (ablation variants added to the
+  decomposition) and the new `review_checks2.py` (TOST p at +-0.05 and +-0.03,
+  secondary-file MAP split into behaviour-bearing and test-asset files, overall
+  MAP of each variant, hybrid vs co-change, whole benchmark per project and
+  without the dolphinscheduler front-end, BM25's Python-subset class effect,
+  fractional-logit models) re-run 2026-11-18 13:27; chained by
+  `Scripts/analysis/run_after_stats.sh`.

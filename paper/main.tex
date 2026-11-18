@@ -59,38 +59,28 @@
 %% ABSTRACT
 %% ===================================================================
 \begin{abstract}
-Bug localization ranks the files of a project by how likely they are to need a
-change for a given bug report. Benchmarks and techniques for this task assume
-that a bug fix changes source files of the project's main language. We examine
-this assumption. We call a fix \emph{Mono-fix} if the files it changes belong
-to one language and \emph{Poly-fix} if they belong to several, for example a
-Java class together with a YAML configuration file. Among 3{,}594 bugs from six
-Java and Python projects of the BeetleBox dataset whose fix changes a file in
-the main language, between 8.2\% and 27.4\% of the fixes are Poly-fix,
-depending on which files count: 8.2\% when only other programming languages
-count, 12.1\% when only files the software itself reads count, and 27.4\% when
-test data and configuration count as well. About two-fifths of the files these
-fixes change cannot be read by a Java or Python parser. We compare five
-localization techniques that differ in what they can read: BM25 and BLAZE read
-every text file, while FLIM and two techniques built on large language models,
-the agent LocAgent and the ranker SweRank (run on the Python projects only),
-see only the files their parser accepts. Trained and tested on time-ordered
-splits of each project, FLIM ranks the fixed files of Poly-fix bugs worse than
-those of Mono-fix bugs (mean average precision 0.25 against 0.37); for BM25
-and BLAZE the drop is smaller and not statistically significant. FLIM
-outperforms BM25 on Mono-fix bugs, and BM25 matches it on Poly-fix bugs;
-LocAgent and SweRank lead BM25 clearly on Mono-fix bugs and lose that lead on
-Poly-fix bugs. The pattern is strongest when the extra files are read by the
-software; without test files in the ground truth it narrows to a smaller lead
-for the parser-dependent techniques. When a fix spans two programming
-languages, every technique does worse, BM25 included. Mean reciprocal rank and
-Top-$k$ accuracy, the metrics most often reported, weaken these effects and
-show no reversal, because they reward only the first fixed file found.
-Diagnostic variants show that for a modern technique the limit is reach, not
-understanding: given every text file, SweRank ranks configuration, data and
-test files as well as BM25, its Poly-fix penalty shrinks from 0.17 to a
-non-significant 0.04, and it outperforms BM25 on both kinds of bug. We release
-the classification, the score files and the analysis scripts.
+Bug localization ranks a project's files by how likely they are to need a
+change for a bug report. Its benchmarks and techniques assume that a fix
+changes source files of the project's main language. We call a fix
+\emph{Mono-fix} if the files it changes belong to one language and
+\emph{Poly-fix} if they belong to several, for example a Java class and a YAML
+configuration file. Among 3{,}594 bugs from six Java and Python projects of
+BeetleBox, 8.2--27.4\% of the fixes are Poly-fix, depending on
+which files count (8.6--25.8\% over all 13 eligible projects), and about
+two-fifths of the files these fixes change cannot be read by a Java or Python
+parser. Of five techniques, evaluated on time-ordered splits, BM25 and BLAZE
+read every file; FLIM, the agent LocAgent and the ranker
+SweRank (Python projects only) see only the files their parser accepts. FLIM
+ranks the fixed files of Poly-fix bugs worse than those of Mono-fix bugs
+(mean average precision 0.25 against 0.37); for BM25 and BLAZE the drop is
+smaller and not significant. All three parser-dependent techniques lead BM25
+on Mono-fix bugs and lose that lead on Poly-fix bugs. Mean reciprocal rank and Top-$k$
+accuracy, which reward only the first fixed file found, weaken these effects
+and show no reversal. Diagnostic variants point to reach. Given every text
+file, SweRank ranks the non-Python files about as well as BM25, and its
+Poly-fix penalty shrinks from 0.17 to a non-significant 0.04; the non-Python
+files, not the added test files, cause the change. Data and scripts are
+released.
 \end{abstract}
 
 \begin{keywords}
@@ -121,7 +111,7 @@ The evaluation of these techniques rests on an assumption that is rarely
 stated: that the files a fix changes are source files of the project's main
 language. Standard benchmarks are built this way. Bench4BL indexes and scores
 Java files only \citep{lee2018bench4bl}, and the dataset-quality literature
-treats non-source files in the ground truth as noise to be removed
+treats files that a fix changes without being buggy as incorrect ground truth
 \citep{kochhar2014potential}. Real fixes are not always contained in that set.
 In localstack, the fix for issue~8030 (``CreateMultipartUpload should return
 InitiateMultipartUploadResult element'') changes three Python files and
@@ -153,7 +143,7 @@ they can read.
 
 This paper reports an exploratory study of that question. The unit of analysis
 is the fix, classified from the files of the fix commit
-(Section~\ref{sec:definitions}). We ask four research questions:
+(Section~\ref{sec:definitions}). We ask five research questions:
 
 \begin{description}[leftmargin=0pt,itemsep=2pt]
 \item[RQ1 (Prevalence).] What proportion of fixes are Poly-fix, and to which
@@ -164,30 +154,24 @@ is the fix, classified from the files of the fix commit
   performance differ between Mono-fix and Poly-fix bugs of the same project?
 \item[RQ4 (Classical baseline).] On Poly-fix bugs, does classical retrieval
   match or exceed the techniques that depend on a parser?
+\item[RQ5 (Reach or representation).] When a parser-dependent technique is
+  given the files it cannot represent, does its Poly-fix penalty shrink, and
+  which of the added files cause the change?
 \end{description}
 
 \noindent In brief, Poly-fix fixes are common, though how common depends on
-which files count (8.2--27.4\% of the bugs we study), and a technique that
-depends on a Java or Python parser cannot read about two-fifths of the files
-they change (RQ1, RQ2). That technique, FLIM, ranks the fixed files of
-Poly-fix bugs clearly worse than those of Mono-fix bugs. For the two
-techniques that read every file, BM25 and BLAZE, the drop is smaller and not
-significant (RQ3).
-
-FLIM's advantage over classical retrieval therefore holds for Mono-fix bugs:
-on Poly-fix bugs BM25 matches it, and slightly exceeds it where the extra files
-are configuration or other files the software itself reads (RQ4). The two
-LLM-based techniques, which see only Python files, show the same interaction.
-LocAgent, an agent, and SweRank, the newest technique in the study, lead BM25
-clearly on Mono-fix bugs and lose that lead on Poly-fix bugs. SweRank's
-language model is not the cause: its retrieval stage alone shows the same
-penalty.
-
-Two qualifications bound these results. Without test files in the ground
-truth the reversal becomes a narrowing. When a fix spans two programming
-languages, every technique does worse, BM25 included. Mean reciprocal rank
-and Top-$k$ accuracy, the metrics most often reported, weaken all of these
-effects and show no reversal.
+which files count, and a parser-dependent technique cannot read about
+two-fifths of the files they change (RQ1, RQ2). Every parser-dependent
+technique we ran ranks the fixed files of Poly-fix bugs worse than those of
+Mono-fix bugs, while for BM25 and BLAZE the drop is smaller and not
+significant (RQ3). Their lead over BM25 on Mono-fix bugs is lost on Poly-fix
+bugs, most clearly where the extra files are read by the software; without
+test files in the ground truth the loss becomes a narrowing, and mean
+reciprocal rank and Top-$k$ accuracy weaken it and show no reversal (RQ4).
+When SweRank is given every text file, its penalty becomes small and not
+significant, and the non-Python files, not the added test files, cause the
+change; FLIM and BLAZE, which already see those files, rank them below BM25
+(RQ5).
 
 Part of the penalty follows by construction: a technique that cannot see a
 fixed file cannot rank it. What does not follow by construction is what this
@@ -195,14 +179,6 @@ paper contributes: how often fixes contain such files, whether the techniques
 that can see them rank them well, how large the penalty is next to the
 advantage parser-dependent techniques show elsewhere, and which metrics reveal
 it.
-
-To separate the two limits of the opening paragraphs, we also run diagnostic
-variants of the parser-dependent techniques: each combined with BM25, or with
-the project's change history, for the files it cannot represent, and SweRank
-given every text file. They are not
-proposed as techniques. They show that the penalty is mostly a matter of
-reach: SweRank ranks the secondary files as well as BM25 once it can see them,
-and its Poly-fix penalty then largely disappears.
 
 \noindent The contributions are:
 \begin{itemize}[itemsep=1pt]
@@ -212,8 +188,8 @@ and its Poly-fix penalty then largely disappears.
 \item A per-file account of which fixed files each technique can read, and a
   measurement of how well it ranks the files it can read, which separates a
   technique that cannot see a file from one that sees it but ranks it poorly
-  (RQ2, RQ3); diagnostic variants confirm that for a modern technique the
-  penalty comes from reach rather than understanding.
+  (RQ2, RQ3), and diagnostic variants that give the techniques the files they
+  miss (RQ5).
 \item A comparison of five techniques that differ in what they can read, on a
   time-ordered split of each project, with every file of the project ranked
   and one evaluator for all techniques (RQ3, RQ4).
@@ -326,7 +302,7 @@ LLM-based localization (agents, rankers) & Current techniques; graph-based tools
 
 The study is exploratory. The research questions are descriptive; where we
 state an expectation it is labelled a prediction, and a statistical test is
-run only where a specific comparison calls for one. The four questions are
+run only where a specific comparison calls for one. The five questions are
 answered independently, so a null result at any step is reported as a result.
 Figure~\ref{fig:design} summarises the pipeline.
 
@@ -434,7 +410,7 @@ phenomenon can be observed in both ecosystems (Table~\ref{tab:dataset}). Each
 has at least 100 bug reports, enough for a within-project comparison of the
 two classes, and its repository history is available. Before classifying, we
 checked with a simple proxy that both classes would be populated: the share of
-fixes that change files with more than one extension is 30--66\% in each of
+fixes that change files with more than one extension is 29--66\% in each of
 the six. This criterion concerns the composition of the fixes, not
 localization results, which were not known at selection time. The selection
 is purposive, not random.
@@ -447,7 +423,11 @@ the benchmarks for LLM-based localizers are Python (SWE-bench
 reports. Second, the parser-dependent techniques were built for them: FLIM on
 Java \citep{liang2022modeling}, LocAgent and SweRank on Python
 \citep{chen2025locagent,reddy2025swerank}; in another language a failure
-would reflect our port of their parsers rather than the technique. Third, the
+would reflect our port of their parsers rather than the technique. FLIM is the
+exception we accept: apart from its parser and one Java-specific feature its
+design is language-independent, so we run it on both languages with each
+language's parser, whereas LocAgent and SweRank depend on models trained on
+Python only. Third, the
 pair covers a statically and a dynamically typed ecosystem. The restriction is
 by design, not for lack of data: BeetleBox has more C++ and JavaScript bugs
 (5{,}268 and 3{,}783) than Java or Python bugs (3{,}707 and 3{,}759).
@@ -531,7 +511,7 @@ fixes that span languages; an adapted technique would be a new technique.
 FLIM-fallback and BLAZE-all are diagnostic variants, labelled as ours, used
 only to separate what the architecture prevents from what training could
 change. Two further kinds of diagnostic variant (Section~\ref{sec:evaluation})
-separate reach from understanding: hybrids with BM25, co-change expansion from
+separate reach from representation: hybrids with BM25, co-change expansion from
 the project's history, and SweRank with its corpus extended to every text
 file. None of them is proposed as a technique;
 they are untuned and reported separately from the techniques as published.
@@ -685,7 +665,7 @@ decoding on a GPU is not guaranteed to be bit-identical between runs, we re-run
 it on a random subset of fold-1 bugs (20, plus one bug that differed in an
 earlier check) to measure the variation.
 
-\paragraph{Diagnostic variants: reach or understanding.} Two kinds of variant
+\paragraph{Diagnostic variants: reach or representation (RQ5).} Two kinds of variant
 ask what the parser-dependent techniques would do with the files they cannot
 represent. A \emph{hybrid} ranks the files a technique can represent by the
 technique's own ranking and every other file by BM25, and merges the two
@@ -706,10 +686,15 @@ test files and Python files without a function---as chunks of 50 lines in
 SweRank's document format (path, then text), at most 40 chunks per file. We
 run its retriever on this corpus and then its reranker on the top 100
 documents, with the settings of the main run; a file's position is that of its
-best document. Neither variant is tuned: the constant, the chunk length and the
-cap were fixed before the runs. They are compared with the original technique
-and with BM25 on the same bugs, with the same paired tests and interaction
-models as in RQ4.
+best document. To see which of the added files cause a change, we also run
+the retriever on three partial corpora: SweRank's documents plus only the
+non-Python files, plus only the Python test files, and plus all files with at
+most 10 chunks each. None of the variants is tuned: the constant, the chunk
+length and the caps were fixed before the runs. Each is compared with the
+original technique and with BM25 on the same bugs, by its MAP over all bugs
+and per class, by the paired tests and interaction models of RQ4, and by the
+MAP of the secondary files with the other ground-truth files removed, split
+into behaviour-bearing and test-asset files (Section~\ref{sec:definitions}).
 
 \paragraph{Training budget and hyper-parameters.} Every hyper-parameter comes
 from the authors' released code except the learning rate. The neural
@@ -788,8 +773,11 @@ size, with a bootstrap interval.
 \emph{Equivalence and multiplicity.} An interval that includes 0 is not
 evidence of no effect. Where we describe two quantities as matching, we test
 equivalence (two one-sided tests, i.e.\ the 90\% confidence interval inside
-$\pm0.05$ AP, a difference we consider too small to matter in practice), and
-otherwise call a difference ``smaller and not significant''. The paper
+$\pm0.05$ AP), and otherwise call a difference ``smaller and not
+significant''. The margin is set just below the smallest advantage the study
+asks about, FLIM-strict's lead over BM25 on Mono-fix bugs (0.059 AP): a
+difference inside it is smaller than the lead whose loss RQ4 tests. Because
+the choice is a judgement, we also report each test at $\pm0.03$. The paper
 reports many intervals; we control the false-discovery rate by the
 Benjamini--Hochberg procedure separately over all class-effect tests (832) and
 all interaction tests (380), and report where a conclusion depends on it.
@@ -912,6 +900,25 @@ the six projects (liquibase: 50.0\% against 49.7\%). Counting the filter-exclude
 as well gives 24.8\% (1{,}153 of 4{,}649). The dataset's filter therefore
 raised the Poly-fix share of the primary-anchored set by 2.6 percentage points.
 
+\paragraph{Beyond the six projects.} To see how far the selection shapes these
+figures, we classified the bugs of all 13 Java and Python projects of BeetleBox
+with at least 100 reports in the same way (Table~\ref{tab:rq1all}). Re-running
+the procedure on the six study projects reproduces the main classification for
+all 4{,}995 bugs. Over the seven other projects, 18.5\% of the 821
+primary-anchored bugs are Poly-fix at the broad grain, 8.5\% at the
+data-format grain and 10.6\% at the strict grain; over all 13 projects the
+shares are 25.8\%, 18.7\% and 8.6\% of 4{,}415 bugs. The selection therefore
+raised the broad-grain prevalence by 1.6 percentage points and the
+data-format grain by 2.3 points, and left the strict grain about the same. The
+other projects differ more in a second respect: only 33.2\% of their bugs are
+primary-anchored, against 72.0\% in the study projects, so a larger share of
+their fixes change no file that a single-language parser can read. Between
+projects the broad-grain share ranges from 2.2\% (selenium, 46 bugs) to 70.0\%
+(ccxt, 40 bugs), and the proxy used for selection predicts it only loosely
+(dubbo: proxy 7.4\%, prevalence 7.5\%; posthog: 48.6\% and 36.6\%; openrefine,
+29.4\% and 22.8\%, passes the proxy as dolphinscheduler does).
+
+\input{tables/tab_rq1_all13}
 \input{tables/hand_secondary}
 \input{tables/hand_prevalence_sensitivity}
 
@@ -921,6 +928,9 @@ which files count: 8.2\% when only other programming languages count, 12.1\%
 when only files the software reads count, 27.4\% when test data and
 configuration count too. The extra files are mostly YAML, JSON and XML, and
 over half of the broad-grain \poly bugs are \poly only through test assets.
+Over all 13 eligible BeetleBox projects the shares are 8.6\%, 18.7\%
+(data-format grain) and 25.8\%, so the purposive selection raised the
+broad-grain figure by less than two percentage points.
 \end{tcolorbox}
 
 \subsection{RQ2: Reach of each technique}\label{sec:rq2}
@@ -1047,8 +1057,11 @@ For BM25 and BLAZE, which index every file, the adjusted class effect is
 smaller and its interval includes 0 ($-0.026$ $[-0.068, 0.016]$ and $-0.021$
 $[-0.059, 0.017]$); per project only BLAZE on dolphinscheduler differs
 significantly. This is not evidence of no drop: equivalence within $\pm0.05$
-AP cannot be shown (90\% intervals $[-0.061, 0.009]$ and $[-0.053, 0.011]$),
-so a drop of up to about half of FLIM-strict's is compatible with the data.
+AP cannot be shown (90\% intervals $[-0.061, 0.009]$ and $[-0.053, 0.011]$;
+TOST $p=0.13$ and $0.07$), so a drop of up to about half of FLIM-strict's is
+compatible with the data. A fractional-logit model gives the same picture
+(average marginal effects $-0.026$ and $-0.016$, $p=0.19$ and $0.39$, against
+$-0.132$ for FLIM-strict).
 BM25's raw MAP falls from 0.311 to 0.274, most in ansible (0.401 to 0.245). Restricting BM25 to the files the parser accepts produces the
 same penalty as FLIM-strict ($-0.129$ against $-0.134$): the penalty of the
 parseable view is a property of the candidate set, not of FLIM's model.
@@ -1082,7 +1095,7 @@ significantly for BM25 or BLAZE.
 \begin{figure}[pos=t]
 \centering
 \includegraphics[width=\linewidth]{figures/fig_decomp.pdf}
-\caption{Where the Poly-fix penalty comes from (both folds): MAP on the files of Mono-fix bugs, and on the primary-language and the secondary-language ground-truth files of Poly-fix bugs. For each of the two Poly-fix bars the other ground-truth files of the bug are removed from the ranking, so each subset is ranked as if it were the whole ground truth. Error bars: 95\% bootstrap interval of the difference between the primary-language bar and the Mono-fix bar. FLIM-strict cannot rank secondary files. $^{\dagger}$Python projects, AP@10.}
+\caption{Where the Poly-fix penalty comes from (both folds): MAP on the files of Mono-fix bugs, and on the primary-language and the secondary-language ground-truth files of Poly-fix bugs. For each of the two Poly-fix bars the other ground-truth files of the bug are removed from the ranking, so each subset is ranked as if it were the whole ground truth. The error bar on the primary-language bar is not an interval for that bar's own MAP: it spans the Mono-fix MAP plus the 95\% bootstrap interval of the paired difference between the two, so the difference is significant where the error bar does not include the Mono-fix value. FLIM-strict cannot rank secondary files. $^{\dagger}$Python projects, AP@10.}
 \label{fig:decomp}
 \end{figure}
 \input{tables/tab_decomp}
@@ -1094,7 +1107,7 @@ the other files of the bug removed from the ranking. For no technique does the
 primary-language MAP of Poly-fix bugs differ detectably from the MAP of
 Mono-fix bugs: BM25 0.291 against 0.311 (difference $[-0.056, 0.018]$),
 FLIM-strict 0.395 against 0.370 ($[-0.017, 0.065]$), LocAgent 0.432 against
-0.456 ($[-0.076, 0.028]$), SweRank 0.468 against 0.478 ($[-0.058, 0.040]$).
+0.456 ($[-0.076, 0.028]$), SweRank 0.468 against 0.477 ($[-0.058, 0.040]$).
 The intervals leave room for differences of up to about 0.06--0.08, so the
 penalty lies mainly, not provably entirely, in the secondary files. On those
 files the techniques separate, and this is the semantic limit of the
@@ -1187,8 +1200,10 @@ Poly-fix bugs than on Mono-fix bugs.
 
 \paragraph{BM25 against FLIM.} On Mono-fix bugs FLIM-strict outperforms BM25
 (mean per-bug AP difference $-0.059$); on Poly-fix bugs BM25 matches it and
-is slightly ahead ($+0.029$; 90\% interval $[0.008, 0.050]$, inside the
-equivalence margin; Wilcoxon FDR-adjusted $q=0.026$). The interaction is
+is slightly ahead ($+0.029$; 90\% interval $[0.008, 0.050]$; Wilcoxon
+FDR-adjusted $q=0.026$). The difference lies inside the $\pm0.05$ margin (TOST
+$p=0.04$) but not inside $\pm0.03$ ($p=0.46$): FLIM-strict loses its lead,
+and BM25's small advantage is not established as negligible. The interaction is
 $+0.107$ $[0.068, 0.147]$ (Figure~\ref{fig:effects}b), and complete-fix
 recall@10 shows the same pattern ($-0.084$ and $+0.046$; interaction
 $+0.150$). On RR FLIM-strict leads by 0.077 in both classes, so the metric
@@ -1200,7 +1215,8 @@ Ansible is the exception ($-0.024$).
 
 
 \paragraph{What the control shows.} When BM25 is also restricted to the files
-the parser accepts, the interaction disappears ($+0.004$ $[-0.035, 0.043]$):
+the parser accepts, the interaction is indistinguishable from 0 ($+0.004$
+$[-0.035, 0.043]$; fractional logit $p=0.95$):
 on the same candidates, FLIM's advantage over BM25 is the same for both
 classes. The inversion is therefore caused by the ground-truth files FLIM
 cannot reach, not by Poly-fix reports being harder for FLIM's model. With the
@@ -1218,10 +1234,10 @@ narrowing.
 \paragraph{BM25 against LocAgent.} On the 781 test bugs of the Python projects,
 both evaluated on their first ten files, LocAgent outperforms BM25 on Mono-fix
 bugs (AP@10 0.456 against 0.342 for BM25, whose MAP on these bugs is 0.364)
-and loses that lead on Poly-fix bugs (0.253 against 0.290; BM25's advantage
+and loses that lead on Poly-fix bugs (0.253 against 0.289; BM25's advantage
 of 0.036 is not significant, $q=0.25$). The interaction is $+0.137$
 $[0.075, 0.199]$, and complete-fix recall@10 shows the same ($+0.147$). LocAgent returns a
-secondary-language file for almost no bug (MAP on secondary files 0.001,
+secondary-language file for almost no bug (MAP on secondary files 0.000,
 Figure~\ref{fig:decomp}), so on Poly-fix bugs it finds the Python part of the
 fix and nothing else. As with FLIM, it leads on RR@10 in both classes; its
 lead narrows on Poly-fix bugs (interaction $+0.097$ $[0.016, 0.178]$) but does
@@ -1248,7 +1264,7 @@ against 0.364), more than any other technique, and loses that lead on
 Poly-fix bugs (0.277 against 0.319). BM25's advantage there, 0.042, is
 fragile: its bootstrap interval barely excludes 0 ($[0.002, 0.082]$), the
 Wilcoxon test is not significant ($q=0.18$), and equivalence cannot be shown
-either. The interaction is $+0.143$ $[0.081, 0.205]$, the largest in the
+either (TOST $p=0.34$). The interaction is $+0.143$ $[0.081, 0.205]$, the largest in the
 study, and complete-fix recall@10 shows the same ($+0.151$). SweRank leads on
 RR in both classes (by 0.264 and 0.187; interaction $+0.084$
 $[0.004, 0.163]$), so on the first-hit metric it appears clearly better on
@@ -1263,9 +1279,10 @@ distinguishable from 0 without test files in the ground truth ($+0.061$), at
 the strict grain or on the filter-excluded bugs (Figure~\ref{fig:sens}).
 
 \begin{tcolorbox}[title=Answer to RQ4]
-Largely yes, on the primary outcome. FLIM outperforms BM25 on \mono bugs, and
-BM25 matches it on \poly bugs (interaction $+0.11$ MAP); the pattern is
-carried by behaviour-bearing \poly bugs, disappears when BM25 is given only the
+Largely yes, on the primary outcome. FLIM outperforms BM25 on \mono bugs and
+loses that lead on \poly bugs, where BM25 is slightly ahead (interaction
+$+0.11$ MAP); the pattern is
+carried by behaviour-bearing \poly bugs, is absent when BM25 is given only the
 files FLIM can parse, and becomes a narrowing of FLIM's lead when tests are
 removed from the ground truth. The two LLM-based techniques, which cannot
 return a non-Python file, show the same interaction: LocAgent ($+0.14$ AP@10)
@@ -1274,69 +1291,109 @@ lead on \poly bugs without falling significantly behind BM25. On RR and
 Top-10 all three parser-dependent techniques lead BM25 on both classes.
 \end{tcolorbox}
 
-\subsection{Reach or understanding: diagnostic variants}\label{sec:variants}
+\subsection{RQ5: Reach or representation}\label{sec:variants}
 
-The results so far leave open whether the parser-dependent techniques lose the
+RQ2--RQ4 leave open whether the parser-dependent techniques lose the
 secondary files only because they cannot see them (reach) or would also rank
-them poorly if they could (understanding). The variants of
-Section~\ref{sec:evaluation} answer this (Table~\ref{tab:variants}).
+them poorly if they could (representation). The variants of
+Section~\ref{sec:evaluation} give the techniques those files
+(Table~\ref{tab:variants}). They are diagnostic, untuned and not proposed as
+techniques.
 
 \input{tables/tab_variants}
 
-\paragraph{Given every file, SweRank ranks the secondary files well.} With its
-corpus extended to all text files, SweRank's retriever ranks the
-secondary-language files of Poly-fix bugs at a MAP of 0.252, against 0.226 for
-BM25 on the same bugs and 0.001 with Python functions only. Its reranker,
-trained on Python functions alone, keeps them there (0.257) while raising both
-classes. Full
-SweRank on all text files reaches a MAP of 0.583 on Mono-fix and 0.475 on
-Poly-fix bugs, against 0.478 and 0.277 as published; it gains 0.106 on
-Mono-fix and 0.198 on Poly-fix bugs, an interaction of $+0.126$
-$[0.084, 0.168]$. Its adjusted class effect shrinks from $-0.172$ to $-0.044$
-$[-0.102, 0.013]$, and without test files in the ground truth it vanishes
-($+0.002$). It outperforms BM25 on both classes (by 0.219 and 0.156), and the
-interaction with BM25 is no longer distinguishable from 0 ($+0.015$
-$[-0.042, 0.072]$). For SweRank, therefore, the Poly-fix penalty is almost
-entirely a matter of reach. The older learned techniques differ: FLIM-fallback
-and BLAZE also see the secondary files but rank them well below BM25
-(Figure~\ref{fig:decomp}), so for them the representation of non-source files
-is a limit as well.
+\paragraph{Given every file, SweRank ranks the secondary files about as well as
+BM25.} With its corpus extended to all text files, SweRank's retriever ranks
+the secondary-language files of Poly-fix bugs at a MAP of 0.252, against
+0.001 with Python functions only and 0.226 for BM25 on the same bugs (paired
+difference $+0.026$ $[-0.017, 0.074]$). Its reranker, trained on Python
+functions alone, keeps them there (0.257; $+0.031$ $[-0.014, 0.081]$ against
+BM25). This holds for both kinds of secondary file: behaviour-bearing files
+(66 bugs) reach 0.290 against 0.278 for BM25 ($+0.012$ $[-0.079, 0.101]$) and
+test assets (184 bugs) 0.238 against 0.208 ($+0.031$ $[-0.024, 0.084]$).
+SweRank therefore represents these files as well as BM25, not better. Because
+it also ranks the Python files better, the whole ranking improves: MAP over
+all bugs rises from 0.408 to 0.546 ($+0.138$ $[0.121, 0.155]$), by 0.106 on
+Mono-fix and 0.198 on Poly-fix bugs (interaction $+0.126$ $[0.084, 0.168]$).
+The adjusted class effect is smaller and no longer significant, $-0.044$
+$[-0.102, 0.013]$ against $-0.172$. It is not shown to be negligible: an
+equivalence test within $\pm 0.05$ fails ($p = 0.43$). Without test files in the
+ground truth the estimate is $+0.002$. SweRank on all files outperforms BM25
+on both classes (by 0.219 and 0.156), and its interaction with BM25 is
+indistinguishable from 0 ($+0.015$ $[-0.042, 0.072]$; fractional logit
+$p = 0.92$).
 
-\paragraph{A hybrid with BM25 recovers part of the loss.} Letting BM25 rank the
-files a technique cannot represent raises every technique on Poly-fix bugs:
-FLIM-strict by 0.051, LocAgent by 0.096 (AP@10) and SweRank by 0.103 (all
-interactions with the original technique exclude 0). It narrows their class
-effects to $-0.050$, $-0.101$ and $-0.110$. On Mono-fix bugs the hybrid costs
-FLIM-strict 0.021 but raises LocAgent and SweRank by 0.032, because it returns
-the test files they skip. All three hybrids outperform BM25 on Poly-fix bugs,
-but they recover less than extending SweRank's corpus: fusing two lists ranks
-the secondary files by lexical similarity alone and interleaves them with files
-the technique ranks better, so they reach a lower MAP on those files (0.128 for
-the SweRank hybrid, against 0.226 for BM25 alone).
+\paragraph{The non-Python files remove the penalty; the Python test files do
+not.} The three partial corpora separate the files that the extension adds
+(retriever only). Adding only the non-Python files raises Poly-fix MAP by
+0.108 $[0.087, 0.129]$ and lowers Mono-fix MAP by 0.029 $[0.021, 0.037]$, where
+the added files compete with the fixed Python files. The interaction is
+$+0.150$ $[0.128, 0.172]$ and the class effect falls to $-0.023$
+$[-0.073, 0.028]$. Adding only the Python test files raises both classes,
+Mono-fix more ($+0.111$ $[0.092, 0.131]$ against $+0.062$ $[0.047, 0.078]$),
+because test files are in the ground truth of many Mono-fix fixes too; the
+class effect widens to $-0.207$. The reduction of the penalty thus comes from
+the secondary-language files, which is the reach explanation of RQ2. The test
+files explain why the full extension raises Mono-fix bugs as well. Capping each
+file at 10 chunks instead of 40 lowers both classes slightly ($-0.015$ and
+$-0.023$) and leaves the class effect at $-0.074$, so the result does not
+depend on the cap.
 
-\paragraph{History recovers about as much as content.} Ranking the missing
-files by how often they changed together with the technique's top files gives
-gains on Poly-fix bugs similar to the BM25 hybrid: FLIM-strict 0.306 (hybrid
-0.296), SweRank 0.400 (0.380) and LocAgent 0.314 (0.349). It costs FLIM-strict
-more on Mono-fix bugs ($-0.045$, against $-0.021$ for the hybrid) and leaves
-LocAgent and SweRank there unchanged or slightly better. On the secondary
-files themselves it reaches a MAP of 0.170, 0.162 and 0.101 (hybrids 0.140,
-0.128 and 0.123). FLIM-strict's class effect falls to $-0.025$
-$[-0.065, 0.015]$; LocAgent's and SweRank's remain
-($-0.093$ and $-0.082$). Change coupling and lexical similarity are therefore
-two comparable, cheap sources for the files a parser-dependent technique
-cannot see; neither reaches what SweRank achieves when it can rank them
-itself.
+\paragraph{Techniques that already see the files rank them below BM25.}
+FLIM-fallback and BLAZE can read every file, yet on the same Poly-fix bugs
+they rank the secondary files at a MAP of 0.055 and 0.142, against 0.203 for
+BM25 (paired differences $0.148$ $[0.120, 0.178]$ and $0.062$
+$[0.031, 0.094]$; Figure~\ref{fig:decomp}). The gap holds for behaviour-bearing
+files (0.038 and 0.123 against 0.199) and for test assets (0.064 and 0.144
+against 0.204). For these two techniques the representation of non-source
+files is a limit in addition to reach. We do not read the contrast with
+SweRank as a difference between newer and older techniques in general. SweRank
+is a larger model trained on many repositories and applied without
+project-specific training, whereas FLIM and BLAZE are fine-tuned per project
+on a few hundred bugs whose fixed files are mostly source files. The
+comparison cannot separate model scale, pretraining data and fine-tuning.
 
-\begin{tcolorbox}[title=Reach or understanding]
-For the newest technique, the penalty is reach: given every text file,
-SweRank ranks configuration, data and test files as well as BM25, its \poly
-penalty becomes small and non-significant, and it outperforms BM25 on both
-classes. For FLIM and BLAZE, which can already see these files, the
-representation of non-source files limits their ranking too. A simple hybrid
-with BM25, or with the change history, recovers part of the loss for every
-parser-dependent technique. These are diagnostic variants, not proposed
-techniques.
+\paragraph{A hybrid with BM25 recovers part of the loss.} Letting BM25 rank
+the files a technique cannot represent raises every technique on Poly-fix
+bugs: FLIM-strict by 0.051 $[0.041, 0.063]$, LocAgent by 0.096
+$[0.072, 0.120]$ (AP@10) and SweRank by 0.103 $[0.080, 0.127]$ (paired
+differences; every interaction with the original technique excludes 0). Over
+all bugs the hybrid adds 0.054 $[0.041, 0.066]$ to LocAgent and 0.057
+$[0.045, 0.068]$ to SweRank. For FLIM-strict it adds nothing
+($+0.001$ $[-0.004, 0.006]$): it moves accuracy from Mono-fix bugs
+($-0.021$) to Poly-fix bugs. The class effects narrow to $-0.050$,
+$-0.101$ and $-0.110$. Each hybrid outperforms BM25 on Poly-fix bugs (by
+0.022, 0.059 and 0.061, all intervals excluding 0). They recover less than
+extending SweRank's corpus. Fusing two lists ranks the secondary files by
+lexical similarity alone and interleaves them with files the technique ranks
+better, so they reach a lower MAP on those files (0.128 for the SweRank
+hybrid, against 0.226 for BM25 alone).
+
+\paragraph{History recovers about as much on Poly-fix bugs.} Ranking the
+missing files by how often they changed together with the technique's top
+files gives Poly-fix MAPs close to the BM25 hybrid: FLIM-strict 0.306 (hybrid
+0.296; paired difference $-0.010$ $[-0.022, 0.002]$), SweRank 0.400 (0.380;
+$-0.020$ $[-0.044, 0.005]$) and LocAgent 0.314 (0.349, a difference of
+0.035 $[0.010,\allowbreak 0.059]$ in favour of the hybrid). On Mono-fix bugs it costs FLIM-strict more ($-0.045$
+against $-0.021$ for the hybrid), so its MAP over all bugs falls by 0.013
+$[0.007, 0.019]$. Overall the co-change variant matches the hybrid for SweRank
+($0.000$ $[-0.015, 0.016]$) and trails it for FLIM-strict (by 0.014) and
+LocAgent (by 0.038). FLIM-strict's class effect falls to $-0.025$
+$[-0.065, 0.015]$; LocAgent's and SweRank's remain ($-0.093$ and $-0.082$).
+Change coupling is therefore a second cheap source for the files a
+parser-dependent technique cannot see, no better than lexical similarity, and
+neither reaches what SweRank achieves when it ranks those files itself.
+
+\begin{tcolorbox}[title=Answer to RQ5]
+For SweRank the penalty is mainly one of reach. Given the non-Python files it
+ranks them about as well as BM25, and its \poly penalty becomes small and not
+significant, though not shown to be negligible. The Python test files raise
+both classes and do not close the gap. FLIM and BLAZE, which can already see
+these files, rank them below BM25, so for them representation is a limit as
+well; the comparison does not tell model scale from training regime. A hybrid
+with BM25 or with the change history recovers part of the \poly loss for every
+parser-dependent technique. It raises MAP over all bugs for LocAgent and
+SweRank, not for FLIM-strict.
 \end{tcolorbox}
 
 \subsection{Filter-excluded and no-primary bugs}\label{sec:removed}
@@ -1365,12 +1422,23 @@ excludes 0 there ($+0.154$).
 The 287 no-primary fixes in the test periods are the extreme case: no
 ground-truth file is in the primary language, so FLIM and LocAgent can reach
 none of their ground-truth files. For BM25, 98.6\% of them have a reachable
-ground-truth file, and its MAP is 0.165. Counting them changes the overall
-comparison: over the primary-anchored and no-primary test bugs of all six projects,
-FLIM-strict and BM25 are level (MAP 0.276 and 0.277), whereas over the primary-anchored
-bugs alone FLIM-strict leads (0.332 against 0.300). On the Python projects
-SweRank still leads BM25 (0.378 against 0.340), by less than on the primary-anchored bugs
-(0.408 against 0.349). BLAZE could read these files but was not run on them.
+ground-truth file, and its MAP is 0.165. BLAZE, which reads every file, was
+scored on them with the models trained on the primary-anchored bugs: its MAP
+is 0.091, below BM25 by 0.074 $[0.038, 0.109]$. Counting them changes the
+overall comparison: over the primary-anchored and no-primary test bugs of all
+six projects, FLIM-strict and BM25 are level (MAP 0.276 and 0.277;
+difference $-0.001$ $[-0.016, 0.015]$, equivalent within $\pm0.03$, TOST
+$p<0.001$), whereas over the primary-anchored bugs alone FLIM-strict leads
+(0.332 against 0.300). The change is concentrated where no-primary bugs are
+common: FLIM-strict falls from 0.298 to 0.190 in dolphinscheduler (156
+no-primary test bugs), by 0.040 and 0.048 in elasticsearch and airflow (55
+and 51), and by at most 0.029 in the three projects with ten or fewer. One hundred of
+dolphinscheduler's no-primary test bugs are fixes of its TypeScript and Vue
+front-end, which a Java benchmark would usually leave out; without them
+FLIM-strict leads by 0.011 $[-0.006, 0.027]$, still equivalent within
+$\pm0.03$ ($p=0.009$). On the Python projects SweRank still leads BM25 (0.378
+against 0.340), by less than on the primary-anchored bugs (0.408 against
+0.349).
 
 \subsection{Sensitivity}
 
@@ -1402,9 +1470,9 @@ language measures a parser-dependent technique on the part of the task it can
 read. In our data that part excludes about two-fifths of the files that
 Poly-fix fixes change, and Poly-fix bugs are 8--27\% of the primary-anchored bugs,
 depending on which files count. On Mono-fix bugs FLIM improves on BM25; on
-Poly-fix bugs it does not, and once the no-primary bugs are counted, its
-overall advantage disappears. The same holds for the newest technique in the
-study: SweRank leads BM25 by 0.11 MAP on Mono-fix bugs and loses that lead on
+Poly-fix bugs it does not, and once the no-primary bugs are counted, it is
+level with BM25 overall (equivalent within $\pm0.03$ MAP). The same holds for
+the most recent technique in the study: SweRank leads BM25 by 0.11 MAP on Mono-fix bugs and loses that lead on
 Poly-fix bugs. A comparison over a source-only ground truth would report the
 first result for both.
 
@@ -1421,29 +1489,34 @@ technique's parser.
 
 \subsection{For technique design}
 
-For a modern technique, what a parser-dependent tool loses is mainly reach.
-Given every text file, SweRank ranked configuration, data and test files as
-well as BM25, without any change to its models, and its Poly-fix penalty
-largely disappeared (Section~\ref{sec:variants}). The choice that cost it the
-secondary files is not in the model but in the corpus: which files the parser
-and the path filter let through. LocAgent's graph and keyword index make the
-same choice, which is why its tools cannot return a YAML or JSON file however
-the model reasons.
+For SweRank, what the parser-dependent design loses is mainly reach. Given
+the non-Python files, its retriever ranked configuration, data and test assets
+about as well as BM25, without any change to its models, and its Poly-fix
+penalty became small and not significant (Section~\ref{sec:variants}). The
+choice that cost it the secondary files is not in the model but in the
+corpus: which files the parser and the path filter let through. LocAgent's
+graph and keyword index make the same choice, which is why its tools cannot
+return a YAML or JSON file however the model reasons.
 
-For older learned techniques the picture is different. Giving FLIM the text of
-the files it cannot parse closed about a quarter of its Poly-fix penalty, but
-its ranking of those files stayed far below BM25's (MAP 0.055 against 0.203),
-because its learned and structural features are defined on parser output; and
-BLAZE trained on every fix file ranked secondary files no better. Where the
-model itself cannot represent non-source files well, reach alone is not
-enough.
+For FLIM and BLAZE the picture is different. Giving FLIM the text of the files
+it cannot parse closed about a quarter of its Poly-fix penalty, but its
+ranking of those files stayed far below BM25's (MAP 0.055 against 0.203),
+plausibly because its learned and structural features are defined on parser
+output. BLAZE, trained on every fix file, also ranked them below BM25 (0.142).
+Where the model cannot represent non-source files well, reach alone is not
+enough. Our data do not say whether SweRank's advantage here comes from its
+size, from pretraining on many repositories, or from not being fine-tuned on
+a project's mostly source-file ground truth; a technique-design study would
+have to vary these separately.
 
 Three cheap directions follow, none of which we propose as a technique here.
 Building the index from every text file rather than from parser output
-recovered most of the loss for SweRank. Where that is not possible, filling in
+recovered most of the loss for SweRank and raised its MAP over all bugs by
+0.138. Where that is not possible, filling in
 the files a technique cannot represent from lexical retrieval or from the
-change history recovered part of it for every technique we tried, with
-comparable gains from the two sources. Both are untuned diagnostics; developing
+change history recovered part of the Poly-fix loss for every technique we
+tried, with comparable gains from the two sources; for FLIM-strict it shifted
+accuracy from Mono-fix to Poly-fix bugs rather than raising it overall. Both are untuned diagnostics; developing
 and evaluating them properly is future work.
 
 \subsection{For benchmark construction}
@@ -1515,7 +1588,13 @@ repository access, and asked which files the fix changed. Over the test bugs
 of all three Python projects it named a correct file among ten for 7.1\% and
 6.6\% of the Mono-fix bugs of folds~1 and~2 and for 3.3\% and 0.8\% of the
 Poly-fix bugs, against 82\% Top-10 for LocAgent with repository access.
-SweRank's models rank code they are shown and cannot be probed this way. SweRank's training data was mined from popular Python repositories,
+The probe is asymmetric: the model names Mono-fix files more often than
+Poly-fix files, so memorisation, small as it is, favours Mono-fix bugs and
+could slightly inflate the interaction. SweRank's models rank code they are
+shown and cannot be probed this way, and a date-based check is not possible:
+every test bug (the latest reported in March 2024) predates the release of
+every model we use (SweRankEmbed's base encoder in April 2024, Qwen2.5-Coder,
+on which SweRankLLM and the LocAgent model are built, in late 2024). SweRank's training data was mined from popular Python repositories,
 excluding those in SWE-bench and LocBench; ansible is in LocBench and so was
 excluded, but airflow and localstack may have been included, and the training
 set is not released, so we cannot check. SweRank was run once per bug;
@@ -1529,15 +1608,24 @@ often 0, but is modelled linearly; the random intercept rests on six projects
 ignore correlation within a project over time; and bugs with several seeds
 enter the models as seed averages next to single-seed bugs. The
 $n_{\mathrm{gt}}$-stratified comparison and the false-discovery control
-(Section~\ref{sec:analysis}) leave the main conclusions unchanged;
-\pending{fractional-logit or permutation robustness check}.
+(Section~\ref{sec:analysis}) leave the main conclusions unchanged. Because
+AP is bounded and has a mass at 0, we refitted the class-effect and
+interaction models as fractional-logit regressions with project fixed
+effects. The average marginal effects agree with the linear estimates (BM25
+$-0.026$, BLAZE $-0.016$, FLIM-strict $-0.132$, LocAgent $-0.158$, SweRank
+$-0.172$, SweRank on all files $-0.045$), each is significant exactly where the
+linear one is, and every interaction keeps its sign and significance (the
+parseable-view control: $p=0.95$).
 
 \paragraph{External validity.} One dataset, two languages and six purposively
 selected projects, which cannot be representative of Java and Python projects
 in general: BeetleBox has 13 Java and Python projects with at least 100 bug
 reports, and our proxy check favoured projects whose fixes span several file
-types, so the prevalence we report describes these six projects, not BeetleBox
-or the wider population. Per-project Poly-fix test sets contain 38--121 bugs over both
+types. Classifying all 13 bounds the effect of this choice within BeetleBox
+(broad grain 25.8\% against 27.4\%; Table~\ref{tab:rq1all}), but the
+localization results rest on the six, and all 13 projects come from one
+dataset's choice of repositories, so neither figure describes Java and Python
+projects in general. Per-project Poly-fix test sets contain 38--121 bugs over both
 folds, so per-project results are descriptive and the pooled models carry the
 inference. Three parser-dependent techniques are evaluated: one of the IR
 family (FLIM), one agent (LocAgent, 7B model) and one LLM ranker (SweRank,
@@ -1569,22 +1657,23 @@ reliability and is not counted as such.
 \section{Conclusion}\label{sec:conclusion}
 
 Between 8\% and 27\% of the bug fixes in six Java and Python projects change
-files of more than one language, depending on which files count; the extra
+files of more than one language, depending on which files count (9\% to 26\%
+over all 13 eligible BeetleBox projects); the extra
 files are mostly configuration, data and test assets. A parser-dependent
 localization technique cannot represent about two-fifths of the files those
 fixes change, and it localizes those bugs worse; for techniques that index
-every file the drop is smaller and not significant. On these bugs classical
-retrieval matches the parser-dependent technique it trails on single-language
-fixes. Two LLM-based techniques that see only source files, an agent and the
+every file the drop is smaller and not significant. On these bugs the parser-dependent technique loses the lead it holds over
+classical retrieval on single-language fixes. Two LLM-based techniques that see only source files, an agent and the
 newest ranker in the study, show the same interaction, and the ranker's
 language model improves both kinds of bug equally. The pattern is strongest
 where the extra files are read by the software, narrows without test files in
 the ground truth, and turns into a penalty for every technique when a fix
 spans two programming languages. The first-hit metrics the field reports most
-often weaken these effects and show no reversal. For the newest technique the
-penalty is a matter of reach rather than understanding: given every text file,
-SweRank ranks the extra files as well as BM25 and outperforms it on both kinds
-of bug. Benchmarks and evaluations that keep only source files of the project
+often weaken these effects and show no reversal. For SweRank the penalty is
+mainly a matter of reach: given the non-Python files it ranks them about as
+well as BM25, its penalty becomes small and not significant, and it
+outperforms BM25 on both kinds of bug. FLIM and BLAZE, which see those files
+already, rank them below BM25. Benchmarks and evaluations that keep only source files of the project
 language therefore report the performance of parser-dependent techniques on
 the part of the task they can read, and the techniques themselves lose the
 rest at the indexing step, before their models run. We release the classification, the per-file parse status, the score
@@ -1617,7 +1706,7 @@ material, the file universe and per-file parse status of every evaluated
 snapshot, the chronological splits, the score file of every technique, fold
 and seed with its run manifest, the trained FLIM, BLAZE and BLAZE-all models,
 the LocAgent outputs and trajectories, the SweRank retrieval and reranking
-outputs with every LLM response,.
+outputs with every LLM response, and the outputs of the diagnostic variants.
 
 \bibliographystyle{cas-model2-names}
 \bibliography{refs}

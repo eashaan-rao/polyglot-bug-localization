@@ -147,12 +147,17 @@ def fig_decomp():
             ("FLIM-\nstrict", "FLIM-parse-ap"), ("Loc-\nAgent$^{\\dagger}$", "LocAgent-all-ap10"),
             ("SweRank", "SweRank-all-ap")]
     spec = [(lab, key, "parse" if key == "FLIM-parse-ap" else "all") for lab, key in spec]
-    mono = [rc[k]["mono"] for _, k, _ in spec]
+    pp = load("rq3_per_project.csv")
+    src = {"BM25-all-ap": ("BM25", "all", "ap"), "BLAZE-all-ap": ("BLAZE", "all", "ap"), "FLIM-all-ap": ("FLIM", "all", "ap"),
+           "FLIM-parse-ap": ("FLIM", "parse", "ap"), "LocAgent-all-ap10": ("LocAgent", "all", "ap10"),
+           "SweRank-all-ap": ("SweRank", "all", "ap")}
+    mono = [one(pp, condition="primary", tech=src[k][0], view=src[k][1], outcome=src[k][2], project="POOLED").mean_mono
+            for _, k, _ in spec]           # same source as the tables (rounding consistency)
     prim = [rc[k]["poly_prim_removed"] for _, k, _ in spec]
     sec = [0.0 if k == "FLIM-parse-ap" else rc[k]["poly_sec_removed"] for _, k, _ in spec]
-    err = np.array([[rc[k]["poly_prim_removed"] - (rc[k]["mono"] + rc[k]["poly_prim_removed_minus_mono_ci"][0]),
-                     rc[k]["mono"] + rc[k]["poly_prim_removed_minus_mono_ci"][1] - rc[k]["poly_prim_removed"]]
-                    for _, k, _ in spec]).T
+    err = np.array([[rc[k]["poly_prim_removed"] - (m_ + rc[k]["poly_prim_removed_minus_mono_ci"][0]),
+                     m_ + rc[k]["poly_prim_removed_minus_mono_ci"][1] - rc[k]["poly_prim_removed"]]
+                    for (_, k, _), m_ in zip(spec, mono)]).T
     x = np.arange(len(spec))
     w = 0.26
     fig, ax = plt.subplots(figsize=(HALF, 5.0 * CM))

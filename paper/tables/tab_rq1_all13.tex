@@ -1,0 +1,33 @@
+\begin{table}[t]
+\caption{Poly-fix prevalence over all 13 Java and Python projects of BeetleBox with at least 100 bug reports (ruleset 0.2.0), the six study projects and the seven others.}
+\label{tab:rq1all}
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{adjustbox}{max width=\linewidth}\begin{tabular}{lrrrrrr}
+\toprule
+Project & Bugs & Anch. & Proxy & broad & data & strict \\
+\midrule
+\multicolumn{7}{l}{\emph{Study projects}} \\
+dolphinscheduler (J) & 1{,}363 & 698 & 29.4 & 23.6 & 14.6 & 10.7 \\
+elasticsearch (J) & 970 & 721 & 49.4 & 17.8 & 15.1 & 0.3 \\
+liquibase (J) & 241 & 199 & 42.7 & 49.7 & 20.1 & 35.7 \\
+airflow (P) & 1{,}181 & 917 & 32.9 & 18.8 & 14.2 & 5.5 \\
+ansible (P) & 768 & 626 & 66.0 & 43.5 & 39.1 & 13.4 \\
+localstack (P) & 472 & 433 & 37.1 & 34.4 & 29.6 & 2.8 \\
+\quad pooled & 4{,}995 & 3{,}594 & 41.1 & 27.4 & 21.0 & 8.2 \\
+\midrule
+\multicolumn{7}{l}{\emph{Other eligible projects}} \\
+dubbo (J) & 379 & 253 & 7.4 & 7.5 & 5.5 & 0.0 \\
+openrefine (J) & 620 & 189 & 29.4 & 22.8 & 16.9 & 13.8 \\
+selenium (J) & 134 & 46 & 11.9 & 2.2 & 0.0 & 2.2 \\
+ccxt (P) & 690 & 40 & 11.8 & 70.0 & 10.0 & 67.5 \\
+langchain (P) & 130 & 112 & 26.2 & 8.9 & 2.7 & 0.0 \\
+odoo (P) & 115 & 80 & 12.2 & 17.5 & 16.2 & 1.2 \\
+posthog (P) & 403 & 101 & 48.6 & 36.6 & 4.0 & 31.7 \\
+\quad pooled & 2{,}471 & 821 & 22.3 & 18.5 & 8.5 & 10.6 \\
+\midrule
+All 13 & 7{,}466 & 4{,}415 & 34.9 & 25.8 & 18.7 & 8.6 \\
+\bottomrule
+\end{tabular}\end{adjustbox}
+\\[2pt]{\footnotesize Anch.: primary-anchored bugs. Proxy: share of fixes whose changed files have more than one extension (pooled: weighted by bugs). Prevalence in \% of primary-anchored bugs; ``data'': data-format grain. The study projects re-classified by the same script agree with the main classification for all 4{,}995 bugs.}
+\end{table}

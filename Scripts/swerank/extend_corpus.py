@@ -37,7 +37,12 @@ CAND = os.path.join(S.DATA, "candidates", "fold{f}")
 OUT = os.path.join(S.DATA, "retrieval_all", "fold{f}")
 OUT_TOP = os.path.join(S.DATA, "retrieval_all_top", "fold{f}")      # same run + top-100 documents for the reranker
 RERANK_ALL = os.path.join(S.DATA, "rerank_all", "fold{f}")
-LINES, MAX_CHUNKS = 50, 40
+LINES, MAX_CHUNKS = 50, int(os.environ.get("SWERANK_MAX_CHUNKS", "40"))
+# which extra files to add (second review, isolating ablation):
+#   all    every candidate file SweRank's corpus lacks (main variant)
+#   nonpy  only files that are not .py (the secondary-language files)
+#   pytest only .py files whose path contains "test" (the files SweRank's own filter drops)
+ADD = os.environ.get("SWERANK_ADD", "all")
 BATCH = int(os.environ.get("SWERANK_EMBED_BATCH", "32"))   # shared GPU; padding only, not the ranking
 
 
@@ -49,6 +54,10 @@ def build(inst_fold):
     cand = json.load(open(os.path.join(CAND.format(f=fold), iid + ".json")))["paths"]
     clone = os.path.join(S.REPOS, inst["repo"].replace("/", "_"))
     todo = [p for p in cand if p not in covered]
+    if ADD == "nonpy":
+        todo = [p for p in todo if not p.endswith(".py")]
+    elif ADD == "pytest":
+        todo = [p for p in todo if p.endswith(".py") and "test" in p.lower()]
     if todo:
         # read blobs straight from git (same snapshot as the evaluator)
         proc = subprocess.run(["git", "-C", clone, "ls-tree", "-r", "-z", inst["base_commit"]],
@@ -79,6 +88,8 @@ def retrieve(a):
     from beir.retrieval import models
     from sentence_transformers import SentenceTransformer
     out = (OUT_TOP if a.with_top else OUT).format(f=a.fold)
+    if a.variant:
+        out = os.path.join(S.DATA, f"retrieval_{a.variant}", f"fold{a.fold}")
     os.makedirs(out, exist_ok=True)
     os.makedirs(S.TMP, exist_ok=True)
     insts = [i for i in S.load_instances(a.fold) if not os.path.exists(os.path.join(out, i["instance_id"] + ".json.gz"))]
@@ -162,7 +173,7 @@ def rerank_scores(a):
 
 def scores(a):
     import pandas as pd
-    src = OUT.format(f=a.fold)
+    src = OUT.format(f=a.fold) if not a.variant else os.path.join(S.DATA, f"retrieval_{a.variant}", f"fold{a.fold}")
     rows, miss = [], 0
     for inst in S.load_instances(a.fold):
         fp = os.path.join(src, inst["instance_id"] + ".json.gz")
@@ -175,11 +186,11 @@ def scores(a):
         rows += [{"project": inst["project"], "bug_id": inst["bug_id"], "path": p, "score": float(n - i)}
                  for i, p in enumerate(r["file_order"])]
     df = pd.DataFrame(rows)
-    base = os.path.join(S.SCORES, "SweRankEmbedAll", f"fold{a.fold}", "seed0")
+    base = os.path.join(S.SCORES, a.tech or "SweRankEmbedAll", f"fold{a.fold}", "seed0")
     os.makedirs(base, exist_ok=True)
     for proj, g in df.groupby("project"):
         g[["bug_id", "path", "score"]].to_parquet(os.path.join(base, proj.replace("/", "_") + ".parquet"), index=False)
-    print(f"SweRankEmbedAll fold {a.fold}: {df.bug_id.nunique()} bugs, {miss} missing -> {base}")
+    print(f"{a.tech or 'SweRankEmbedAll'} fold {a.fold}: {df.bug_id.nunique()} bugs, {miss} missing -> {base}")
 
 
 if __name__ == "__main__":
@@ -189,5 +200,7 @@ if __name__ == "__main__":
     ap.add_argument("--scores", action="store_true")
     ap.add_argument("--with-top", action="store_true", help="also store the top-100 documents (for reranking)")
     ap.add_argument("--rerank-scores", action="store_true")
+    ap.add_argument("--variant", default="", help="output folder suffix for ablations (with SWERANK_ADD / SWERANK_MAX_CHUNKS)")
+    ap.add_argument("--tech", default="", help="score technique name for --scores")
     a = ap.parse_args()
     rerank_scores(a) if a.rerank_scores else scores(a) if a.scores else retrieve(a)

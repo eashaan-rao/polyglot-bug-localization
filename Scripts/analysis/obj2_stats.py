@@ -94,6 +94,11 @@ PAIRS = [
     ("BM25 vs SweRankEmbedAll", "BM25", "all", "SweRankEmbedAll", "all", OUTCOMES),
     ("SweRankEmbed vs SweRankEmbedAll (corpus extension)", "SweRankEmbedAll", "all", "SweRankEmbed", "all", OUTCOMES),
     ("BM25 vs SweRankAll", "BM25", "all", "SweRankAll", "all", OUTCOMES),
+    # isolating ablation of the extended corpus (second review, 2026-11-18)
+    ("SweRankEmbedNonPy vs SweRankEmbed (non-Python files added)", "SweRankEmbedNonPy", "all", "SweRankEmbed", "all", OUTCOMES),
+    ("SweRankEmbedPyTest vs SweRankEmbed (Python test files added)", "SweRankEmbedPyTest", "all", "SweRankEmbed", "all", OUTCOMES),
+    ("SweRankEmbedAllCap10 vs SweRankEmbedAll (10-chunk cap)", "SweRankEmbedAllCap10", "all", "SweRankEmbedAll", "all", OUTCOMES),
+    ("BM25 vs SweRankEmbedNonPy", "BM25", "all", "SweRankEmbedNonPy", "all", OUTCOMES),
     # co-change baseline (Scripts/analysis/cochange.py, 2026-11-18)
     ("CoChangeFLIM vs FLIM-strict", "CoChangeFLIM", "all", "FLIM", "parse", OUTCOMES),
     ("CoChangeSweRank vs SweRank", "CoChangeSweRank", "all", "SweRank", "all", OUTCOMES),
