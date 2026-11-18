@@ -149,6 +149,9 @@ def rerank_scores(a):
     then the extended retriever's order for every other file."""
     import pandas as pd
     src, rer = OUT_TOP.format(f=a.fold), RERANK_ALL.format(f=a.fold)
+    if a.variant:       # ablation with reranker (third review): retrieval_<variant> -> rerank_<variant>
+        src = os.path.join(S.DATA, f"retrieval_{a.variant}", f"fold{a.fold}")
+        rer = os.path.join(S.DATA, f"rerank_{a.variant}", f"fold{a.fold}")
     rows, miss = [], 0
     for inst in S.load_instances(a.fold):
         rp, kp = os.path.join(src, inst["instance_id"] + ".json.gz"), os.path.join(rer, inst["instance_id"] + ".json.gz")
@@ -164,11 +167,12 @@ def rerank_scores(a):
         rows += [{"project": inst["project"], "bug_id": inst["bug_id"], "path": f, "score": float(n - i)}
                  for i, f in enumerate(files)]
     df = pd.DataFrame(rows)
-    base = os.path.join(S.SCORES, "SweRankAll", f"fold{a.fold}", "seed0")
+    tech = a.tech or "SweRankAll"
+    base = os.path.join(S.SCORES, tech, f"fold{a.fold}", "seed0")
     os.makedirs(base, exist_ok=True)
     for proj, g in df.groupby("project"):
         g[["bug_id", "path", "score"]].to_parquet(os.path.join(base, proj.replace("/", "_") + ".parquet"), index=False)
-    print(f"SweRankAll fold {a.fold}: {df.bug_id.nunique()} bugs, {miss} missing -> {base}")
+    print(f"{tech} fold {a.fold}: {df.bug_id.nunique()} bugs, {miss} missing -> {base}")
 
 
 def scores(a):

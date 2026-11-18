@@ -158,22 +158,21 @@ def fig_decomp():
     err = np.array([[rc[k]["poly_prim_removed"] - (m_ + rc[k]["poly_prim_removed_minus_mono_ci"][0]),
                      m_ + rc[k]["poly_prim_removed_minus_mono_ci"][1] - rc[k]["poly_prim_removed"]]
                     for (_, k, _), m_ in zip(spec, mono)]).T
+    diff = [rc[k]["poly_prim_removed"] - rc[k]["mono"] for _, k, _ in spec]
+    dci = np.array([rc[k]["poly_prim_removed_minus_mono_ci"] for _, k, _ in spec])
     x = np.arange(len(spec))
     w = 0.26
-    fig, ax = plt.subplots(figsize=(HALF, 5.0 * CM))
+    fig, (ax, bx) = plt.subplots(2, 1, figsize=(HALF, 7.4 * CM), sharex=True,
+                                 gridspec_kw=dict(height_ratios=[3, 1.35], hspace=0.25))
     for i, (vals, col, lab, hatch) in enumerate([
             (mono, BLUE, "Mono-fix bugs, all fix files", None),
             (prim, AQUA, "Poly-fix bugs, primary-language files", None),
             (sec, ORANGE, "Poly-fix bugs, secondary-language files", None)]):
-        bars = ax.bar(x + (i - 1) * (w + 0.02), vals, w, color=col, label=lab, zorder=2, linewidth=0)
-        if i == 1:
-            ax.errorbar(x, vals, yerr=err, fmt="none", ecolor=INK2, elinewidth=0.8, capsize=1.6, zorder=3)
+        ax.bar(x + (i - 1) * (w + 0.02), vals, w, color=col, label=lab, zorder=2, linewidth=0)
         if i == 2:
             for xi, v, (_, key, vw) in zip(x, vals, spec):
                 txt = "n/a" if key == "FLIM-parse-ap" else f"{v:.3f}".replace("0.", ".", 1)
                 ax.text(xi + (w + 0.02), v + 0.012, txt, ha="center", va="bottom", fontsize=5.6, color=INK)
-    ax.set_xticks(x)
-    ax.set_xticklabels([s[0] for s in spec])
     ax.set_ylabel("MAP")
     ax.set_ylim(0, 0.55)
     ax.grid(axis="y", color=GRID, lw=0.5, zorder=0)
@@ -181,6 +180,18 @@ def fig_decomp():
     ax.tick_params(axis="x", length=0)
     ax.legend(loc="lower left", frameon=False, ncol=1, bbox_to_anchor=(-0.02, 1.0), handlelength=1.0,
               borderaxespad=0.2)
+    # (b) paired difference: Poly-fix primary-language files minus Mono-fix, 95% bootstrap CI
+    bx.axhline(0, color=INK2, lw=0.6, zorder=1)
+    bx.errorbar(x, diff, yerr=[np.array(diff) - dci[:, 0], dci[:, 1] - np.array(diff)], fmt="o", ms=2.6,
+                color=AQUA, ecolor=INK2, elinewidth=0.8, capsize=1.6, zorder=3)
+    bx.set_ylabel("Primary \u2212\nMono", fontsize=6.4)
+    lim = max(0.1, float(np.abs(dci).max()) + 0.01)
+    bx.set_ylim(-lim, lim)
+    bx.grid(axis="y", color=GRID, lw=0.5, zorder=0)
+    bx.spines["left"].set_visible(False)
+    bx.tick_params(axis="x", length=0)
+    bx.set_xticks(x)
+    bx.set_xticklabels([s[0] for s in spec])
     save(fig, "fig_decomp")
 
 

@@ -141,3 +141,24 @@ Still open (authors): kappa round, tangling audit, author list / CRediT / AI
 declaration, Zenodo DOI. Optional: title variant "...and Their Effect on Bug
 Localization" (reviewer suggestion; current title kept). Length: 24 pages
 against the 16-page JSS limit; distribute into main text / appendix next.
+
+## Third internal review (2026-11-18)
+
+Done: selection rule stated (budget, three per language, our choice among
+qualifying projects); RQ1 selection effect as study vs non-selected (27.4% vs
+18.5%; medians 29.0% vs 17.5%; counted-file denominator 21.5% vs 6.6%); ccxt and
+posthog flagged; SweRank vs BM25 on secondary files as non-inferiority; "reduce"
+not "remove"; abstract separates full pipeline and drops retriever attribution;
+equivalence margin disclosed as post hoc, +-0.03 as conservative reading; RQ5
+marked exploratory/post hoc; co-change vs hybrid technique-specific; reranker
+TOST; -0.067; contamination point for RQ5; reach/representation throughout;
+Kochhar transition; Fig. 1 RQ5 branch; Fig. 3 difference panel; Appendix A.
+
+Open:
+- [ ] SweRankNonPy (reranker on non-Python-only corpus): when tmux `nonpyrr`
+      finishes, add PAIRS to obj2_stats.py ("SweRankNonPy vs SweRank",
+      "BM25 vs SweRankNonPy"), a row in tab:variants, review_checks3 re-run,
+      and lift the "at the retriever" qualifier in RQ5 if the result agrees.
+- [ ] Optional: one FLIM run against a published number (reviewer 2.6).
+- [ ] 124 pt overfull box at \maketitle: from cas-common.sty's keywords box
+      layout (disappears without the keywords environment); nothing visible on page 1.

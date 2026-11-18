@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net">
   <diagram name="Study design" id="study-design">
-    <mxGraphModel dx="1100" dy="320" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1060" pageHeight="306" math="0" shadow="0">
+    <mxGraphModel dx="1100" dy="320" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1060" pageHeight="430" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -34,6 +34,9 @@
         <mxCell id="fe" value="&lt;b&gt;Filter-excluded&lt;/b&gt;&lt;br&gt;1,226 reports naming&lt;br&gt;a fixed file: scored&lt;br&gt;separately" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#eaf2fb;strokeColor=#52514e;fontColor=#0b0b0b;fontFamily=Helvetica;fontSize=14;">
           <mxGeometry x="20" y="160" width="180" height="96" as="geometry" />
         </mxCell>
+        <mxCell id="dv" value="&lt;b&gt;Diagnostic variants&lt;/b&gt;&lt;br&gt;SweRank on all text files&lt;br&gt;hybrid with BM25&lt;br&gt;co-change (history)" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#fdeee7;strokeColor=#52514e;fontColor=#0b0b0b;fontFamily=Helvetica;fontSize=14;">
+          <mxGeometry x="860" y="300" width="180" height="96" as="geometry" />
+        </mxCell>
         <mxCell id="e0" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;endSize=6;strokeColor=#52514e;strokeWidth=1.5;" edge="1" parent="1" source="bb" target="fx">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
@@ -66,6 +69,9 @@
         <mxCell id="e8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;endSize=6;strokeColor=#52514e;strokeWidth=1.5;" edge="1" parent="1" source="bb" target="fe">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
+        <mxCell id="e9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;endSize=6;strokeColor=#52514e;strokeWidth=1.5;" edge="1" parent="1" source="te" target="dv">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
         <mxCell id="rq0" value="&lt;b&gt;RQ1&lt;/b&gt;" vertex="1" parent="1" style="text=1;html=1;align=center;verticalAlign=middle;strokeColor=none;fillColor=none;fontColor=#52514e;fontFamily=Helvetica;fontSize=14;">
           <mxGeometry x="230" y="260" width="180" height="24" as="geometry" />
         </mxCell>
@@ -74,6 +80,9 @@
         </mxCell>
         <mxCell id="rq2" value="&lt;b&gt;RQ3, RQ4&lt;/b&gt;" vertex="1" parent="1" style="text=1;html=1;align=center;verticalAlign=middle;strokeColor=none;fillColor=none;fontColor=#52514e;fontFamily=Helvetica;fontSize=14;">
           <mxGeometry x="440" y="260" width="180" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="rq3" value="&lt;b&gt;RQ5 (exploratory)&lt;/b&gt;" vertex="1" parent="1" style="text=1;html=1;align=center;verticalAlign=middle;strokeColor=none;fillColor=none;fontColor=#52514e;fontFamily=Helvetica;fontSize=14;">
+          <mxGeometry x="860" y="400" width="180" height="24" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

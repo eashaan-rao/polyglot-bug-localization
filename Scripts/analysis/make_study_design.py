@@ -26,6 +26,7 @@ DRAWIO = os.path.join(OUT, "study_design.drawio")
 INK, INK2 = "#0b0b0b", "#52514e"
 PREP, EVAL = "#eaf2fb", "#fdeee7"          # tints of palette blue / orange
 W, H, H2, GAP, X0, Y1, Y2 = 180, 80, 96, 30, 20, 20, 160
+Y3, H3 = Y2 + H2 + 44, 96            # third row: diagnostic variants (RQ5)
 COL = [X0 + i * (W + GAP) for i in range(5)]
 FONT = 14
 
@@ -41,14 +42,15 @@ BOXES = [  # id, column, row, fill, lines (first line bold)
     ("st", 2, 2, EVAL, ["Statistics", "AP, CFR@10, RR", "mixed models, S1\u2013S6"]),
     ("pr", 1, 2, PREP, ["Prevalence", "per grain and project", "984 no-primary aside"]),
     ("fe", 0, 2, PREP, ["Filter-excluded", "1,226 reports naming", "a fixed file: scored", "separately"]),
+    ("dv", 4, 3, EVAL, ["Diagnostic variants", "SweRank on all text files", "hybrid with BM25", "co-change (history)"]),
 ]
 EDGES = [("bb", "fx"), ("fx", "cl"), ("cl", "sp"), ("sp", "sn"), ("sn", "te"), ("te", "ev"), ("ev", "st"),
-         ("cl", "pr"), ("bb", "fe")]
-LABELS = [("RQ1", "pr"), ("RQ2", "ev"), ("RQ3, RQ4", "st")]
+         ("cl", "pr"), ("bb", "fe"), ("te", "dv")]
+LABELS = [("RQ1", "pr"), ("RQ2", "ev"), ("RQ3, RQ4", "st"), ("RQ5 (exploratory)", "dv")]
 
 
 def geom(col, row):
-    return COL[col], (Y1 if row == 1 else Y2), W, (H if row == 1 else H2)
+    return COL[col], {1: Y1, 2: Y2, 3: Y3}[row], W, {1: H, 2: H2, 3: H3}[row]
 
 
 def write_drawio():
@@ -56,7 +58,7 @@ def write_drawio():
     dg = ET.SubElement(mx, "diagram", name="Study design", id="study-design")
     gm = ET.SubElement(dg, "mxGraphModel", dx="1100", dy="320", grid="1", gridSize="10", guides="1",
                        tooltips="1", connect="1", arrows="1", fold="1", page="1", pageScale="1",
-                       pageWidth=str(COL[-1] + W + X0), pageHeight=str(Y2 + H2 + 50), math="0", shadow="0")
+                       pageWidth=str(COL[-1] + W + X0), pageHeight=str(Y3 + H3 + 34), math="0", shadow="0")
     root = ET.SubElement(gm, "root")
     ET.SubElement(root, "mxCell", id="0")
     ET.SubElement(root, "mxCell", id="1", parent="0")
@@ -79,6 +81,9 @@ def write_drawio():
             style += "exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;"
             ymid = (sy + sh + ty) // 2
             pts = [(sx + sw // 2, ymid), (tx + tw // 2, ymid)]
+        if (s, t) == ("dv", "ev"):          # left out of the variants box, up into the evaluator
+            style += "exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;"
+            pts = [(tx + tw // 2, sy + sh // 2)]
         cell = ET.SubElement(root, "mxCell", id=f"e{i}", style=style, edge="1", parent="1", source=s, target=t)
         g = ET.SubElement(cell, "mxGeometry", relative="1", **{"as": "geometry"})
         if pts:
@@ -151,7 +156,9 @@ def render():
         pts = [(float(p.get("x")), float(p.get("y"))) for p in c.iter("mxPoint")]
         st = style_of(c.get("style"))
         col = st.get("strokeColor", INK2)
-        if pts:
+        if pts and st.get("exitX") == "0":                          # left side out, into the bottom
+            path = [(s[0], s[1] + s[3] / 2)] + pts + [(t[0] + t[2] / 2, t[1] + t[3])]
+        elif pts:
             path = [(s[0] + s[2] / 2, s[1] + s[3])] + pts + [(t[0] + t[2] / 2, t[1])]
         elif abs((s[1] + s[3] / 2) - (t[1] + t[3] / 2)) < 1:        # same row
             yy = s[1] + s[3] / 2

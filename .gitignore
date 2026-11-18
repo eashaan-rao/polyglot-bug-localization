@@ -82,3 +82,5 @@ data/obj2/swerank/retrieval_pytest/
 data/obj2/swerank/retrieval_cap10/
 # blobless clones of the 7 unselected BeetleBox projects (Scripts/rq1_all_projects.py)
 data/repos_extra/
+data/obj2/swerank/retrieval_nonpy_top/
+data/obj2/swerank/rerank_nonpy_top/

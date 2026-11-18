@@ -211,3 +211,17 @@ do with the files they cannot represent? Not proposed as techniques; untuned.
   without the dolphinscheduler front-end, BM25's Python-subset class effect,
   fractional-logit models) re-run 2026-11-18 13:27; chained by
   `Scripts/analysis/run_after_stats.sh`.
+
+## Third internal review, 2026-11-18
+
+- `Scripts/analysis/review_checks3.py` -> `results/obj2/stats/review_checks3.json`:
+  non-inferiority (margin 0.03, bootstrap) of SweRank variants against BM25 on the
+  secondary files; co-change minus hybrid on the secondary files; TOST for the
+  reranker interaction and the partial-corpus class effects; RQ1 over 13 projects
+  with all bugs with counted fix files as denominator and per-project medians.
+- `tab_rq1_all13.tex` gains the primary-anchored share and the counted-file
+  denominator; study design figure gains the RQ5 branch; decomposition figure
+  gains a paired-difference panel; six supporting tables moved to Appendix A.
+- Full SweRank (retriever + reranker) on the "+ non-Python files only" corpus
+  (`Scripts/swerank/run_nonpy_rerank.sh`, technique SweRankNonPy; tmux nonpyrr)
+  queued 14:30, waiting for GPU memory (the shared GPU was full).

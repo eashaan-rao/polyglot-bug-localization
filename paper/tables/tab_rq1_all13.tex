@@ -3,31 +3,33 @@
 \label{tab:rq1all}
 \small
 \setlength{\tabcolsep}{3pt}
-\begin{adjustbox}{max width=\linewidth}\begin{tabular}{lrrrrrr}
+\begin{adjustbox}{max width=\linewidth}\begin{tabular}{lrrrrrrrr}
 \toprule
-Project & Bugs & Anch. & Proxy & broad & data & strict \\
+ & & & & & \multicolumn{3}{c}{\% of anchored} & \% of cnt. \\
+\cmidrule(lr){6-8}\cmidrule(lr){9-9}
+Project & Bugs & Anch. & Anch.\,\% & Proxy & broad & data & strict & broad \\
 \midrule
-\multicolumn{7}{l}{\emph{Study projects}} \\
-dolphinscheduler (J) & 1{,}363 & 698 & 29.4 & 23.6 & 14.6 & 10.7 \\
-elasticsearch (J) & 970 & 721 & 49.4 & 17.8 & 15.1 & 0.3 \\
-liquibase (J) & 241 & 199 & 42.7 & 49.7 & 20.1 & 35.7 \\
-airflow (P) & 1{,}181 & 917 & 32.9 & 18.8 & 14.2 & 5.5 \\
-ansible (P) & 768 & 626 & 66.0 & 43.5 & 39.1 & 13.4 \\
-localstack (P) & 472 & 433 & 37.1 & 34.4 & 29.6 & 2.8 \\
-\quad pooled & 4{,}995 & 3{,}594 & 41.1 & 27.4 & 21.0 & 8.2 \\
+\multicolumn{9}{l}{\emph{Study projects}} \\
+dolphinscheduler (J) & 1{,}363 & 698 & 53.6 & 29.4 & 23.6 & 14.6 & 10.7 & 12.7 \\
+elasticsearch (J) & 970 & 721 & 84.8 & 49.4 & 17.8 & 15.1 & 0.3 & 15.1 \\
+liquibase (J) & 241 & 199 & 84.7 & 42.7 & 49.7 & 20.1 & 35.7 & 42.1 \\
+airflow (P) & 1{,}181 & 917 & 85.2 & 32.9 & 18.8 & 14.2 & 5.5 & 16.0 \\
+ansible (P) & 768 & 626 & 94.7 & 66.0 & 43.5 & 39.1 & 13.4 & 41.1 \\
+localstack (P) & 472 & 433 & 95.6 & 37.1 & 34.4 & 29.6 & 2.8 & 32.9 \\
+\quad pooled & 4{,}995 & 3{,}594 & 78.5 & 41.1 & 27.4 & 21.0 & 8.2 & 21.5 \\
 \midrule
-\multicolumn{7}{l}{\emph{Other eligible projects}} \\
-dubbo (J) & 379 & 253 & 7.4 & 7.5 & 5.5 & 0.0 \\
-openrefine (J) & 620 & 189 & 29.4 & 22.8 & 16.9 & 13.8 \\
-selenium (J) & 134 & 46 & 11.9 & 2.2 & 0.0 & 2.2 \\
-ccxt (P) & 690 & 40 & 11.8 & 70.0 & 10.0 & 67.5 \\
-langchain (P) & 130 & 112 & 26.2 & 8.9 & 2.7 & 0.0 \\
-odoo (P) & 115 & 80 & 12.2 & 17.5 & 16.2 & 1.2 \\
-posthog (P) & 403 & 101 & 48.6 & 36.6 & 4.0 & 31.7 \\
-\quad pooled & 2{,}471 & 821 & 22.3 & 18.5 & 8.5 & 10.6 \\
+\multicolumn{9}{l}{\emph{Other eligible projects}} \\
+dubbo (J) & 379 & 253 & 67.8 & 7.4 & 7.5 & 5.5 & 0.0 & 5.1 \\
+openrefine (J) & 620 & 189 & 34.9 & 29.4 & 22.8 & 16.9 & 13.8 & 7.9 \\
+selenium (J) & 134 & 46 & 46.0 & 11.9 & 2.2 & 0.0 & 2.2 & 1.0 \\
+ccxt (P) & 690 & 40 & 5.9 & 11.8 & 70.0 & 10.0 & 67.5 & 4.2 \\
+langchain (P) & 130 & 112 & 97.4 & 26.2 & 8.9 & 2.7 & 0.0 & 8.7 \\
+odoo (P) & 115 & 80 & 70.8 & 12.2 & 17.5 & 16.2 & 1.2 & 12.4 \\
+posthog (P) & 403 & 101 & 26.4 & 48.6 & 36.6 & 4.0 & 31.7 & 9.7 \\
+\quad pooled & 2{,}471 & 821 & 35.7 & 22.3 & 18.5 & 8.5 & 10.6 & 6.6 \\
 \midrule
-All 13 & 7{,}466 & 4{,}415 & 34.9 & 25.8 & 18.7 & 8.6 \\
+All 13 & 7{,}466 & 4{,}415 & 64.2 & 34.9 & 25.8 & 18.7 & 8.6 & 16.5 \\
 \bottomrule
 \end{tabular}\end{adjustbox}
-\\[2pt]{\footnotesize Anch.: primary-anchored bugs. Proxy: share of fixes whose changed files have more than one extension (pooled: weighted by bugs). Prevalence in \% of primary-anchored bugs; ``data'': data-format grain. The study projects re-classified by the same script agree with the main classification for all 4{,}995 bugs.}
+\\[2pt]{\footnotesize Anch.: primary-anchored bugs; Anch.\,\%: their share of the bugs with a counted fix file. Proxy: share of fixes whose changed files have more than one extension (pooled: weighted by bugs). Prevalence in \% of primary-anchored bugs (``data'': data-format grain) and, in the last column, broad-grain Poly-fix bugs in \% of all bugs with a counted fix file. In ccxt and posthog fewer than a third of the bugs touch the assigned primary language, so their prevalence describes a small subset. The study projects re-classified by the same script agree with the main classification for all 4{,}995 bugs.}
 \end{table}
