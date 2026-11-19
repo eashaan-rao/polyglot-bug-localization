@@ -155,10 +155,9 @@ TOST; -0.067; contamination point for RQ5; reach/representation throughout;
 Kochhar transition; Fig. 1 RQ5 branch; Fig. 3 difference panel; Appendix A.
 
 Open:
-- [ ] SweRankNonPy (reranker on non-Python-only corpus): when tmux `nonpyrr`
-      finishes, add PAIRS to obj2_stats.py ("SweRankNonPy vs SweRank",
-      "BM25 vs SweRankNonPy"), a row in tab:variants, review_checks3 re-run,
-      and lift the "at the retriever" qualifier in RQ5 if the result agrees.
+- [x] SweRankNonPy (full SweRank on the non-Python-only corpus), 2026-11-19:
+      class effect -0.020 [-0.072, 0.031], interaction +0.153; RQ5, abstract and
+      introduction updated, retriever-only qualifier removed.
 - [ ] Optional: one FLIM run against a published number (reviewer 2.6).
 - [ ] 124 pt overfull box at \maketitle: from cas-common.sty's keywords box
       layout (disappears without the keywords environment); nothing visible on page 1.

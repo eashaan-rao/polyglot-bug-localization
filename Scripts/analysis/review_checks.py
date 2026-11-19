@@ -39,7 +39,7 @@ VARIANTS = [("SweRankEmbed", "all", "ap"), ("SweRankEmbedAll", "all", "ap"), ("S
             ("HybridFLIM", "all", "ap"), ("HybridSweRank", "all", "ap"), ("HybridLocAgent", "all", "ap10"),
             ("BM25", "all", "ap10"), ("CoChangeFLIM", "all", "ap"), ("CoChangeSweRank", "all", "ap"),
             ("CoChangeLocAgent", "all", "ap10"), ("SweRankEmbedNonPy", "all", "ap"),
-            ("SweRankEmbedPyTest", "all", "ap"), ("SweRankEmbedAllCap10", "all", "ap")]
+            ("SweRankEmbedPyTest", "all", "ap"), ("SweRankEmbedAllCap10", "all", "ap"), ("SweRankNonPy", "all", "ap")]
 OUT = {}
 
 

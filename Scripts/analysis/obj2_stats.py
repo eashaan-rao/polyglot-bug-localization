@@ -99,6 +99,10 @@ PAIRS = [
     ("SweRankEmbedPyTest vs SweRankEmbed (Python test files added)", "SweRankEmbedPyTest", "all", "SweRankEmbed", "all", OUTCOMES),
     ("SweRankEmbedAllCap10 vs SweRankEmbedAll (10-chunk cap)", "SweRankEmbedAllCap10", "all", "SweRankEmbedAll", "all", OUTCOMES),
     ("BM25 vs SweRankEmbedNonPy", "BM25", "all", "SweRankEmbedNonPy", "all", OUTCOMES),
+    # full SweRank (with reranker) on the non-Python-only corpus (third review, 2026-11-19)
+    ("SweRankNonPy vs SweRank (non-Python files added)", "SweRankNonPy", "all", "SweRank", "all", OUTCOMES),
+    ("BM25 vs SweRankNonPy", "BM25", "all", "SweRankNonPy", "all", OUTCOMES),
+    ("SweRankAll vs SweRankNonPy (Python test files added)", "SweRankAll", "all", "SweRankNonPy", "all", OUTCOMES),
     # co-change baseline (Scripts/analysis/cochange.py, 2026-11-18)
     ("CoChangeFLIM vs FLIM-strict", "CoChangeFLIM", "all", "FLIM", "parse", OUTCOMES),
     ("CoChangeSweRank vs SweRank", "CoChangeSweRank", "all", "SweRank", "all", OUTCOMES),

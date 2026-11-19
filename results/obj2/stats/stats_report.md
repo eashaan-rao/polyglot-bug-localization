@@ -1,6 +1,6 @@
 # Objective 2 statistics (full)
 
-Input: `/home/cs21d002_eashaan/PhD/Objective2/results/obj2/eval/per_bug.parquet`; bugs (seed-averaged rows): 135858
+Input: `/home/cs21d002_eashaan/PhD/Objective2/results/obj2/eval/per_bug.parquet`; bugs (seed-averaged rows): 142086
 
 ## RQ3 — class effect (Poly-fix minus Mono-fix), pooled model, primary condition
 
@@ -226,6 +226,20 @@ Primary outcome: AP (MAP); AP@10 for LocAgent.
 | primary     | SweRankEmbedPyTest   | parse  | ap10                    | mixedlm_powell     |      781 |             -0.1939 | -0.2506 | -0.1373 | 0      |
 | primary     | SweRankEmbedPyTest   | parse  | rr10                    | mixedlm_powell     |      781 |             -0.0712 | -0.1405 | -0.0018 | 0.0443 |
 | primary     | SweRankEmbedPyTest   | parse  | top10 (logit, log-odds) | logit_project_fe   |      781 |             -0.2648 | -0.7674 |  0.2379 | 0.3019 |
+| primary     | SweRankNonPy         | all    | ap                      | mixedlm_powell     |      781 |             -0.0202 | -0.0717 |  0.0314 | 0.4431 |
+| primary     | SweRankNonPy         | all    | cfr10                   | mixedlm_powell     |      781 |              0.0572 |  0.0042 |  0.1102 | 0.0345 |
+| primary     | SweRankNonPy         | all    | rr                      | ols_project_fe_hc3 |      781 |              0.0353 | -0.037  |  0.1076 | 0.3382 |
+| primary     | SweRankNonPy         | all    | top10                   | ols_project_fe_hc3 |      781 |              0.0858 |  0.0188 |  0.1528 | 0.0121 |
+| primary     | SweRankNonPy         | all    | ap10                    | mixedlm_powell     |      781 |             -0.0259 | -0.0781 |  0.0264 | 0.3317 |
+| primary     | SweRankNonPy         | all    | rr10                    | ols_project_fe_hc3 |      781 |              0.0369 | -0.0366 |  0.1103 | 0.3254 |
+| primary     | SweRankNonPy         | all    | top10 (logit, log-odds) | logit_project_fe   |      781 |              0.7646 |  0.1947 |  1.3345 | 0.0086 |
+| primary     | SweRankNonPy         | parse  | ap                      | mixedlm_powell     |      781 |             -0.1713 | -0.2208 | -0.1218 | 0      |
+| primary     | SweRankNonPy         | parse  | cfr10                   | mixedlm_powell     |      781 |             -0.1961 | -0.2452 | -0.147  | 0      |
+| primary     | SweRankNonPy         | parse  | rr                      | mixedlm_powell     |      781 |             -0.037  | -0.1062 |  0.0321 | 0.2938 |
+| primary     | SweRankNonPy         | parse  | top10                   | mixedlm_powell     |      781 |             -0.0439 | -0.1065 |  0.0188 | 0.1701 |
+| primary     | SweRankNonPy         | parse  | ap10                    | mixedlm_powell     |      781 |             -0.1662 | -0.2162 | -0.1162 | 0      |
+| primary     | SweRankNonPy         | parse  | rr10                    | mixedlm_powell     |      781 |             -0.0359 | -0.1058 |  0.0339 | 0.3134 |
+| primary     | SweRankNonPy         | parse  | top10 (logit, log-odds) | logit_project_fe   |      781 |             -0.4236 | -0.9109 |  0.0637 | 0.0885 |
 
 ## RQ4 — inversion test (d = A - B; interaction = Poly-fix minus Mono-fix difference)
 
@@ -311,6 +325,18 @@ Primary outcome: AP (MAP); AP@10 for LocAgent.
 | primary     | BM25 vs SweRankEmbedNonPy                                    | cfr10     | mixedlm_powell     |      781 |            -0.0716 | -0.145  |  0.0018 | 0.0557 |           0.0273 |          -0.0343 | False               |
 | primary     | BM25 vs SweRankEmbedNonPy                                    | rr        | mixedlm_powell     |      781 |             0.0408 | -0.036  |  0.1177 | 0.2977 |          -0.1476 |          -0.0994 | False               |
 | primary     | BM25 vs SweRankEmbedNonPy                                    | top10     | ols_project_fe_hc3 |      781 |            -0.047  | -0.139  |  0.0451 | 0.3174 |          -0.0961 |          -0.1144 | False               |
+| primary     | SweRankNonPy vs SweRank (non-Python files added)             | ap        | mixedlm_lbfgs      |      781 |             0.1531 |  0.1305 |  0.1757 | 0      |          -0.0151 |           0.1201 | True                |
+| primary     | SweRankNonPy vs SweRank (non-Python files added)             | cfr10     | mixedlm_powell     |      781 |             0.2481 |  0.2172 |  0.2791 | 0      |          -0.0175 |           0.2026 | True                |
+| primary     | SweRankNonPy vs SweRank (non-Python files added)             | rr        | mixedlm_lbfgs      |      781 |             0.0871 |  0.0564 |  0.1177 | 0      |          -0.0164 |           0.0417 | True                |
+| primary     | SweRankNonPy vs SweRank (non-Python files added)             | top10     | mixedlm_powell     |      781 |             0.121  |  0.0831 |  0.159  | 0      |          -0.0157 |           0.0775 | True                |
+| primary     | BM25 vs SweRankNonPy                                         | ap        | mixedlm_lbfgs      |      781 |            -0.0089 | -0.0707 |  0.0528 | 0.7764 |          -0.098  |          -0.0783 | False               |
+| primary     | BM25 vs SweRankNonPy                                         | cfr10     | mixedlm_lbfgs      |      781 |            -0.0944 | -0.1682 | -0.0206 | 0.0122 |          -0.0007 |          -0.0899 | False               |
+| primary     | BM25 vs SweRankNonPy                                         | rr        | ols_project_fe_hc3 |      781 |             0.0077 | -0.0767 |  0.0921 | 0.8575 |          -0.248  |          -0.2284 | False               |
+| primary     | BM25 vs SweRankNonPy                                         | top10     | ols_project_fe_hc3 |      781 |            -0.0543 | -0.1431 |  0.0346 | 0.2313 |          -0.1333 |          -0.1661 | False               |
+| primary     | SweRankAll vs SweRankNonPy (Python test files added)         | ap        | mixedlm_lbfgs      |      781 |            -0.0281 | -0.065  |  0.0088 | 0.135  |           0.1205 |           0.078  | False               |
+| primary     | SweRankAll vs SweRankNonPy (Python test files added)         | cfr10     | mixedlm_powell     |      781 |            -0.0675 | -0.114  | -0.021  | 0.0044 |           0.1745 |           0.0781 | False               |
+| primary     | SweRankAll vs SweRankNonPy (Python test files added)         | rr        | mixedlm_powell     |      781 |             0.0006 | -0.0363 |  0.0376 | 0.9731 |           0.0092 |           0.0077 | False               |
+| primary     | SweRankAll vs SweRankNonPy (Python test files added)         | top10     | mixedlm_powell     |      781 |            -0.0595 | -0.1031 | -0.0159 | 0.0075 |           0.0373 |          -0.0111 | False               |
 | primary     | CoChangeFLIM vs FLIM-strict                                  | ap        | mixedlm_powell     |     1399 |             0.1081 |  0.0945 |  0.1217 | 0      |          -0.0453 |           0.0616 | True                |
 | primary     | CoChangeFLIM vs FLIM-strict                                  | cfr10     | mixedlm_powell     |     1399 |             0.1221 |  0.1016 |  0.1426 | 0      |          -0.0306 |           0.0837 | True                |
 | primary     | CoChangeFLIM vs FLIM-strict                                  | rr        | mixedlm_powell     |     1399 |             0.0054 | -0.0149 |  0.0257 | 0.6038 |          -0.0529 |          -0.0528 | False               |
@@ -424,6 +450,10 @@ Primary outcome: AP (MAP); AP@10 for LocAgent.
 | primary     | SweRankEmbedPyTest   | all    | Poly-fix |      271 | 0.584 | 0.289 |   0.425 |            0.593 |              0.001 |            0.485 |              0.001 |            0.985 |              0.1   |        0.009 |          0.015 |
 | primary     | SweRankEmbedPyTest   | parse  | Mono-fix |      510 | 0.634 | 0.526 |   0.694 |            0.634 |            nan     |            0.526 |            nan     |            1     |              0.998 |        0.008 |          0.011 |
 | primary     | SweRankEmbedPyTest   | parse  | Poly-fix |      271 | 0.584 | 0.288 |   0.425 |            0.593 |              0     |            0.485 |              0     |            0.985 |              0.1   |        0.01  |          0.016 |
+| primary     | SweRankNonPy         | all    | Mono-fix |      510 | 0.698 | 0.462 |   0.55  |            0.698 |            nan     |            0.462 |            nan     |            1     |              0.998 |        0.005 |          0.008 |
+| primary     | SweRankNonPy         | all    | Poly-fix |      271 | 0.728 | 0.397 |   0.548 |            0.666 |              0.218 |            0.441 |              0.199 |            0.985 |              0.1   |        0.009 |          0.015 |
+| primary     | SweRankNonPy         | parse  | Mono-fix |      510 | 0.708 | 0.474 |   0.564 |            0.708 |            nan     |            0.474 |            nan     |            1     |              0.998 |        0.008 |          0.011 |
+| primary     | SweRankNonPy         | parse  | Poly-fix |      271 | 0.681 | 0.272 |   0.339 |            0.691 |              0     |            0.462 |              0     |            0.985 |              0.1   |        0.01  |          0.016 |
 
 ## Sensitivity — interaction estimate under each condition
 
@@ -444,6 +474,7 @@ Primary outcome: AP (MAP); AP@10 for LocAgent.
 | ('BM25 vs SweRankAll', 'ap')                                           |          0.0371 |       -0.0152 |       -0.0216 |        0.008  |      0      |          0.0208 |         0.0149 |     0.0313 |    -0.0149 |            0.0145 |       0.008  |    0.0149 |
 | ('BM25 vs SweRankEmbedAll', 'ap')                                      |          0.088  |       -0.0062 |        0.0469 |        0.0226 |      0.057  |          0.0384 |         0.0328 |     0.0479 |     0.0248 |            0.0248 |      -0.0166 |    0.0328 |
 | ('BM25 vs SweRankEmbedNonPy', 'ap')                                    |          0.0222 |       -0.0331 |        0.0348 |       -0.0125 |     -0.0354 |          0.0009 |        -0.0061 |     0.0084 |    -0.0234 |           -0.0367 |      -0.156  |   -0.0061 |
+| ('BM25 vs SweRankNonPy', 'ap')                                         |          0.01   |       -0.0337 |       -0.0237 |       -0.0165 |     -0.0689 |         -0.0012 |        -0.0089 |     0.0096 |    -0.0298 |           -0.032  |      -0.1105 |   -0.0089 |
 | ('BM25-parse vs FLIM-strict (control)', 'ap')                          |          0.0181 |       -0.0039 |        0.0094 |       -0.002  |      0.0331 |          0.0042 |         0.0046 |    -0.0243 |     0.0277 |           -0.0012 |      -0.0297 |    0.0043 |
 | ('CoChangeFLIM vs FLIM-strict', 'ap')                                  |          0.1077 |        0.1081 |        0.0352 |        0.1191 |      0.0828 |          0.1279 |         0.1087 |     0.1242 |     0.0917 |            0.1106 |       0.1176 |    0.1081 |
 | ('CoChangeLocAgent vs LocAgent', 'ap10')                               |          0.016  |        0.0962 |        0.0471 |        0.0853 |      0.0242 |          0.0716 |         0.0712 |     0.0919 |     0.0446 |            0.0646 |       0.0311 |    0.0712 |
@@ -452,9 +483,11 @@ Primary outcome: AP (MAP); AP@10 for LocAgent.
 | ('HybridLocAgent vs LocAgent', 'ap10')                                 |          0.0298 |        0.0721 |        0.0288 |        0.0669 |     -0.0043 |          0.0993 |         0.0615 |     0.0872 |     0.0328 |            0.0534 |       0.0206 |    0.0615 |
 | ('HybridSweRank vs SweRank', 'ap')                                     |          0.0273 |        0.0709 |        0.0108 |        0.0657 |     -0.0175 |          0.1053 |         0.0588 |     0.0773 |     0.0352 |            0.0486 |       0.0101 |    0.0588 |
 | ('SweRankAll vs SweRank (corpus extension, reranked)', 'ap')           |          0.1397 |        0.1085 |        0.0862 |        0.1405 |      0.0294 |          0.1259 |         0.126  |     0.1319 |     0.1169 |            0.112  |       0.0694 |    0.126  |
+| ('SweRankAll vs SweRankNonPy (Python test files added)', 'ap')         |         -0.0274 |       -0.026  |       -0.0015 |       -0.0293 |     -0.0757 |         -0.0281 |        -0.0281 |    -0.0305 |    -0.0254 |           -0.0502 |      -0.1314 |   -0.0281 |
 | ('SweRankEmbed vs SweRank (reranker effect)', 'ap')                    |          0.0246 |       -0.014  |       -0.0105 |        0.0035 |     -0.0332 |          0.0016 |         0.0012 |    -0.0024 |    -0.0025 |            0.0059 |       0.0238 |    0.0012 |
 | ('SweRankEmbed vs SweRankEmbedAll (corpus extension)', 'ap')           |          0.0652 |        0.1238 |        0.0314 |        0.1225 |      0.016  |          0.1078 |         0.1081 |     0.1212 |     0.0902 |            0.0953 |       0.0809 |    0.1081 |
 | ('SweRankEmbedAllCap10 vs SweRankEmbedAll (10-chunk cap)', 'ap')       |         -0.0259 |        0.0018 |       -0.017  |       -0.0117 |      0.0045 |         -0.0088 |        -0.0089 |    -0.0109 |    -0.0049 |           -0.009  |      -0.0074 |   -0.0089 |
 | ('SweRankEmbedNonPy vs SweRankEmbed (non-Python files added)', 'ap')   |          0.1305 |        0.1515 |        0.0472 |        0.1624 |      0.1007 |          0.1503 |         0.15   |     0.1549 |     0.1388 |            0.1615 |       0.211  |    0.15   |
 | ('SweRankEmbedPyTest vs SweRankEmbed (Python test files added)', 'ap') |         -0.0764 |       -0.0211 |       -0.0011 |       -0.0334 |     -0.0829 |         -0.0397 |        -0.0396 |    -0.0241 |    -0.056  |           -0.0594 |      -0.1149 |   -0.0396 |
+| ('SweRankNonPy vs SweRank (non-Python files added)', 'ap')             |          0.167  |        0.1339 |        0.0897 |        0.1692 |      0.1009 |          0.1535 |         0.1531 |     0.1607 |     0.1368 |            0.1614 |       0.2052 |    0.1531 |
 

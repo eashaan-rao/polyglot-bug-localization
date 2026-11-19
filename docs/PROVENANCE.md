@@ -225,3 +225,8 @@ do with the files they cannot represent? Not proposed as techniques; untuned.
 - Full SweRank (retriever + reranker) on the "+ non-Python files only" corpus
   (`Scripts/swerank/run_nonpy_rerank.sh`, technique SweRankNonPy; tmux nonpyrr)
   queued 14:30, waiting for GPU memory (the shared GPU was full).
+- SweRankNonPy finished 2026-11-19 12:53 (fold 1 02:27; fold 2 waited for GPU
+  memory until 05:17): 1,047 bugs reranked, none missing; evaluated with
+  `append_eval.py SweRankNonPy`; pairs added to `obj2_stats.py` and to the
+  decomposition in `review_checks.py`; stats, checks, tables and figures re-run
+  21:45 (`Scripts/analysis/run_after_stats_nonpy.sh`).

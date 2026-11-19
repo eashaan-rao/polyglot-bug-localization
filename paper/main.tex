@@ -59,14 +59,14 @@
 %% ABSTRACT
 %% ===================================================================
 \begin{abstract}
-Bug localization ranks a project's files by how likely they are to need a
+Bug localization ranks a project's files by how likely each is to need a
 change for a bug report. Its benchmarks and techniques assume that a fix
 changes source files of the project's main language. We call a fix
 \emph{Mono-fix} if the files it changes belong to one language and
 \emph{Poly-fix} if they belong to several, for example a Java class and a YAML
 configuration file. Among 3{,}594 bugs from six Java and Python projects of
 BeetleBox, 8.2--27.4\% of the fixes are Poly-fix, depending on
-which files count (8.6--25.8\% over all 13 eligible projects), and about
+which files count, and about
 two-fifths of the files these fixes change cannot be read by a Java or Python
 parser. Of five techniques, evaluated on time-ordered splits, BM25 and BLAZE
 read every file; FLIM, the agent LocAgent and the ranker
@@ -79,7 +79,7 @@ accuracy, which reward only the first fixed file found, weaken these effects
 and show no reversal. For SweRank, diagnostic variants point to reach:
 given every text file, it ranks the non-Python files at least as well as
 BM25, and its Poly-fix penalty falls by about three quarters, from 0.17 to
-0.04. Data and scripts are released.
+0.04; the non-Python files, not the test files, account for the reduction.
 \end{abstract}
 
 \begin{keywords}
@@ -170,8 +170,8 @@ bugs, most clearly where the extra files are read by the software; without
 test files in the ground truth the loss becomes a narrowing, and mean
 reciprocal rank and Top-$k$ accuracy weaken it and show no reversal (RQ4).
 When SweRank is given every text file, its penalty falls by about three
-quarters, and at the retriever the non-Python files, not the added test
-files, account for the reduction; FLIM and BLAZE, which already see those
+quarters, and the non-Python files, not the added test files, account for
+the reduction; FLIM and BLAZE, which already see those
 files, rank them below BM25 (RQ5, exploratory).
 
 Part of the penalty follows by construction: a technique that cannot see a
@@ -679,7 +679,8 @@ documents, with the settings of the main run; a file's position is that of its
 best document. To see which of the added files cause a change, we also run
 the retriever on three partial corpora: SweRank's documents plus only the
 non-Python files, plus only the Python test files, and plus all files with at
-most 10 chunks each. None of the variants is tuned: the constant, the chunk
+most 10 chunks each. On the first of these, the decisive one, we also run the
+full technique, retriever and reranker, with the settings of the main run. None of the variants is tuned: the constant, the chunk
 length and the caps were fixed before each run. The variants, and RQ5 itself,
 were added after the results of RQ3 and RQ4 were known, so RQ5 is
 exploratory; the partial corpora were added later still.
@@ -1334,21 +1335,28 @@ on both classes (by 0.219 and 0.156), and its interaction with BM25 is
 indistinguishable from 0 ($+0.015$ $[-0.042, 0.072]$; fractional logit
 $p = 0.92$).
 
-\paragraph{At the retriever, the non-Python files reduce the penalty; the
-Python test files do not.} The three partial corpora separate the files that
-the extension adds; they were run with the retriever only. Adding only the
-non-Python files gives an interaction of $+0.150$ $[0.128, 0.172]$: Poly-fix
-MAP rises by 0.108 $[0.087, 0.129]$, and Mono-fix MAP falls by 0.029
-$[0.021, 0.037]$ because the added files compete with the fixed Python files.
-Part of the narrower gap therefore comes from the Mono-fix side, as for
-FLIM's co-change variant below. The class effect falls to $-0.023$
-$[-0.073, 0.028]$, not significant and not shown to be negligible (equivalence
-within $\pm0.05$: $p = 0.14$). Adding only the Python test files raises both classes,
-Mono-fix more ($+0.111$ $[0.092, 0.131]$ against $+0.062$ $[0.047, 0.078]$),
-because test files are in the ground truth of many Mono-fix fixes too; the
-class effect widens to $-0.207$. At the retriever, the reduction of the
-penalty thus comes from the secondary-language files, which is the reach
-explanation of RQ2. The test
+\paragraph{The non-Python files reduce the penalty; the Python test files do
+not.} The three partial corpora separate the files that the extension adds.
+Run through the full technique, adding only the non-Python files gives an
+interaction of $+0.153$ $[0.131, 0.176]$ against SweRank as published:
+Poly-fix MAP rises by 0.120 $[0.099, 0.142]$ (0.277 to 0.397), and Mono-fix
+MAP falls by 0.015 $[0.007, 0.023]$ because the added files compete with the
+fixed Python files. Part of the narrower gap therefore comes from the
+Mono-fix side, as for FLIM's co-change variant below. The class effect falls
+to $-0.020$ $[-0.072, 0.031]$, not significant and not shown to be negligible
+(equivalence within $\pm0.05$: $p = 0.13$); without test files in the ground
+truth it is $0.000$. The secondary files are ranked at a MAP of 0.261,
+non-inferior to BM25 within 0.03 ($p = 0.004$), and the interaction with BM25
+is indistinguishable from 0 ($-0.009$ $[-0.071, 0.053]$) while SweRank leads
+in both classes. The retriever alone gives the same picture (interaction
+$+0.150$ $[0.128, 0.172]$, class effect $-0.023$). Adding only the Python
+test files, at the retriever, raises both classes, Mono-fix more ($+0.111$
+$[0.092, 0.131]$ against $+0.062$ $[0.047, 0.078]$), because test files are
+in the ground truth of many Mono-fix fixes too; the class effect widens to
+$-0.207$. Adding them on top of the non-Python files in the full technique
+raises Mono-fix bugs by 0.121 and Poly-fix bugs by 0.078 (interaction
+$-0.028$ $[-0.065, 0.009]$). The reduction of the penalty thus comes from the
+secondary-language files, which is the reach explanation of RQ2; the test
 files explain why the full extension raises Mono-fix bugs as well. Capping each
 file at 10 chunks instead of 40 lowers both classes slightly ($-0.015$ and
 $-0.023$) and leaves the class effect at $-0.074$, so the result does not
@@ -1410,9 +1418,9 @@ when it ranks those files itself.
 For SweRank the penalty is mainly one of reach. Given every text file, it
 ranks the secondary files at least as well as BM25 (non-inferior within 0.03;
 for behaviour-bearing files the data cannot tell), and its \poly penalty falls
-by about three quarters (interaction $+0.13$). At the retriever, the
-non-Python files account for the reduction; the Python test files raise both
-classes and widen the gap. FLIM and BLAZE, which already see these files,
+by about three quarters (interaction $+0.13$). The non-Python files account
+for the reduction (with them alone, class effect $-0.020$, interaction
+$+0.15$); the Python test files raise both classes, Mono-fix more. FLIM and BLAZE, which already see these files,
 rank them below BM25, so for them representation is a limit as well; the
 comparison does not separate model scale from training regime. A hybrid with
 BM25 or with the change history recovers part of the \poly loss for every
@@ -1690,8 +1698,9 @@ reliability and is not counted as such.
 \section{Conclusion}\label{sec:conclusion}
 
 Between 8\% and 27\% of the bug fixes in six Java and Python projects change
-files of more than one language, depending on which files count (9\% to 26\%
-over all 13 eligible BeetleBox projects); the extra
+files of more than one language, depending on which files count, and the share is
+lower in the eligible BeetleBox projects we did not select (18.5\% against
+27.4\% at the broad grain); the extra
 files are mostly configuration, data and test assets. A parser-dependent
 localization technique cannot represent about two-fifths of the files those
 fixes change, and it localizes those bugs worse; for techniques that index
