@@ -161,3 +161,14 @@ Open:
 - [ ] Optional: one FLIM run against a published number (reviewer 2.6).
 - [ ] 124 pt overfull box at \maketitle: from cas-common.sty's keywords box
       layout (disappears without the keywords environment); nothing visible on page 1.
+
+## Main text / appendix split (2026-11-20)
+
+Main manuscript 14 pages including references (text pp. 1-12, references
+pp. 13-14), 9 floats; Appendices A-G (supplementary material) pp. 15-25 with
+the moved tables and paragraphs. The 13-project analysis is in Appendix C only
+(main text: selection rule in 3.2, one pointer in RQ1, two sentences in
+Threats; not in the RQ1 box, abstract or conclusion). ~2 pages of slack remain
+for the kappa and tangling results. Check with the guide / JSS guide for
+authors that supplementary appendices do not count toward the 16 pages.
+Pre-cut version: git history (commit b79ba04).
