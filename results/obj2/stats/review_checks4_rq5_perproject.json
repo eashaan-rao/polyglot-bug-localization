@@ -1,0 +1,110 @@
+{
+ "SweRankAll": {
+  "sec_behav": {
+   "ansible/ansible": {
+    "n": 7,
+    "a": 0.29,
+    "bm25": 0.288,
+    "diff": 0.002
+   },
+   "apache/airflow": {
+    "n": 52,
+    "a": 0.323,
+    "bm25": 0.282,
+    "diff": 0.04
+   },
+   "localstack/localstack": {
+    "n": 7,
+    "a": 0.046,
+    "bm25": 0.239,
+    "diff": -0.193
+   }
+  },
+  "sec_test": {
+   "ansible/ansible": {
+    "n": 103,
+    "a": 0.284,
+    "bm25": 0.126,
+    "diff": 0.158
+   },
+   "localstack/localstack": {
+    "n": 81,
+    "a": 0.18,
+    "bm25": 0.312,
+    "diff": -0.132
+   }
+  }
+ },
+ "SweRankNonPy": {
+  "sec_behav": {
+   "ansible/ansible": {
+    "n": 7,
+    "a": 0.246,
+    "bm25": 0.288,
+    "diff": -0.042
+   },
+   "apache/airflow": {
+    "n": 52,
+    "a": 0.345,
+    "bm25": 0.282,
+    "diff": 0.062
+   },
+   "localstack/localstack": {
+    "n": 7,
+    "a": 0.058,
+    "bm25": 0.239,
+    "diff": -0.182
+   }
+  },
+  "sec_test": {
+   "ansible/ansible": {
+    "n": 103,
+    "a": 0.268,
+    "bm25": 0.126,
+    "diff": 0.142
+   },
+   "localstack/localstack": {
+    "n": 81,
+    "a": 0.2,
+    "bm25": 0.312,
+    "diff": -0.112
+   }
+  }
+ },
+ "SweRankEmbedAll": {
+  "sec_behav": {
+   "ansible/ansible": {
+    "n": 7,
+    "a": 0.226,
+    "bm25": 0.288,
+    "diff": -0.062
+   },
+   "apache/airflow": {
+    "n": 52,
+    "a": 0.243,
+    "bm25": 0.282,
+    "diff": -0.039
+   },
+   "localstack/localstack": {
+    "n": 7,
+    "a": 0.047,
+    "bm25": 0.239,
+    "diff": -0.193
+   }
+  },
+  "sec_test": {
+   "ansible/ansible": {
+    "n": 103,
+    "a": 0.312,
+    "bm25": 0.126,
+    "diff": 0.187
+   },
+   "localstack/localstack": {
+    "n": 81,
+    "a": 0.186,
+    "bm25": 0.312,
+    "diff": -0.126
+   }
+  }
+ }
+}

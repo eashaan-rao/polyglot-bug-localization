@@ -223,7 +223,7 @@ def decomposition(T):
     r0 = one(T["dec"], condition="primary", tech="BM25", view="all", **{"class": "Poly-fix"})
     r1 = one(T["dec"], condition="primary", tech="BM25", view="all", **{"class": "Mono-fix"})
     rows.append(" & ".join(["Random ranking", f(r1["random_MRR"]), f(r0["random_MRR"]), "", "", ""]) + r" \\")
-    body = r"""\begin{table}[pos=t]
+    body = r"""\begin{table}[t]
 \caption{Where the Poly-fix penalty comes from (both folds). MRR of Mono-fix and Poly-fix bugs; MAP of Mono-fix bugs and of the primary-language and the secondary-language ground-truth files of Poly-fix bugs, each subset ranked with the other ground-truth files of the bug removed (the convention of Figure~\ref{fig:decomp}).}
 \label{tab:decomp}
 \footnotesize

@@ -172,3 +172,19 @@ Threats; not in the RQ1 box, abstract or conclusion). ~2 pages of slack remain
 for the kappa and tangling results. Check with the guide / JSS guide for
 authors that supplementary appendices do not count toward the 16 pages.
 Pre-cut version: git history (commit b79ba04).
+
+## Fourth internal review (2026-11-20)
+
+Done: RQ5 restricted (test assets non-inferior; configuration / behaviour-bearing
+inconclusive, 66 bugs, 52 airflow; per-project directions in S5); "hide" ->
+"weaken and show no reversal"; selection caveat in abstract and RQ1 box (in
+words, without the 13-project numbers, per author decision); C4-C6; Introduction
+antecedent; section 2.1 renamed; "R" dropped; fold-1 label; abstract sentence;
+supplement compiled separately (supplement.tex, S-numbering, xr cross-refs,
+own title and page numbers; build with paper/build.sh); Latin Modern +
+glyphtounicode (no Type 3 fonts, searchable "fi"); duplicates between main text
+and supplement removed; repeated statements cut; Definitions prose shortened;
+RQ2 body/box merged; "For technique design" rewritten as implications;
+tab:rq3 back in the main text; supplement S4 RQ3/RQ4 paragraphs restructured;
+orphan paragraph fixed; full-technique test-file result in RQ5.
+Not changed: 124pt overfull at \maketitle (template-internal, invisible).
