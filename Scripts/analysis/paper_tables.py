@@ -254,7 +254,8 @@ Technique & Mono & Poly & MAP Mono & primary & secondary \\
 
 # ---------------------------------------------------------------- RQ4
 def rq4(T):
-    spec = [("BM25 vs FLIM-strict", "ap"), ("BM25 vs FLIM-fallback", "ap"),
+    # FLIM-fallback's interaction is in the robustness table (tab_sensitivity) and S3
+    spec = [("BM25 vs FLIM-strict", "ap"),
             ("BM25-parse vs FLIM-strict (control)", "ap"), ("BM25 vs LocAgent", "ap10"),
             ("BM25 vs SweRank", "ap")]
     lab = {"BM25 vs FLIM-strict": "BM25 $-$ FLIM-strict", "BM25 vs FLIM-fallback": "BM25 $-$ FLIM-fallback",
