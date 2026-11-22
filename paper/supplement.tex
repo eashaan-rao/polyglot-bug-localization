@@ -87,8 +87,10 @@ seed 13).
 tie-breaking, and for each bug we compute the RR and Top-10 that random ranking
 would reach. LocAgent and SweRank are
 run on 395 fold-1 and 395 fold-2 test bugs plus the filter-excluded bugs of
-those windows (121 and 136). LocAgent uses its default sampling (temperature 1.0); SweRank
-decodes greedily. The learning rate of FLIM and BLAZE is chosen by validation
+those windows (121 and 136). BM25 uses bm25s 0.3.11 with English stop words and no stemming.
+LocAgent is run from commit \texttt{4935b55} with vLLM (bf16, 128k context) and
+its default sampling (temperature 1.0); SweRank is run from commit
+\texttt{d3df508}, reranks in windows of 10 and decodes greedily. The learning rate of FLIM and BLAZE is chosen by validation
 MAP over a small grid around the published values, once per project and fold
 with the first seed; the test set is never used.
 
