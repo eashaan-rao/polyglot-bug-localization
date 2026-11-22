@@ -1,55 +1,88 @@
-%% Additional tables of the replication package for "Mono-fix or Poly-fix? On
-%% the Prevalence and Localizability of Multi-Language Bug Fixes". Tables R1-R11,
-%% referred to from main.tex by number; the PDF ships in the GitHub repository
-%% and the archived replication package. The generated tables come from
-%% Scripts/analysis/paper_tables.py; the hand-written ones (hand_*.tex) were
-%% moved here from main.tex. Keep the \input order: it fixes the numbering.
+%% Additional tables of the replication package (not part of the paper or its
+%% supplementary material). Build: pdflatex replication_tables.tex
 \documentclass[a4paper,10pt]{article}
 \usepackage[margin=2cm]{geometry}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
-\usepackage{booktabs}
-\usepackage{multirow}
-\usepackage{xcolor}
-\usepackage{adjustbox}
-\usepackage{caption}
-\usepackage{amsmath}
-\usepackage{url}
+\input{glyphtounicode}\pdfgentounicode=1
+\usepackage{booktabs,multirow,xcolor,adjustbox,caption,amsmath,url,graphicx,xspace}
+\usepackage{xr}\externaldocument{main}   % table captions refer to sections of the paper
 \renewcommand{\thetable}{R\arabic{table}}
+\renewcommand{\thefigure}{R\arabic{figure}}
 \captionsetup{font=small,labelfont=bf}
 \setlength{\parindent}{0pt}
-
+\setlength{\parskip}{4pt}
 \begin{document}
 \begin{center}
 {\Large\bfseries Replication package: additional tables}\\[4pt]
-Mono-fix or Poly-fix? On the Prevalence and Localizability of Multi-Language Bug Fixes\\[2pt]
+Mono-fix or Poly-fix? Bug Fixes Beyond the Main Language and Their Effect on Bug Localization\\[2pt]
 A Eashaan Rao and Sridhar Chimalakonda
 \end{center}
 
-\noindent This document is part of the replication package
-(\url{https://github.com/eashaan-rao/polyglot-bug-localization}). It holds the
-tables that the paper refers to as Tables R1--R11: the departures of each technique from its original implementation,
-training details and run-to-run variation, the per-project results, and the
-complete statistical results behind Figures 2--4 of the paper. All tables are
-generated from the stored statistics in the replication package.
+This document belongs to the replication package
+(\url{https://github.com/eashaan-rao/polyglot-bug-localization}). It holds
+tables needed to reproduce or inspect the runs that are neither in the paper
+nor in its supplementary material.
 
-\section*{Techniques and runs}
-\input{tables/hand_deviations}   % R1
-\input{tables/tab_lr}            % R2
-\input{tables/tab_seeds}         % R3
+\textbf{Data details.} Candidate files are the text files of the pre-fix
+snapshot (at most 1\,MB, no NUL byte in the first 8\,KB); the universe R keeps
+those the classification ruleset counts (median 1{,}890 files in localstack to
+21{,}658 in elasticsearch per snapshot) and the text universe T all text files
+(sensitivity S3). Fold~1 has 719 primary-anchored test bugs (483 Mono-fix, 213
+Poly-fix, 23 multi-language only outside the broad grain), fold~2 has 718 (505,
+206, 7); bugs whose fixed files were all added by the fix are left out of the
+rank metrics, leaving 1{,}399 Mono-fix and Poly-fix test bugs. The 1{,}226
+filter-excluded reports are distributed as elasticsearch 363, airflow 383,
+ansible 295, dolphinscheduler 83, localstack 63 and liquibase 39. BeetleBox has
+more C++ and JavaScript bugs (5{,}268 and 3{,}783) than Java or Python bugs
+(3{,}707 and 3{,}759).
 
-\section*{RQ3: Mono-fix vs Poly-fix performance}
-\input{tables/tab_rq3_python}    % R4
-\input{tables/tab_rq3_models}    % R5
-\input{tables/tab_decomp}        % R6
+\begin{table*}[t]
+\caption{Positioning: what each line of work provides and what this study adds.}
+\label{tab:positioning}
+\small
+\begin{adjustbox}{max width=\linewidth}\begin{tabular}{p{3.3cm}p{6.2cm}p{6.6cm}}
+\toprule
+Line of work & Strength we use & Gap this study addresses \\
+\midrule
+Fix characterisation & Method for classifying fixes; multi-hunk taxonomy & Classifies by size and distance, not by file type \\
+Cross-language BL (BLAZE, BeetleBox) & Multi-language ground truth; language-agnostic technique & Unit is a single-language fix within a project \\
+Language-interaction bugs (xLoc) & Bugs at language boundaries & Bugs \emph{caused} by a boundary, not fixes that \emph{cross} one \\
+Dataset quality & Ground truth affects measured performance & Concerns files wrongly included, not files fixes contain \\
+Polyglot SE / RTS & Monolingual tools can be unsafe on polyglot code & Different task (testing, not localization) \\
+LLM-based localization (agents, rankers) & Current techniques; graph-based tools; retrieve-and-rerank & Evaluated on source-only targets (SWE-bench, LocBench) \\
+\bottomrule
+\end{tabular}\end{adjustbox}
+\end{table*}
 
-\section*{RQ4: classical retrieval against the parser-dependent techniques}
-\input{tables/tab_rq4}           % R7
-\input{tables/tab_rq4_project}   % R8
-\input{tables/tab_sensitivity}   % R9
+\input{tables/tab_lr}
 
-\section*{RQ1: prevalence}
-\input{tables/hand_secondary}                % R10
-\input{tables/hand_prevalence_sensitivity}   % R11
+\begin{table}[t]
+\caption{Reachability of ground-truth files in the test sets, before any technique is run (fold~1; fold~2 in parentheses).}
+\label{tab:reach}
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{adjustbox}{max width=\linewidth}\begin{tabular}{lrr}
+\toprule
+ & Mono-fix & Poly-fix \\
+\midrule
+Test bugs & 483 (505) & 213 (206) \\
+Ground-truth files per bug, mean & 2.3 (2.5) & 4.4 (4.2) \\
+Bugs with an added (unreachable) file & 8.7\% (7.7\%) & 34.7\% (33.0\%) \\
+GT files parseable & 99.9\% (100\%) & 62.8\% (65.8\%) \\
+Bugs with $\ge$1 parseable GT file & 100\% (100\%) & 98.1\% (98.5\%) \\
+Bugs with only parseable GT files & 99.8\% (100\%) & 10.8\% (10.2\%) \\
+\bottomrule
+\end{tabular}\end{adjustbox}
+\end{table}
 
+\input{tables/tab_decomp}
+\input{tables/tab_rq3_python}
+\input{tables/tab_seeds}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/fig_sensitivity.pdf}
+\caption{RQ4 interaction (BM25's gain over technique X on Poly-fix bugs minus its gain on Mono-fix bugs, AP) under each sensitivity condition, with 95\% confidence intervals; the same values as the paper's sensitivity table.}
+\end{figure}
 \end{document}

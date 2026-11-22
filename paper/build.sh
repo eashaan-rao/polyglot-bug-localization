@@ -10,3 +10,4 @@ run main; run supplement; run main; run supplement
 for f in main supplement; do
   echo "$f.pdf: $(pdfinfo $f.pdf | awk '/^Pages:/{print $2}') pages, $(grep -c 'undefined' $f.log) undefined references"
 done
+pdflatex -interaction=nonstopmode replication_tables.tex > /dev/null && pdflatex -interaction=nonstopmode replication_tables.tex > /dev/null && echo "replication_tables.pdf: $(pdfinfo replication_tables.pdf | awk '/^Pages:/{print $2}') pages"

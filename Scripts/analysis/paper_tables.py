@@ -74,35 +74,44 @@ def one(df, **kw):
 
 # ---------------------------------------------------------------- RQ3 per project
 def rq3_project(T):
+    """Per-project RQ3 for the five techniques as published (fifth review: LLM columns in the main table)."""
+    spec = [("BM25", "BM25", "all", "ap"), ("BLAZE", "BLAZE", "all", "ap"), ("FLIM-strict", "FLIM", "parse", "ap"),
+            ("LocAgent (AP@10)", "LocAgent", "all", "ap10"), ("SweRank", "SweRank", "all", "ap")]
+    llm = {"LocAgent", "SweRank"}
     rows = []
     for repo, name, lang in PROJ:
-        cells = [f"{name} ({lang})"]
-        for _, tech, view, out in TECHS:
+        n = one(T["pp"], condition="primary", tech="BM25", view="all", outcome="ap", project=repo)
+        cells = [f"{name} ({lang})", f"{int(n['n_mono'])}/{int(n['n_poly'])}"]
+        for _, tech, view, out in spec:
+            if tech in llm and lang == "J":
+                cells += ["--", "--", "--"]
+                continue
             r = one(T["pp"], condition="primary", tech=tech, view=view, outcome=out, project=repo)
             star = "$^{*}$" if r["mwu_p_holm"] < 0.05 else ""
             cells += [f(r["mean_mono"]), f(r["mean_poly"]), f(r["cliffs_delta_poly_vs_mono"], 2, True) + star]
-        n = one(T["pp"], condition="primary", tech="BM25", view="all", outcome="ap", project=repo)
-        cells.insert(1, f"{int(n['n_mono'])}/{int(n['n_poly'])}")
         rows.append(" & ".join(cells) + r" \\")
-    pooled = ["All (pooled)", ""]
-    adj = ["Adjusted class effect", ""]
-    for _, tech, view, out in TECHS:
-        mo = one(T["dec"], condition="primary", tech=tech, view=view, **{"class": "Mono-fix"})
-        po = one(T["dec"], condition="primary", tech=tech, view=view, **{"class": "Poly-fix"})
-        pooled += [f(mo["MAP"]), f(po["MAP"]), ""]
+    pooled, adj = ["All (pooled)", ""], ["Adjusted class effect", ""]
+    for _, tech, view, out in spec:
+        if tech in llm:
+            r = one(T["pp"], condition="primary", tech=tech, view=view, outcome=out, project="POOLED")
+            pooled += [f(r["mean_mono"]), f(r["mean_poly"]), ""]
+        else:
+            mo = one(T["dec"], condition="primary", tech=tech, view=view, **{"class": "Mono-fix"})
+            po = one(T["dec"], condition="primary", tech=tech, view=view, **{"class": "Poly-fix"})
+            pooled += [f(mo["MAP"]), f(po["MAP"]), ""]
         m = one(T["m"], condition="primary", tech=tech, view=view, outcome=out)
         star = "$^{*}$" if (m["ci_lo"] > 0 or m["ci_hi"] < 0) else ""
         adj += [r"\multicolumn{3}{c}{" + f(m["class_effect_poly"], 3, True) + star + "}"]
     body = r"""\begin{table*}[t]
-\caption{RQ3: MAP of Mono-fix and Poly-fix test bugs per project (both folds, seed-averaged), and Cliff's $\delta$ of Poly-fix against Mono-fix AP ($^{*}$: Holm-adjusted Mann--Whitney $p<0.05$ across the six projects). The last row is the pooled class effect on AP from the mixed model with $n_{\mathrm{gt}}$, $\log n_{\mathrm{cand}}$, report length and fold ($^{*}$: 95\% CI excludes 0).}
+\caption{RQ3: MAP of Mono-fix and Poly-fix test bugs per project (both folds, seed-averaged; AP@10 for LocAgent) and Cliff's $\delta$ of Poly-fix against Mono-fix ($^{*}$: Holm-adjusted Mann--Whitney $p<0.05$). LocAgent and SweRank cannot be run on the Java projects (--); their pooled values cover the three Python projects. The last row is the adjusted class effect of Section~\ref{sec:analysis} ($^{*}$: 95\% CI excludes 0).}
 \label{tab:rq3}
 \footnotesize
-\setlength{\tabcolsep}{2.6pt}
-\begin{tabular}{lr rrr rrr rrr rrr}
+\setlength{\tabcolsep}{2.4pt}
+\begin{tabular}{lr rrr rrr rrr rrr rrr}
 \toprule
- & & \multicolumn{3}{c}{BM25} & \multicolumn{3}{c}{FLIM-strict} & \multicolumn{3}{c}{FLIM-fallback} & \multicolumn{3}{c}{BLAZE} \\
-\cmidrule(lr){3-5}\cmidrule(lr){6-8}\cmidrule(lr){9-11}\cmidrule(lr){12-14}
-Project & $n$ M/P & Mono & Poly & $\delta$ & Mono & Poly & $\delta$ & Mono & Poly & $\delta$ & Mono & Poly & $\delta$ \\
+ & & \multicolumn{3}{c}{BM25} & \multicolumn{3}{c}{BLAZE} & \multicolumn{3}{c}{FLIM-strict} & \multicolumn{3}{c}{LocAgent (AP@10)} & \multicolumn{3}{c}{SweRank} \\
+\cmidrule(lr){3-5}\cmidrule(lr){6-8}\cmidrule(lr){9-11}\cmidrule(lr){12-14}\cmidrule(lr){15-17}
+Project & $n$ M/P & Mono & Poly & $\delta$ & Mono & Poly & $\delta$ & Mono & Poly & $\delta$ & Mono & Poly & $\delta$ & Mono & Poly & $\delta$ \\
 \midrule
 """ + "\n".join(rows) + r"""
 \midrule
@@ -153,7 +162,7 @@ def rq3_python(T):
         adj.append(r"\multicolumn{3}{c}{" + f(m["class_effect_poly"], 3, True) + star + "}")
     rows.append(" & ".join(adj) + r" \\")
     body = r"""\begin{table*}[t]
-\caption{RQ3 for the two techniques built on language models, which run on the Python projects only: MAP (AP@10 for LocAgent) of Mono-fix and Poly-fix test bugs per project (both folds) and Cliff's $\delta$ of Poly-fix against Mono-fix ($^{*}$: Holm-adjusted Mann--Whitney $p<0.05$). BM25 on the same bugs for reference. The last row is the adjusted class effect as in Table~\ref{tab:rq3models}.}
+\caption{RQ3 for the two techniques built on language models, which run on the Python projects only: MAP (AP@10 for LocAgent) of Mono-fix and Poly-fix test bugs per project (both folds) and Cliff's $\delta$ of Poly-fix against Mono-fix ($^{*}$: Holm-adjusted Mann--Whitney $p<0.05$). BM25 on the same bugs for reference. The last row is the adjusted class effect as in Section~\ref{sec:analysis}.}
 \label{tab:rq3py}
 \footnotesize
 \setlength{\tabcolsep}{2.6pt}
@@ -264,7 +273,7 @@ def rq4(T):
                                     "yes" if r["inversion_pattern"] else "no"]) + r" \\")
         rows.append(r"\addlinespace")
     body = r"""\begin{table*}[t]
-\caption{RQ4: paired differences between techniques on the same bugs (both folds). $\bar d$ is the mean per-bug difference A $-$ B within a class; the interaction is the Poly-fix minus Mono-fix difference of $d$, adjusted as in Table~\ref{tab:rq3models}. The inversion pattern is $\bar d_{\mathrm{Mono}}<0\le\bar d_{\mathrm{Poly}}$: the parser-dependent technique is better on Mono-fix bugs and no better on Poly-fix bugs.}
+\caption{RQ4: paired differences between techniques on the same bugs (both folds). $\bar d$ is the mean per-bug difference A $-$ B within a class; the interaction is the Poly-fix minus Mono-fix difference of $d$, adjusted as in Section~\ref{sec:analysis}. The inversion pattern is $\bar d_{\mathrm{Mono}}<0\le\bar d_{\mathrm{Poly}}$: the parser-dependent technique is better on Mono-fix bugs and no better on Poly-fix bugs.}
 \label{tab:rq4}
 \footnotesize
 \begin{tabular}{llrrrlc}
@@ -431,7 +440,7 @@ def variants(T):
             allmap = overall(tech, view, out, pyonly, mo, po)
             rows.append(" & ".join([r"\quad " + lab, str(n), f(mo), f(po), f(allmap), sec, ce]) + r" \\")
     body = r"""\begin{table*}[pos=t]
-\caption{RQ5, reach or representation: diagnostic variants of the parser-dependent techniques (ours, untuned; not proposed as techniques). A hybrid ranks the files the technique can represent by its own ranking and every other file by BM25, merged by reciprocal rank fusion ($k{=}60$); a co-change variant ranks the other files instead by how often they changed together with the technique's top five files before the report. ``All text files'' gives SweRank every candidate file: its own function documents plus 50-line chunks (at most 40 per file) of all other files; the indented rows add only the non-Python files, only the Python test files, or all files with at most 10 chunks each (retriever), and only the non-Python files (full SweRank). MAP of Mono-fix and Poly-fix bugs and of both together, MAP on the secondary-language files of Poly-fix bugs (other ground-truth files removed from the ranking), and the adjusted class effect as in Table~\ref{tab:rq3models} ($^{*}$: 95\% CI excludes 0).}
+\caption{RQ5, reach or representation: diagnostic variants of the parser-dependent techniques (ours, untuned; not proposed as techniques). A hybrid ranks the files the technique can represent by its own ranking and every other file by BM25, merged by reciprocal rank fusion ($k{=}60$); a co-change variant ranks the other files instead by how often they changed together with the technique's top five files before the report. ``All text files'' gives SweRank every candidate file: its own function documents plus 50-line chunks (at most 40 per file) of all other files; the indented rows add only the non-Python files, only the Python test files, or all files with at most 10 chunks each (retriever), and only the non-Python files (full SweRank). MAP of Mono-fix and Poly-fix bugs and of both together, MAP on the secondary-language files of Poly-fix bugs (other ground-truth files removed from the ranking), and the adjusted class effect as in Section~\ref{sec:analysis} ($^{*}$: 95\% CI excludes 0).}
 \label{tab:variants}
 \footnotesize
 \begin{tabular}{lrrrrrl}
