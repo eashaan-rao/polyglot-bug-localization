@@ -324,11 +324,11 @@ Project & Mono & Poly & Mono & Poly & Mono & Poly \\
 # ---------------------------------------------------------------- sensitivity
 def sensitivity(T):
     conds = [("primary", "Main analysis"), ("P_behavioural", "Poly-fix: behaviour-bearing only"),
-             ("P_test_only", "Poly-fix: test-asset only"), ("S1_no_tests", "S1 ground truth without tests"),
-             ("S2_headline", "S2 data-format grain"), ("S2_strict", "S2 strict grain"),
-             ("S3_universe_T", "S3 text universe T"), ("S4_untangled", "S4 merge commits removed"),
-             ("S5_fold1", "S5 fold 1 only"), ("S5_fold2", "S5 fold 2 only"),
-             ("S6_removed", "S6 filter-excluded bugs only")]
+             ("P_test_only", "Poly-fix: test-asset only"), ("S1_no_tests", "R1 ground truth without tests"),
+             ("S2_headline", "R2 data-format grain"), ("S2_strict", "R2 strict grain"),
+             ("S3_universe_T", "R3 text universe T"), ("S4_untangled", "R4 merge commits removed"),
+             ("S5_fold1", "R5 fold 1 only"), ("S5_fold2", "R5 fold 2 only"),
+             ("S6_removed", "R6 filter-excluded bugs only")]
     rows = []
     for c, lab in conds:
         cells = [lab]
@@ -347,7 +347,7 @@ def sensitivity(T):
             cells.append(f(r["interaction_poly"], 3, True) + ("$^{*}$" if (r["ci_lo"] > 0 or r["ci_hi"] < 0) else ""))
         rows.append(" & ".join(cells) + r" \\")
     body = r"""\begin{table*}[t]
-\caption{Sensitivity: RQ3 class effect and RQ4 interaction under each condition (AP; AP@10 for LocAgent; LocAgent and SweRank on the Python projects). $^{*}$: 95\% CI excludes 0. S6 uses the bugs BeetleBox removed because their report names a fixed file, scored by models trained on the primary-anchored bugs.}
+\caption{Robustness: RQ3 class effect and RQ4 interaction by Poly-fix sub-type and under each condition R1--R6 (AP; AP@10 for LocAgent; LocAgent and SweRank on the Python projects). $^{*}$: 95\% CI excludes 0. R6 uses the bugs BeetleBox removed because their report names a fixed file, scored by models trained on the primary-anchored bugs.}
 \label{tab:sens}
 \footnotesize
 \setlength{\tabcolsep}{3pt}

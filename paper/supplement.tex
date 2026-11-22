@@ -22,7 +22,7 @@
 \date{}
 % Numbers of the paper's sections and tables cited here (prefix M-), written in
 % directly (see the note in main.tex); build.sh checks them against main.aux.
-\newlabel{M-sec:variants}{{4.5}{}{}{}{}}
+\newlabel{M-sec:variants}{{4.6}{}{}{}{}}
 \newlabel{M-tab:feas}{{4}{}{}{}{}}
 \begin{document}
 \maketitle
@@ -38,8 +38,8 @@ variation, decomposition including MRR) are in the replication package.
 languages receive their own row in the statistics: at least 15 Poly-fix bugs
 across at least two projects. Test scope is decided from the path, so
 test-harness code in a \texttt{test} package under \texttt{src/main/} counts as
-test (96 primary-language ground-truth files); this affects only S1 and the
-sub-type. In the agreement round both annotators raised the same rule readings:
+test (96 primary-language ground-truth files); this affects only robustness condition
+R1 and the sub-type. In the agreement round both annotators raised the same rule readings:
 the closed dev-tooling list (checkstyle XML counts), \texttt{scripts/ci/} not
 being the CI path \texttt{.ci/}, generated files outside \texttt{generated/},
 module names ending in \texttt{-testing}, and tooling under \texttt{test/}. All
@@ -85,11 +85,9 @@ seed 13).
 
 \paragraph{Metrics and runs.} Ties are resolved by expected rank under random
 tie-breaking, and for each bug we compute the RR and Top-10 that random ranking
-would reach. In a pilot LocAgent run, a Poly-fix bug had RR 1.0 and AP 0.25: the
-Python file was ranked first, and the YAML and INI files of the fix were never
-returned, the case that made AP the primary outcome. LocAgent and SweRank are
+would reach. LocAgent and SweRank are
 run on 395 fold-1 and 395 fold-2 test bugs plus the filter-excluded bugs of
-those windows (121 and 136). LocAgent samples at temperature 1.0; SweRank
+those windows (121 and 136). LocAgent uses its default sampling (temperature 1.0); SweRank
 decodes greedily. The learning rate of FLIM and BLAZE is chosen by validation
 MAP over a small grid around the published values, once per project and fold
 with the first seed; the test set is never used.
@@ -204,8 +202,8 @@ Test assets & ansible & 103 & .284 & .268 & .126 \\
 
 \paragraph{No-primary and filter-excluded bugs.} On the 287 no-primary test bugs
 BM25 reaches a MAP of 0.165 (98.6\% have a reachable ground-truth file) and BLAZE
-0.091, below BM25 by 0.074 $[0.038, 0.109]$. Counting them makes FLIM-strict and
-BM25 level overall (difference $-0.001$ $[-0.016, 0.015]$). The change is
+0.091, below BM25 by 0.074 $[0.038, 0.109]$. The overall FLIM-strict minus BM25
+difference with them counted is $-0.001$ $[-0.016, 0.015]$; the change is
 concentrated where no-primary bugs are common: FLIM-strict falls from 0.298 to
 0.190 in dolphinscheduler (156 no-primary test bugs), by 0.040 and 0.048 in
 elasticsearch and airflow (55 and 51), and by at most 0.029 in the other three.

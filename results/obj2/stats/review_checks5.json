@@ -1,0 +1,294 @@
+{
+ "tost_control": {
+  "primary": {
+   "est": 0.0043,
+   "ci": [
+    -0.0348,
+    0.0434
+   ],
+   "p_tost_005": 0.011,
+   "p_tost_003": 0.0988
+  },
+  "S1_no_tests": {
+   "est": 0.0094,
+   "ci": [
+    -0.0316,
+    0.0504
+   ],
+   "p_tost_005": 0.0261,
+   "p_tost_003": 0.1624
+  },
+  "S2_headline": {
+   "est": -0.002,
+   "ci": [
+    -0.0443,
+    0.0402
+   ],
+   "p_tost_005": 0.013,
+   "p_tost_003": 0.097
+  },
+  "S2_strict": {
+   "est": 0.0331,
+   "ci": [
+    -0.0234,
+    0.0896
+   ],
+   "p_tost_005": 0.2788,
+   "p_tost_003": 0.5428
+  },
+  "S3_universe_T": {
+   "est": 0.0042,
+   "ci": [
+    -0.0349,
+    0.0433
+   ],
+   "p_tost_005": 0.0108,
+   "p_tost_003": 0.098
+  },
+  "S4_untangled": {
+   "est": 0.0046,
+   "ci": [
+    -0.0347,
+    0.0438
+   ],
+   "p_tost_005": 0.0117,
+   "p_tost_003": 0.1023
+  },
+  "S5_fold1": {
+   "est": -0.0243,
+   "ci": [
+    -0.0856,
+    0.037
+   ],
+   "p_tost_005": 0.2056,
+   "p_tost_003": 0.4277
+  },
+  "S5_fold2": {
+   "est": 0.0277,
+   "ci": [
+    -0.0261,
+    0.0814
+   ],
+   "p_tost_005": 0.2081,
+   "p_tost_003": 0.4666
+  },
+  "S6_removed": {
+   "est": -0.0297,
+   "ci": [
+    -0.1425,
+    0.0832
+   ],
+   "p_tost_005": 0.3622,
+   "p_tost_003": 0.4979
+  },
+  "S6_kept+removed": {
+   "est": -0.0012,
+   "ci": [
+    -0.0415,
+    0.0392
+   ],
+   "p_tost_005": 0.0089,
+   "p_tost_003": 0.0809
+  },
+  "P_behavioural": {
+   "est": 0.0181,
+   "ci": [
+    -0.045,
+    0.0812
+   ],
+   "p_tost_005": 0.1609,
+   "p_tost_003": 0.3558
+  },
+  "P_test_only": {
+   "est": -0.0039,
+   "ci": [
+    -0.0503,
+    0.0426
+   ],
+   "p_tost_005": 0.0259,
+   "p_tost_003": 0.1354
+  }
+ },
+ "tost_poly": {
+  "BM25 vs FLIM-strict": {
+   "diff": 0.0289,
+   "ci": [
+    0.0034,
+    0.0531
+   ],
+   "q_or_p": 0.0163,
+   "p_tost_005": 0.048,
+   "p_tost_003": 0.4654
+  },
+  "BM25 vs LocAgent": {
+   "diff": 0.0365,
+   "ci": [
+    -0.004,
+    0.0772
+   ],
+   "q_or_p": 0.1926,
+   "p_tost_005": 0.2573,
+   "p_tost_003": 0.6232
+  },
+  "BM25 vs SweRank": {
+   "diff": 0.0418,
+   "ci": [
+    0.0044,
+    0.0795
+   ],
+   "q_or_p": 0.1349,
+   "p_tost_005": 0.3343,
+   "p_tost_003": 0.731
+  }
+ },
+ "blaze_all_sec": {
+  "BLAZE seed 13": {
+   "n": 190,
+   "blaze_all": 0.1207,
+   "other": 0.1297,
+   "diff": -0.009,
+   "ci95": [
+    -0.0388,
+    0.0209
+   ],
+   "p_tost_005": 0.0036,
+   "p_tost_003": 0.0841
+  },
+  "BLAZE seed-averaged": {
+   "n": 190,
+   "blaze_all": 0.1207,
+   "other": 0.1256,
+   "diff": -0.0049,
+   "ci95": [
+    -0.0353,
+    0.0258
+   ],
+   "p_tost_005": 0.0019,
+   "p_tost_003": 0.0535
+  },
+  "BM25": {
+   "n": 190,
+   "blaze_all": 0.1207,
+   "other": 0.2218,
+   "diff": -0.1011,
+   "ci95": [
+    -0.147,
+    -0.0541
+   ],
+   "p_tost_005": 0.9845,
+   "p_tost_003": 0.9987
+  }
+ },
+ "acc_at_k": {
+  "LocAgent Mono-fix all_gt": {
+   "n": 510,
+   "acc5": 0.3059,
+   "acc10": 0.3098
+  },
+  "LocAgent Mono-fix non_test_gt": {
+   "n": 495,
+   "acc5": 0.699,
+   "acc10": 0.7051
+  },
+  "LocAgent Poly-fix all_gt": {
+   "n": 271,
+   "acc5": 0.0295,
+   "acc10": 0.0295
+  },
+  "LocAgent Poly-fix non_test_gt": {
+   "n": 265,
+   "acc5": 0.483,
+   "acc10": 0.5057
+  },
+  "SweRank Mono-fix all_gt": {
+   "n": 510,
+   "acc5": 0.2824,
+   "acc10": 0.302
+  },
+  "SweRank Mono-fix non_test_gt": {
+   "n": 495,
+   "acc5": 0.6828,
+   "acc10": 0.7354
+  },
+  "SweRank Poly-fix all_gt": {
+   "n": 271,
+   "acc5": 0.0258,
+   "acc10": 0.0295
+  },
+  "SweRank Poly-fix non_test_gt": {
+   "n": 265,
+   "acc5": 0.5623,
+   "acc10": 0.5811
+  },
+  "SweRankEmbed Mono-fix all_gt": {
+   "n": 510,
+   "acc5": 0.2608,
+   "acc10": 0.2863
+  },
+  "SweRankEmbed Mono-fix non_test_gt": {
+   "n": 495,
+   "acc5": 0.6263,
+   "acc10": 0.6909
+  },
+  "SweRankEmbed Poly-fix all_gt": {
+   "n": 271,
+   "acc5": 0.0148,
+   "acc10": 0.0185
+  },
+  "SweRankEmbed Poly-fix non_test_gt": {
+   "n": 265,
+   "acc5": 0.4679,
+   "acc10": 0.5321
+  },
+  "BM25 Mono-fix all_gt": {
+   "n": 510,
+   "acc5": 0.3216,
+   "acc10": 0.4137
+  },
+  "BM25 Mono-fix non_test_gt": {
+   "n": 495,
+   "acc5": 0.3939,
+   "acc10": 0.503
+  },
+  "BM25 Poly-fix all_gt": {
+   "n": 271,
+   "acc5": 0.0996,
+   "acc10": 0.1956
+  },
+  "BM25 Poly-fix non_test_gt": {
+   "n": 265,
+   "acc5": 0.2981,
+   "acc10": 0.4189
+  }
+ },
+ "example_localstack_8030": {
+  "BLAZE|localstack/aws/api/s3/__init__.py": 13.0,
+  "BLAZE|localstack/aws/protocol/serializer.py": 10.0,
+  "BLAZE|localstack/aws/spec-patches.json": 15.0,
+  "BLAZE|localstack/services/s3/provider.py": 7.0,
+  "BM25|localstack/aws/api/s3/__init__.py": 35.0,
+  "BM25|localstack/aws/protocol/serializer.py": 29.0,
+  "BM25|localstack/aws/spec-patches.json": 4.0,
+  "BM25|localstack/services/s3/provider.py": 1.0,
+  "FLIM|localstack/aws/api/s3/__init__.py": 6.0,
+  "FLIM|localstack/aws/protocol/serializer.py": 7.0,
+  "FLIM|localstack/aws/spec-patches.json": 27.0,
+  "FLIM|localstack/services/s3/provider.py": 3.0,
+  "LocAgent|localstack/aws/api/s3/__init__.py": 2.0,
+  "LocAgent|localstack/aws/protocol/serializer.py": 1.0,
+  "LocAgent|localstack/aws/spec-patches.json": 697.0,
+  "LocAgent|localstack/services/s3/provider.py": 3.0,
+  "SweRank|localstack/aws/api/s3/__init__.py": 2.0,
+  "SweRank|localstack/aws/protocol/serializer.py": 4.0,
+  "SweRank|localstack/aws/spec-patches.json": 937.0,
+  "SweRank|localstack/services/s3/provider.py": 1.0,
+  "SweRankAll|localstack/aws/api/s3/__init__.py": 2.0,
+  "SweRankAll|localstack/aws/protocol/serializer.py": 4.0,
+  "SweRankAll|localstack/aws/spec-patches.json": 52.0,
+  "SweRankAll|localstack/services/s3/provider.py": 1.0,
+  "SweRankNonPy|localstack/aws/api/s3/__init__.py": 2.0,
+  "SweRankNonPy|localstack/aws/protocol/serializer.py": 4.0,
+  "SweRankNonPy|localstack/aws/spec-patches.json": 40.0,
+  "SweRankNonPy|localstack/services/s3/provider.py": 1.0
+ }
+}

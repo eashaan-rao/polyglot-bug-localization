@@ -1,0 +1,5 @@
+8-27% of bug fixes in six Java and Python projects change files of several languages.
+Parser-based localizers cannot read about two-fifths of the files these fixes change.
+FLIM, LocAgent and SweRank lose their lead over BM25 on these multi-language fixes.
+MRR and Top-k weaken this; average precision over the whole fix reveals it.
+Given every text file, SweRank's penalty on these fixes falls by three quarters.
