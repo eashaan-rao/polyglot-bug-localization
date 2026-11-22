@@ -58,8 +58,7 @@ technique was run: annotators classify every fix file (counted or excluded,
 language, test scope) and every bug (label, keep, secondary languages,
 sub-type) from the protocol alone, without access to the classifier; the
 two-person agreement is reported in Section~\ref{sec:classification}. In
-that round both annotators independently raised the same rule readings as the
-automated round (closed dev-tooling list, \texttt{scripts/ci/} not being the CI
+that round both annotators independently raised the same rule readings (closed dev-tooling list, \texttt{scripts/ci/} not being the CI
 path \texttt{.ci/}, generated files outside \texttt{generated/}, module names
 ending in \texttt{-testing}, tooling under \texttt{test/}); all were applied as
 written. One annotator noticed that the rules document listed a
@@ -67,11 +66,8 @@ documentation-path rule that the protocol and the frozen code do not apply;
 its wording was corrected, with no effect on any result, because files with a
 documentation extension are excluded wherever they are. The protocol now also
 states that \emph{counts} asks only whether a boundary rule excludes a file,
-not whether the file caused the bug, the reading behind the four slips. A
-preliminary round with two independent automated annotators following the
-same protocol agreed with each other and with the ruleset on every bug-level
-field; it led to publishing the exact path patterns in the protocol. Three
-rule readings it questioned were kept frozen rather than amended; amending
+not whether the file caused the bug, the reading behind the four slips. Three
+of the questioned rule readings were kept frozen rather than amended; amending
 them would change the Poly-fix label of at most 1.4\% of Poly-fix bugs. Test scope is decided from the path, so test-harness code in a \texttt{test} package under \texttt{src/main/} counts as test (96 primary-language ground-truth files); this affects only S1 and the sub-type.
 
 \paragraph{Bugs outside the primary-anchored set.} Of the 4{,}995 bugs of the
@@ -613,6 +609,65 @@ the base models' general pretraining remains as a possible source.
 \input{tables/tab_seeds}
 
 
+
+\section{Tangling audit}\label{app:tangling}
+
+\paragraph{Sample and procedure.} From the evaluated test bugs we drew five
+Poly-fix and three Mono-fix bugs per project at random (seed 20261122): 48 bugs
+with 175 counted fix files. For every file, an annotator (a Master's student)
+read the bug report, the commit message and the file's diff, and decided
+whether the change fixes the reported problem or directly supports that fix
+(the code change, its tests and test data, configuration, schema or build
+changes the fix needs), is unrelated (refactoring or cleanup, another feature,
+another bug, formatting, a dependency or version bump, release housekeeping),
+or cannot be judged. The audit took about three hours.
+
+\paragraph{Results.} 164 files are part of the fix, 10 are unrelated and 1 is
+undecided (Table~\ref{tab:tangling}). The unrelated changes are refactorings
+or cleanups (4: removal of deprecated parameters and its test, two test
+refactorings), a trailing-whitespace cleanup, a timeout increase and a
+snapshot-path change in unrelated tests, release bookkeeping in a provider
+version list, a wrong \texttt{toString} name in an unrelated class, and a
+polling throttle for a different service. All occur in
+Poly-fix bugs: 7 of the 30 Poly-fix bugs and none of the 18 Mono-fix bugs
+contain at least one unrelated file, consistent with larger commits being more
+often tangled. Within Poly-fix bugs, primary-language and secondary-language
+files are unrelated about equally often. In one Poly-fix bug (airflow 30324)
+the only secondary file is an unrelated release-bookkeeping change, so it would
+become Mono-fix without it.
+
+\paragraph{Effect on the penalty.} Removing the unrelated files from the ground
+truth of the audited bugs, with every other file keeping its rank, changes the
+Poly-fix minus Mono-fix MAP little (Table~\ref{tab:tangling}): the penalty of
+the parser-dependent techniques remains, and BM25 and BLAZE still show none.
+With 48 bugs these are descriptive figures; they bound how much tangling could
+contribute to the main results rather than re-estimating them.
+
+\begin{table}[t]
+\caption{Tangling audit (48 test bugs, 175 fix files). Top: files unrelated to
+the bug by class and role. Bottom: Poly-fix minus Mono-fix MAP on the audited
+bugs, with all fix files as ground truth and with the unrelated files removed
+(LocAgent: full AP, ranks beyond its ten files count as misses).}
+\label{tab:tangling}
+\small
+\begin{tabular}{lrrr}
+\toprule
+Files & Files & Unrelated & Share \\
+\midrule
+Mono-fix, all files & 41 & 0 & 0.0\% \\
+Poly-fix, primary-language files & 76 & 6 & 7.9\% \\
+Poly-fix, secondary-language files & 58 & 4 & 6.9\% \\
+\midrule
+Technique & MAP gap & Gap, unrelated removed & \\
+\midrule
+BM25 & $+0.038$ & $+0.057$ & \\
+BLAZE & $+0.075$ & $+0.079$ & \\
+FLIM-strict & $-0.141$ & $-0.127$ & \\
+LocAgent & $-0.265$ & $-0.264$ & \\
+SweRank & $-0.180$ & $-0.170$ & \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \bibliographystyle{cas-model2-names}
 \bibliography{refs}

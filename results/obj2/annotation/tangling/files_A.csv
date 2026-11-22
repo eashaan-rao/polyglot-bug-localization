@@ -1,0 +1,176 @@
+repo_name,bug_id,cls,subtype,path,change_type,language,role,lines,diff_link,part_of_fix,unrelated_kind,notes
+ansible/ansible,78131,Poly-fix,test-asset-only,lib/ansible/modules/apt.py,M,Python,primary,+27 / -3,open,yes,,
+ansible/ansible,78131,Poly-fix,test-asset-only,test/integration/targets/apt/tasks/apt.yml,M,YAML,"secondary, test",+50 / -1,open,yes,,
+ansible/ansible,73946,Poly-fix,test-asset-only,lib/ansible/module_utils/facts/system/distribution.py,M,Python,primary,+10 / -3,open,yes,,
+ansible/ansible,73946,Poly-fix,test-asset-only,test/units/module_utils/facts/system/distribution/fixtures/amazon_linux_2.json,M,JSON,"secondary, test",+16 / -11,open,yes,,
+ansible/ansible,73946,Poly-fix,test-asset-only,test/units/module_utils/facts/system/distribution/fixtures/amazon_linux_release_2.json,A,JSON,"secondary, test",+34 / -0,open,yes,,
+ansible/ansible,71277,Poly-fix,test-asset-only,lib/ansible/plugins/callback/default.py,M,Python,primary,+2 / -0,open,yes,,
+ansible/ansible,71277,Poly-fix,test-asset-only,test/integration/targets/callback_default/callback_default.out.default.stdout,M,TestData,"secondary, test",+9 / -1,open,yes,,
+ansible/ansible,71277,Poly-fix,test-asset-only,test/integration/targets/callback_default/callback_default.out.failed_to_stderr.stdout,M,TestData,"secondary, test",+9 / -1,open,yes,,
+ansible/ansible,71277,Poly-fix,test-asset-only,test/integration/targets/callback_default/callback_default.out.hide_ok.stdout,M,TestData,"secondary, test",+6 / -1,open,yes,,
+ansible/ansible,71277,Poly-fix,test-asset-only,test/integration/targets/callback_default/callback_default.out.hide_skipped.stdout,M,TestData,"secondary, test",+11 / -1,open,yes,,
+ansible/ansible,71277,Poly-fix,test-asset-only,test/integration/targets/callback_default/callback_default.out.hide_skipped_ok.stdout,M,TestData,"secondary, test",+6 / -1,open,yes,,
+ansible/ansible,71277,Poly-fix,test-asset-only,test/integration/targets/callback_default/test.yml,M,YAML,"secondary, test",+6 / -0,open,yes,,
+ansible/ansible,71277,Poly-fix,test-asset-only,test/integration/targets/callback_default/test_dryrun.yml,M,YAML,"secondary, test",+4 / -4,open,no,formatting or cosmetic,Only trailing-whitespace cleanup in an unrelated test playbook.
+ansible/ansible,76676,Poly-fix,test-asset-only,lib/ansible/executor/task_executor.py,M,Python,primary,+1 / -7,open,yes,,
+ansible/ansible,76676,Poly-fix,test-asset-only,test/integration/targets/delegate_to/delegate_facts_loop.yml,M,YAML,"secondary, test",+20 / -1,open,yes,,
+ansible/ansible,80561,Poly-fix,test-asset-only,lib/ansible/plugins/loader.py,M,Python,primary,+4 / -6,open,yes,,
+ansible/ansible,80561,Poly-fix,test-asset-only,test/integration/targets/collections/runme.sh,M,Shell,"secondary, test",+3 / -0,open,yes,,
+ansible/ansible,72854,Mono-fix,,test/integration/targets/ansible-test/ansible_collections/ns/col/plugins/filter/check_pylint.py,A,Python,"primary, test",+21 / -0,open,yes,,
+ansible/ansible,72854,Mono-fix,,test/lib/ansible_test/_internal/sanity/pylint.py,M,Python,"primary, test",+8 / -0,open,yes,,
+ansible/ansible,77560,Mono-fix,,lib/ansible/galaxy/collection/concrete_artifact_manager.py,M,Python,primary,+4 / -1,open,yes,,
+ansible/ansible,77560,Mono-fix,,test/units/galaxy/test_collection_install.py,M,Python,"primary, test",+34 / -9,open,yes,,
+ansible/ansible,82244,Mono-fix,,lib/ansible/module_utils/facts/hardware/linux.py,M,Python,primary,+3 / -3,open,yes,,
+apache/airflow,26427,Poly-fix,behaviour-bearing,airflow/www/static/js/main.js,M,JavaScript,secondary,+33 / -0,open,yes,,
+apache/airflow,26427,Poly-fix,behaviour-bearing,airflow/www/utils.py,M,Python,primary,+37 / -1,open,yes,,
+apache/airflow,30324,Poly-fix,behaviour-bearing,airflow/providers/cncf/kubernetes/operators/pod.py,M,Python,primary,+1 / -1,open,yes,,
+apache/airflow,30324,Poly-fix,behaviour-bearing,airflow/providers/cncf/kubernetes/provider.yaml,M,YAML,secondary,+1 / -0,open,no,release or docs housekeeping,"Adds 6.0.0 to the provider version list; release bookkeeping, not needed for the default conn id."
+apache/airflow,30324,Poly-fix,behaviour-bearing,airflow/providers/cncf/kubernetes/utils/pod_manager.py,M,Python,primary,+2 / -16,open,no,refactoring or cleanup,Removes deprecated get_kube_client / in_cluster params (provider 6.0 cleanup); not needed for the default conn_id fix.
+apache/airflow,30324,Poly-fix,behaviour-bearing,kubernetes_tests/test_kubernetes_pod_operator.py,M,Python,"primary, test",+46 / -37,open,yes,,"Tests now mock the default kubernetes_default connection; part fits the fix, part is cleanup for the removed params."
+apache/airflow,30324,Poly-fix,behaviour-bearing,tests/providers/cncf/kubernetes/decorators/test_kubernetes.py,M,Python,"primary, test",+2 / -2,open,yes,,
+apache/airflow,30324,Poly-fix,behaviour-bearing,tests/providers/cncf/kubernetes/operators/test_pod.py,M,Python,"primary, test",+1 / -1,open,yes,,
+apache/airflow,30324,Poly-fix,behaviour-bearing,tests/providers/cncf/kubernetes/utils/test_pod_manager.py,M,Python,"primary, test",+0 / -15,open,no,refactoring or cleanup,"Deletes the reminder test for the removed get_kube_client; goes with the cleanup, not the bug."
+apache/airflow,30280,Poly-fix,behaviour-bearing,airflow/www/static/css/dags.css,M,CSS,secondary,+3 / -0,open,yes,,Small CSS so the new Running/Failed tabs fit in the header; part of the feature.
+apache/airflow,30280,Poly-fix,behaviour-bearing,airflow/www/views.py,M,Python,primary,+43 / -0,open,yes,,
+apache/airflow,30280,Poly-fix,behaviour-bearing,tests/www/views/test_views_home.py,M,Python,"primary, test",+17 / -1,open,yes,,
+apache/airflow,34878,Poly-fix,behaviour-bearing,chart/templates/redis/redis-statefulset.yaml,M,YAML,secondary,+3 / -0,open,yes,,
+apache/airflow,34878,Poly-fix,behaviour-bearing,chart/values.schema.json,M,JSON,secondary,+8 / -0,open,yes,,
+apache/airflow,34878,Poly-fix,behaviour-bearing,chart/values.yaml,M,YAML,secondary,+1 / -0,open,yes,,
+apache/airflow,34878,Poly-fix,behaviour-bearing,helm_tests/other/test_redis.py,M,Python,"primary, test",+11 / -0,open,yes,,
+apache/airflow,34740,Poly-fix,behaviour-bearing,chart/templates/secrets/metadata-connection-secret.yaml,M,YAML,secondary,+5 / -3,open,yes,,
+apache/airflow,34740,Poly-fix,behaviour-bearing,helm_tests/other/test_keda.py,M,Python,"primary, test",+8 / -2,open,yes,,
+apache/airflow,34756,Mono-fix,,airflow/cli/cli_config.py,M,Python,primary,+7 / -1,open,yes,,
+apache/airflow,34756,Mono-fix,,airflow/cli/commands/variable_command.py,M,Python,primary,+2 / -2,open,yes,,
+apache/airflow,34756,Mono-fix,,tests/cli/commands/test_variable_command.py,M,Python,"primary, test",+18 / -0,open,yes,,
+apache/airflow,31745,Mono-fix,,airflow/providers/cncf/kubernetes/operators/pod.py,M,Python,primary,+5 / -2,open,yes,,
+apache/airflow,31745,Mono-fix,,airflow/providers/cncf/kubernetes/utils/pod_manager.py,M,Python,primary,+6 / -1,open,yes,,
+apache/airflow,31745,Mono-fix,,kubernetes_tests/test_kubernetes_pod_operator.py,M,Python,"primary, test",+18 / -0,open,yes,,
+apache/airflow,31745,Mono-fix,,tests/providers/cncf/kubernetes/utils/test_pod_manager.py,M,Python,"primary, test",+17 / -1,open,yes,,
+apache/airflow,27057,Mono-fix,,airflow/models/trigger.py,M,Python,primary,+11 / -10,open,yes,,
+apache/dolphinscheduler,10822,Poly-fix,behaviour-bearing,dolphinscheduler-api/src/main/java/org/apache/dolphinscheduler/api/python/PythonGateway.java,M,Java,primary,+15 / -0,open,yes,,
+apache/dolphinscheduler,10822,Poly-fix,behaviour-bearing,dolphinscheduler-api/src/main/java/org/apache/dolphinscheduler/api/service/ResourcesService.java,M,Java,primary,+24 / -0,open,yes,,
+apache/dolphinscheduler,10822,Poly-fix,behaviour-bearing,dolphinscheduler-api/src/main/java/org/apache/dolphinscheduler/api/service/impl/ResourcesServiceImpl.java,M,Java,primary,+92 / -0,open,yes,,
+apache/dolphinscheduler,10822,Poly-fix,behaviour-bearing,dolphinscheduler-api/src/test/java/org/apache/dolphinscheduler/api/python/PythonGatewayTest.java,M,Java,"primary, test",+20 / -0,open,yes,,
+apache/dolphinscheduler,10822,Poly-fix,behaviour-bearing,dolphinscheduler-api/src/test/java/org/apache/dolphinscheduler/api/service/ResourcesServiceTest.java,M,Java,"primary, test",+59 / -1,open,yes,,
+apache/dolphinscheduler,10822,Poly-fix,behaviour-bearing,dolphinscheduler-common/src/main/java/org/apache/dolphinscheduler/common/Constants.java,M,Java,primary,+5 / -0,open,yes,,
+apache/dolphinscheduler,10822,Poly-fix,behaviour-bearing,dolphinscheduler-python/pydolphinscheduler/src/pydolphinscheduler/core/process_definition.py,M,Python,secondary,+14 / -0,open,yes,,
+apache/dolphinscheduler,10822,Poly-fix,behaviour-bearing,dolphinscheduler-python/pydolphinscheduler/src/pydolphinscheduler/core/resource.py,A,Python,secondary,+43 / -0,open,yes,,
+apache/dolphinscheduler,10822,Poly-fix,behaviour-bearing,dolphinscheduler-python/pydolphinscheduler/tests/core/test_process_definition.py,M,Python,"secondary, test",+8 / -1,open,yes,,
+apache/dolphinscheduler,10822,Poly-fix,behaviour-bearing,dolphinscheduler-python/pydolphinscheduler/tests/core/test_resource_definition.py,A,Python,"secondary, test",+38 / -0,open,yes,,
+apache/dolphinscheduler,14456,Poly-fix,behaviour-bearing,dolphinscheduler-e2e/dolphinscheduler-e2e-case/src/test/java/org/apache/dolphinscheduler/e2e/cases/WorkflowE2ETest.java,M,Java,"primary, test",+10 / -8,open,yes,,E2E test adapted to the new confirm dialog on release.
+apache/dolphinscheduler,14456,Poly-fix,behaviour-bearing,dolphinscheduler-e2e/dolphinscheduler-e2e-case/src/test/java/org/apache/dolphinscheduler/e2e/pages/LoginPage.java,M,Java,"primary, test",+2 / -2,open,no,other,"Only raises WebDriver wait from 10s to 20s on the login page, a flaky-test tweak unrelated to the reminder feature."
+apache/dolphinscheduler,14456,Poly-fix,behaviour-bearing,dolphinscheduler-e2e/dolphinscheduler-e2e-case/src/test/java/org/apache/dolphinscheduler/e2e/pages/project/workflow/WorkflowDefinitionTab.java,M,Java,"primary, test",+33 / -1,open,yes,,
+apache/dolphinscheduler,14456,Poly-fix,behaviour-bearing,dolphinscheduler-ui/src/locales/en_US/project.ts,M,TypeScript,secondary,+6 / -1,open,yes,,New UI strings for the online/offline confirm and timing prompt.
+apache/dolphinscheduler,14456,Poly-fix,behaviour-bearing,dolphinscheduler-ui/src/locales/zh_CN/project.ts,M,TypeScript,secondary,+4 / -1,open,yes,,"Same strings, Chinese locale."
+apache/dolphinscheduler,14456,Poly-fix,behaviour-bearing,dolphinscheduler-ui/src/views/projects/workflow/definition/components/table-action.tsx,M,TypeScript,secondary,+17 / -8,open,yes,,
+apache/dolphinscheduler,14456,Poly-fix,behaviour-bearing,dolphinscheduler-ui/src/views/projects/workflow/definition/index.tsx,M,TypeScript,secondary,+19 / -2,open,yes,,
+apache/dolphinscheduler,14456,Poly-fix,behaviour-bearing,dolphinscheduler-ui/src/views/projects/workflow/definition/timing/use-table.ts,M,TypeScript,secondary,+99 / -0,open,yes,,Timing list table shown in the new set-timing dialog; part of the feature.
+apache/dolphinscheduler,14456,Poly-fix,behaviour-bearing,dolphinscheduler-ui/src/views/projects/workflow/definition/use-table.ts,M,TypeScript,secondary,+11 / -3,open,yes,,
+apache/dolphinscheduler,14250,Poly-fix,behaviour-bearing,dolphinscheduler-task-plugin/dolphinscheduler-task-seatunnel/src/main/java/org/apache/dolphinscheduler/plugin/task/seatunnel/flink/SeatunnelFlinkParameters.java,M,Java,primary,+1 / -0,open,yes,,
+apache/dolphinscheduler,14250,Poly-fix,behaviour-bearing,dolphinscheduler-task-plugin/dolphinscheduler-task-seatunnel/src/main/java/org/apache/dolphinscheduler/plugin/task/seatunnel/flink/SeatunnelFlinkTask.java,M,Java,primary,+7 / -3,open,yes,,
+apache/dolphinscheduler,14250,Poly-fix,behaviour-bearing,dolphinscheduler-ui/src/views/projects/task/components/node/fields/use-sea-tunnel.ts,M,TypeScript,secondary,+4 / -0,open,yes,,
+apache/dolphinscheduler,13018,Poly-fix,behaviour-bearing,dolphinscheduler-api/src/main/java/org/apache/dolphinscheduler/api/controller/ProcessInstanceController.java,M,Java,primary,+11 / -13,open,yes,,"Expands wildcard static imports so the stricter check in pom.xml passes; needed for the fix, though it looks like cleanup."
+apache/dolphinscheduler,13018,Poly-fix,behaviour-bearing,dolphinscheduler-api/src/main/java/org/apache/dolphinscheduler/api/controller/WorkflowInstanceV2Controller.java,M,Java,primary,+5 / -6,open,yes,,Same as above: removing wildcard static imports the new check would block.
+apache/dolphinscheduler,13018,Poly-fix,behaviour-bearing,dolphinscheduler-api/src/main/java/org/apache/dolphinscheduler/api/service/impl/ProcessInstanceServiceImpl.java,M,Java,primary,+19 / -10,open,yes,,Same as above.
+apache/dolphinscheduler,13018,Poly-fix,behaviour-bearing,dolphinscheduler-api/src/test/java/org/apache/dolphinscheduler/api/controller/TaskInstanceV2ControllerTest.java,M,Java,"primary, test",+2 / -1,open,yes,,Same as above (test file).
+apache/dolphinscheduler,13018,Poly-fix,behaviour-bearing,dolphinscheduler-task-plugin/dolphinscheduler-task-linkis/src/main/java/org/apache/dolphinscheduler/plugin/task/linkis/LinkisTask.java,M,Java,primary,+3 / -1,open,yes,,Same as above.
+apache/dolphinscheduler,13018,Poly-fix,behaviour-bearing,pom.xml,M,XML,secondary,+1 / -1,open,yes,,The actual fix: spotless regex now also catches import static wildcards.
+apache/dolphinscheduler,10949,Poly-fix,behaviour-bearing,dolphinscheduler-api/src/main/java/org/apache/dolphinscheduler/api/python/PythonGateway.java,M,Java,primary,+4 / -0,open,yes,,
+apache/dolphinscheduler,10949,Poly-fix,behaviour-bearing,dolphinscheduler-python/pydolphinscheduler/src/pydolphinscheduler/java_gateway.py,M,Python,secondary,+22 / -1,open,yes,,
+apache/dolphinscheduler,10961,Mono-fix,,dolphinscheduler-alert/dolphinscheduler-alert-plugins/dolphinscheduler-alert-email/src/main/java/org/apache/dolphinscheduler/plugin/alert/email/template/DefaultHTMLTemplate.java,M,Java,primary,+16 / -0,open,yes,,
+apache/dolphinscheduler,10961,Mono-fix,,dolphinscheduler-alert/dolphinscheduler-alert-plugins/dolphinscheduler-alert-email/src/test/java/org/apache/dolphinscheduler/plugin/alert/email/template/DefaultHTMLTemplateTest.java,M,Java,"primary, test",+8 / -0,open,yes,,
+apache/dolphinscheduler,12383,Mono-fix,,dolphinscheduler-service/src/main/java/org/apache/dolphinscheduler/service/expand/CuringGlobalParams.java,M,Java,primary,+1 / -1,open,yes,,
+apache/dolphinscheduler,12429,Mono-fix,,dolphinscheduler-api/src/main/java/org/apache/dolphinscheduler/api/service/impl/ProcessInstanceServiceImpl.java,M,Java,primary,+4 / -0,open,yes,,
+elastic/elasticsearch,94647,Poly-fix,behaviour-bearing,x-pack/plugin/core/src/main/resources/fleet-file-data.json,M,JSON,secondary,+2 / -2,open,yes,,
+elastic/elasticsearch,94647,Poly-fix,behaviour-bearing,x-pack/plugin/core/src/main/resources/fleet-files.json,M,JSON,secondary,+2 / -2,open,yes,,
+elastic/elasticsearch,94647,Poly-fix,behaviour-bearing,x-pack/plugin/fleet/src/javaRestTest/java/org/elasticsearch/xpack/fleet/FleetSystemIndicesIT.java,M,Java,"primary, test",+0 / -20,open,yes,,"Removes the dot-index warning expectation from the IT, since the indices are now hidden."
+elastic/elasticsearch,100048,Poly-fix,test-asset-only,x-pack/plugin/esql/compute/src/main/java/org/elasticsearch/compute/lucene/ValueSources.java,M,Java,primary,+13 / -13,open,yes,,
+elastic/elasticsearch,100048,Poly-fix,test-asset-only,x-pack/plugin/esql/compute/src/main/java/org/elasticsearch/compute/operator/topn/DefaultSortableTopNEncoder.java,M,Java,primary,+1 / -1,open,no,other bug,Fixes a wrong toString name (DefaultUnsortable -> DefaultSortable) in an unrelated encoder.
+elastic/elasticsearch,100048,Poly-fix,test-asset-only,x-pack/plugin/esql/compute/src/main/java/org/elasticsearch/compute/operator/topn/TopNEncoder.java,M,Java,primary,+5 / -0,open,yes,,
+elastic/elasticsearch,100048,Poly-fix,test-asset-only,x-pack/plugin/esql/compute/src/main/java/org/elasticsearch/compute/operator/topn/UnsupportedTypesTopNEncoder.java,A,Java,primary,+45 / -0,open,yes,,
+elastic/elasticsearch,100048,Poly-fix,test-asset-only,x-pack/plugin/esql/qa/server/single-node/src/yamlRestTest/resources/rest-api-spec/test/40_tsdb.yml,M,YAML,"secondary, test",+6 / -0,open,yes,,"Allows the new ""returning null"" warning that the fix introduces."
+elastic/elasticsearch,100048,Poly-fix,test-asset-only,x-pack/plugin/esql/qa/server/single-node/src/yamlRestTest/resources/rest-api-spec/test/40_unsupported_types.yml,M,YAML,"secondary, test",+93 / -0,open,yes,,
+elastic/elasticsearch,100048,Poly-fix,test-asset-only,x-pack/plugin/esql/qa/server/single-node/src/yamlRestTest/resources/rest-api-spec/test/50_index_patterns.yml,M,YAML,"secondary, test",+4 / -0,open,yes,,Same: allows the new warning.
+elastic/elasticsearch,100048,Poly-fix,test-asset-only,x-pack/plugin/esql/src/main/java/org/elasticsearch/xpack/esql/planner/LocalExecutionPlanner.java,M,Java,primary,+2 / -0,open,yes,,
+elastic/elasticsearch,99776,Poly-fix,test-asset-only,server/src/main/java/org/elasticsearch/search/aggregations/metrics/GlobalOrdCardinalityAggregator.java,M,Java,primary,+3 / -6,open,yes,,
+elastic/elasticsearch,99776,Poly-fix,test-asset-only,x-pack/plugin/src/yamlRestTest/resources/rest-api-spec/test/constant_keyword/10_basic.yml,M,YAML,"secondary, test",+37 / -0,open,yes,,
+elastic/elasticsearch,100144,Poly-fix,test-asset-only,x-pack/plugin/eql/qa/rest/src/yamlRestTest/resources/rest-api-spec/test/eql/40_tsdb.yml,A,YAML,"secondary, test",+174 / -0,open,yes,,
+elastic/elasticsearch,100144,Poly-fix,test-asset-only,x-pack/plugin/esql/qa/server/single-node/src/yamlRestTest/resources/rest-api-spec/test/40_tsdb.yml,M,YAML,"secondary, test",+52 / -3,open,yes,,
+elastic/elasticsearch,100144,Poly-fix,test-asset-only,x-pack/plugin/esql/src/main/java/org/elasticsearch/xpack/esql/enrich/EnrichPolicyResolver.java,M,Java,primary,+3 / -1,open,yes,,
+elastic/elasticsearch,100144,Poly-fix,test-asset-only,x-pack/plugin/esql/src/main/java/org/elasticsearch/xpack/esql/session/EsqlSession.java,M,Java,primary,+36 / -1,open,yes,,
+elastic/elasticsearch,100144,Poly-fix,test-asset-only,x-pack/plugin/esql/src/test/java/org/elasticsearch/xpack/esql/type/EsqlDataTypeRegistryTests.java,M,Java,"primary, test",+7 / -1,open,yes,,
+elastic/elasticsearch,100144,Poly-fix,test-asset-only,x-pack/plugin/ql/src/main/java/org/elasticsearch/xpack/ql/index/IndexResolver.java,M,Java,primary,+36 / -7,open,yes,,
+elastic/elasticsearch,100144,Poly-fix,test-asset-only,x-pack/plugin/sql/qa/server/src/main/java/org/elasticsearch/xpack/sql/qa/rest/RestSqlTestCase.java,M,Java,"primary, test",+220 / -0,open,yes,,
+elastic/elasticsearch,96284,Poly-fix,test-asset-only,modules/aggregations/src/yamlRestTest/resources/rest-api-spec/test/aggregations/top_hits.yml,M,YAML,"secondary, test",+30 / -0,open,yes,,
+elastic/elasticsearch,96284,Poly-fix,test-asset-only,server/src/main/java/org/elasticsearch/search/fetch/FetchPhase.java,M,Java,primary,+4 / -4,open,yes,,
+elastic/elasticsearch,96236,Mono-fix,,x-pack/plugin/ql/src/main/java/org/elasticsearch/xpack/ql/planner/ExpressionTranslators.java,M,Java,primary,+12 / -1,open,yes,,
+elastic/elasticsearch,96236,Mono-fix,,x-pack/plugin/ql/src/main/java/org/elasticsearch/xpack/ql/querydsl/query/BoolQuery.java,M,Java,primary,+45 / -32,open,yes,,
+elastic/elasticsearch,96236,Mono-fix,,x-pack/plugin/ql/src/test/java/org/elasticsearch/xpack/ql/querydsl/query/BoolQueryTests.java,M,Java,"primary, test",+22 / -5,open,yes,,
+elastic/elasticsearch,96236,Mono-fix,,x-pack/plugin/sql/src/test/java/org/elasticsearch/xpack/sql/planner/QueryTranslatorTests.java,M,Java,"primary, test",+29 / -25,open,yes,,
+elastic/elasticsearch,93888,Mono-fix,,server/src/main/java/org/elasticsearch/index/mapper/DocumentParser.java,M,Java,primary,+8 / -16,open,yes,,Signature refactor (token param removed) needed by the DynamicFieldsBuilder change.
+elastic/elasticsearch,93888,Mono-fix,,server/src/main/java/org/elasticsearch/index/mapper/DynamicFieldsBuilder.java,M,Java,primary,+5 / -4,open,yes,,
+elastic/elasticsearch,93888,Mono-fix,,server/src/test/java/org/elasticsearch/index/mapper/DynamicFieldsBuilderTests.java,A,Java,"primary, test",+62 / -0,open,yes,,
+elastic/elasticsearch,93888,Mono-fix,,test/framework/src/main/java/org/elasticsearch/index/mapper/TestDocumentParserContext.java,M,Java,"primary, test",+13 / -1,open,yes,,Test helper extended for the new DynamicFieldsBuilderTests.
+elastic/elasticsearch,93851,Mono-fix,,server/src/main/java/org/elasticsearch/plugins/PluginsService.java,M,Java,primary,+6 / -4,open,yes,,
+liquibase/liquibase,5278,Poly-fix,test-asset-only,liquibase-integration-tests/src/test/groovy/liquibase/command/core/UpdateTestingRollbackCommandsIntegrationTest.groovy,A,Groovy,"secondary, test",+57 / -0,open,yes,,
+liquibase/liquibase,5278,Poly-fix,test-asset-only,liquibase-integration-tests/src/test/resources/liquibase/update-tests-with-params.yml,A,YAML,"secondary, test",+27 / -0,open,yes,,
+liquibase/liquibase,5278,Poly-fix,test-asset-only,liquibase-standard/src/main/java/liquibase/Liquibase.java,M,Java,primary,+6 / -0,open,yes,,
+liquibase/liquibase,3734,Poly-fix,test-asset-only,liquibase-core/src/main/java/liquibase/snapshot/jvm/ColumnSnapshotGenerator.java,M,Java,primary,+11 / -27,open,yes,,
+liquibase/liquibase,3734,Poly-fix,test-asset-only,liquibase-integration-tests/src/test/groovy/liquibase/command/core/GenerateChangeLogDb2CommandTest.groovy,M,Groovy,"secondary, test",+6 / -42,open,no,refactoring or cleanup,Moves Db2 generate-changelog test onto the new CommandUtil helper; no ENUM/SET coverage.
+liquibase/liquibase,3734,Poly-fix,test-asset-only,liquibase-integration-tests/src/test/groovy/liquibase/command/core/GenerateChangeLogMSSQLCommandTest.groovy,M,Groovy,"secondary, test",+11 / -47,open,no,refactoring or cleanup,Same refactor for the MSSQL test.
+liquibase/liquibase,3734,Poly-fix,test-asset-only,liquibase-integration-tests/src/test/groovy/liquibase/command/core/GenerateChangeLogMySQLCommandTest.groovy,M,Groovy,"secondary, test",+20 / -17,open,yes,,Adds the MySQL ENUM generate-changelog test (plus some helper refactoring).
+liquibase/liquibase,3734,Poly-fix,test-asset-only,liquibase-integration-tests/src/test/groovy/liquibase/command/util/CommandUtil.groovy,A,Groovy,"secondary, test",+85 / -0,open,yes,,New helper used by the ENUM test; written as a refactor but the new test needs it.
+liquibase/liquibase,3734,Poly-fix,test-asset-only,liquibase-integration-tests/src/test/resources/changelogs/mysql/complete/enum.changelog.xml,A,XML,"secondary, test",+22 / -0,open,yes,,Changelog with ENUM columns used by the new test.
+liquibase/liquibase,4448,Poly-fix,test-asset-only,liquibase-integration-tests/src/test/groovy/liquibase/command/ChangelogSyncIntegrationTest.groovy,A,Groovy,"secondary, test",+36 / -0,open,yes,,
+liquibase/liquibase,4448,Poly-fix,test-asset-only,liquibase-standard/src/main/java/liquibase/command/core/ChangelogSyncCommandStep.java,M,Java,primary,+3 / -1,open,yes,,
+liquibase/liquibase,4990,Poly-fix,test-asset-only,liquibase-standard/src/main/java/liquibase/sqlgenerator/core/AddDefaultValueGeneratorMySQL.java,M,Java,primary,+18 / -1,open,yes,,
+liquibase/liquibase,4990,Poly-fix,test-asset-only,liquibase-standard/src/test/groovy/liquibase/sqlgenerator/core/AddDefaultValueGeneratorMySQLTest.groovy,M,Groovy,"secondary, test",+43 / -4,open,yes,,
+liquibase/liquibase,3814,Poly-fix,test-asset-only,liquibase-integration-tests/src/test/resources/liquibase/extension/testing/command/calculateChecksum.test.groovy,M,Groovy,"secondary, test",+23 / -9,open,yes,,
+liquibase/liquibase,3814,Poly-fix,test-asset-only,liquibase-standard/src/main/java/liquibase/Liquibase.java,M,Java,primary,+14 / -12,open,yes,,
+liquibase/liquibase,3814,Poly-fix,test-asset-only,liquibase-standard/src/main/java/liquibase/command/core/CalculateChecksumCommandStep.java,M,Java,primary,+131 / -26,open,yes,,
+liquibase/liquibase,3814,Poly-fix,test-asset-only,liquibase-standard/src/main/java/liquibase/integration/commandline/Main.java,M,Java,primary,+14 / -15,open,yes,,
+liquibase/liquibase,4415,Mono-fix,,liquibase-standard/src/main/java/liquibase/sqlgenerator/core/CreateSequenceGenerator.java,M,Java,primary,+4 / -2,open,yes,,
+liquibase/liquibase,4415,Mono-fix,,liquibase-standard/src/test/java/liquibase/sqlgenerator/core/CreateSequenceGeneratorTest.java,M,Java,"primary, test",+22 / -0,open,yes,,
+liquibase/liquibase,4530,Mono-fix,,liquibase-standard/src/main/java/liquibase/snapshot/jvm/ForeignKeySnapshotGenerator.java,M,Java,primary,+4 / -0,open,yes,,
+liquibase/liquibase,4530,Mono-fix,,liquibase-standard/src/main/java/liquibase/sqlgenerator/core/AddForeignKeyConstraintGenerator.java,M,Java,primary,+8 / -0,open,yes,,
+liquibase/liquibase,5098,Mono-fix,,liquibase-standard/src/main/java/liquibase/statement/ExecutablePreparedStatementBase.java,M,Java,primary,+21 / -1,open,yes,,
+liquibase/liquibase,5098,Mono-fix,,liquibase-standard/src/test/java/liquibase/statement/InsertExecutablePreparedStatementTest.java,M,Java,"primary, test",+41 / -0,open,yes,,
+localstack/localstack,8596,Poly-fix,test-asset-only,localstack/services/sqs/models.py,M,Python,primary,+2 / -4,open,yes,,
+localstack/localstack,8596,Poly-fix,test-asset-only,localstack/services/sqs/provider.py,M,Python,primary,+27 / -3,open,yes,,
+localstack/localstack,8596,Poly-fix,test-asset-only,localstack/services/sqs/utils.py,M,Python,primary,+13 / -1,open,yes,,
+localstack/localstack,8596,Poly-fix,test-asset-only,tests/aws/services/sqs/test_sqs.py,M,Python,"primary, test",+58 / -0,open,yes,,
+localstack/localstack,8596,Poly-fix,test-asset-only,tests/aws/services/sqs/test_sqs.snapshot.json,M,JSON,"secondary, test",+34 / -0,open,yes,,
+localstack/localstack,10216,Poly-fix,test-asset-only,localstack/services/stepfunctions/asl/component/state/state_execution/state_task/service/state_task_service.py,M,Python,primary,+4 / -1,open,yes,,
+localstack/localstack,10216,Poly-fix,test-asset-only,localstack/services/stepfunctions/asl/component/state/state_execution/state_task/service/state_task_service_callback.py,M,Python,primary,+5 / -0,open,yes,,Throttle helper used by the new ECS sync loop.
+localstack/localstack,10216,Poly-fix,test-asset-only,localstack/services/stepfunctions/asl/component/state/state_execution/state_task/service/state_task_service_ecs.py,A,Python,primary,+127 / -0,open,yes,,
+localstack/localstack,10216,Poly-fix,test-asset-only,localstack/services/stepfunctions/asl/component/state/state_execution/state_task/service/state_task_service_factory.py,M,Python,primary,+5 / -0,open,yes,,
+localstack/localstack,10216,Poly-fix,test-asset-only,localstack/services/stepfunctions/asl/component/state/state_execution/state_task/service/state_task_service_sfn.py,M,Python,primary,+1 / -0,open,no,other feature,Adds polling throttle to the SFN (nested state machine) sync loop; not part of ECS support.
+localstack/localstack,10216,Poly-fix,test-asset-only,tests/aws/cdk_templates/StepFunctionsEcsTask/StepFunctionsEcsTaskStack.json,A,JSON,"secondary, test",+975 / -0,open,yes,,
+localstack/localstack,10216,Poly-fix,test-asset-only,tests/aws/services/stepfunctions/conftest.py,M,Python,"primary, test",+73 / -1,open,yes,,
+localstack/localstack,10216,Poly-fix,test-asset-only,tests/aws/services/stepfunctions/v2/services/test_ecs_task_service.py,A,Python,"primary, test",+397 / -0,open,yes,,
+localstack/localstack,10216,Poly-fix,test-asset-only,tests/aws/services/stepfunctions/v2/services/test_ecs_task_service.snapshot.json,A,JSON,"secondary, test",+1731 / -0,open,yes,,
+localstack/localstack,10216,Poly-fix,test-asset-only,tests/aws/services/stepfunctions/v2/services/test_ecs_task_service.validation.json,A,JSON,"secondary, test",+14 / -0,open,yes,,
+localstack/localstack,6566,Poly-fix,test-asset-only,localstack/services/awslambda/lambda_api.py,M,Python,primary,+55 / -21,open,yes,,
+localstack/localstack,6566,Poly-fix,test-asset-only,localstack/utils/aws/aws_models.py,M,Python,primary,+1 / -0,open,yes,,
+localstack/localstack,6566,Poly-fix,test-asset-only,tests/integration/awslambda/test_lambda.py,M,Python,"primary, test",+46 / -0,open,yes,,
+localstack/localstack,6566,Poly-fix,test-asset-only,tests/integration/awslambda/test_lambda.snapshot.json,M,JSON,"secondary, test",+74 / -0,open,yes,,
+localstack/localstack,6566,Poly-fix,test-asset-only,tests/integration/awslambda/test_lambda_size_lims.py,M,Python,"primary, test",+4 / -1,open,unsure,,"Tightens a size-limit test (ClientError + 400). May follow from the new state checks, but the diff does not show a link."
+localstack/localstack,6566,Poly-fix,test-asset-only,tests/integration/awslambda/test_lambda_whitebox.py,M,Python,"primary, test",+68 / -2,open,yes,,
+localstack/localstack,6566,Poly-fix,test-asset-only,tests/unit/test_lambda.py,M,Python,"primary, test",+1 / -0,open,yes,,
+localstack/localstack,8174,Poly-fix,test-asset-only,localstack/services/s3/utils.py,M,Python,primary,+4 / -2,open,yes,,
+localstack/localstack,8174,Poly-fix,test-asset-only,tests/integration/s3/test_s3.py,M,Python,"primary, test",+16 / -0,open,yes,,
+localstack/localstack,8174,Poly-fix,test-asset-only,tests/integration/s3/test_s3.snapshot.json,M,JSON,"secondary, test",+108 / -0,open,yes,,
+localstack/localstack,8841,Poly-fix,test-asset-only,localstack/http/client.py,M,Python,primary,+2 / -1,open,yes,,
+localstack/localstack,8841,Poly-fix,test-asset-only,tests/aws/s3/test_s3.py,M,Python,"primary, test",+37 / -0,open,yes,,
+localstack/localstack,8841,Poly-fix,test-asset-only,tests/aws/s3/test_s3.snapshot.json,M,JSON,"secondary, test",+34 / -0,open,yes,,
+localstack/localstack,8841,Poly-fix,test-asset-only,tests/aws/s3/test_s3_notifications_lambda.py,M,Python,"primary, test",+2 / -2,open,no,other,Changes snapshot skip paths in an S3 notification test; unrelated to Content-Length.
+localstack/localstack,8841,Poly-fix,test-asset-only,tests/unit/http_/test_proxy.py,M,Python,"primary, test",+32 / -1,open,yes,,
+localstack/localstack,6445,Mono-fix,,localstack/aws/app.py,M,Python,primary,+1 / -0,open,yes,,
+localstack/localstack,6445,Mono-fix,,localstack/aws/handlers/__init__.py,M,Python,primary,+1 / -0,open,yes,,
+localstack/localstack,6445,Mono-fix,,localstack/aws/handlers/legacy.py,M,Python,primary,+12 / -0,open,yes,,
+localstack/localstack,9731,Mono-fix,,localstack/services/stepfunctions/asl/utils/boto_client.py,M,Python,primary,+7 / -1,open,yes,,
+localstack/localstack,7935,Mono-fix,,localstack/services/sns/constants.py,M,Python,primary,+1 / -0,open,yes,,
+localstack/localstack,7935,Mono-fix,,localstack/services/sns/models.py,M,Python,primary,+1 / -1,open,yes,,Only removes the TODO that this feature resolves; trivial but related.
+localstack/localstack,7935,Mono-fix,,localstack/services/sns/provider.py,M,Python,primary,+83 / -15,open,yes,,
+localstack/localstack,7935,Mono-fix,,localstack/services/sns/publisher.py,M,Python,primary,+21 / -11,open,yes,,
+localstack/localstack,7935,Mono-fix,,tests/integration/test_sns.py,M,Python,"primary, test",+215 / -122,open,yes,,

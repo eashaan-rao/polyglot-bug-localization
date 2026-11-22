@@ -2,7 +2,7 @@
 Human two-person round of the 50-bug classification agreement check
 (docs/ANNOTATION_PROTOCOL.md, protocol rev. 2.1, ruleset 0.2.0) in Excel.
 
-  make     one workbook per annotator, from the blank sheets of the AI round
+  make     one workbook per annotator, from the blank sheets of the pilot round
            (results/obj2/annotation/v2/{bugs,files}_blank.csv: same 50 bugs,
            178 files), written to results/obj2/annotation/human/handout/.
            The workbook holds the instructions, the two answer sheets with

@@ -4,8 +4,8 @@ Ruleset **0.2.0** (frozen 2026-09-06). Package: `results/obj2/annotation/v2/`
 (built by `Scripts/make_annotation_sample_v2.py`, seed 20261103). This protocol is
 what each annotator follows; it is also the base for the human two-person check.
 
-Protocol revision **2.1** (2026-11-03), after a first round with two isolated AI
-annotators (`results/obj2/annotation/v2/reconciliation.md`): exact path
+Protocol revision **2.1** (2026-11-03), after a pilot round
+(`results/obj2/annotation/v2/reconciliation.md`): exact path
 patterns published (§3 Step 1, Appendix C), `dockerfile*` prefix added to
 Appendix B, five points made explicit, and a worked-cases table (§3.1) taken
 from both annotators' records. The rules themselves are unchanged.

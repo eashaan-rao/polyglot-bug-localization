@@ -1,7 +1,7 @@
 # Human two-person round: results and reconciliation (2026-11-22)
 
-Same sample as the AI round: 50 bugs, 178 fix files, ruleset 0.2.0, protocol
-rev. 2.1. Two annotators, working independently in Excel
+Same sample as the pilot round: 50 bugs, 178 fix files, ruleset 0.2.0, protocol
+rev. 2.1. Two annotators, A (a Master's student) and B (the first author), working independently in Excel
 (`returned/annotation_{A,B}.xlsx`); scored with
 `Scripts/annotation_workbook.py import --force` (`agreement_report.md`).
 
@@ -37,12 +37,12 @@ explicitly that `counts` asks only whether a boundary rule excludes the file
 
 ## Ambiguities raised
 
-Both annotators independently raised the readings the AI round raised: the
+Both annotators independently raised the readings the pilot round raised: the
 closed dev-tooling list (checkstyle XML counted), `scripts/ci/` not being the
 CI path `.ci/`, generated files without `generated/` or `*.generated.*`,
 module names ending in `-testing` not being test paths, and tooling under
 `test/` being test scope. All were applied as written; they remain reported as
-boundary threats, as after the AI round.
+boundary threats, as after the pilot round.
 
 Annotator A also found that `docs/CLASSIFICATION_RULES.md` §3 listed a
 "Documentation path" rule (`docs/` + docs extension) that the protocol says

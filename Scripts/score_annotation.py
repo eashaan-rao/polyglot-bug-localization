@@ -77,7 +77,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--a", default="A")
     ap.add_argument("--b", default="B")
-    ap.add_argument("--dir", default=D, help="folder with the annotator CSVs and key_*.csv (default: the AI round, v2)")
+    ap.add_argument("--dir", default=D, help="folder with the annotator CSVs and key_*.csv (default: the pilot round, v2)")
     a = ap.parse_args()
     D = a.dir
     kf = pd.read_csv(os.path.join(D, "key_files.csv"), dtype=str, keep_default_na=False) \

@@ -37,10 +37,11 @@ Updated 2026-10-17 for the journal design (docs/JOURNAL_PLAN.md v2).
 - **Epoch cap.** BLAZE's selected run reached its 15-epoch limit in 2 of 12
   project-folds (liquibase fold 1, localstack fold 2); the limit is the
   paper's, not raised.
-- **Agreement check by AI annotators.** Two isolated AI annotators agreed with
-  each other and the ruleset (κ 1.0 on label, keep and counts); same-model
-  agreement is not human agreement. Mitigation: the human two-person round
-  uses the same package and the revised protocol, and is what the paper reports.
+- **Agreement check.** Two annotators (a Master's student and the first author)
+  classified the 50-bug sample independently: κ 1.00 on the bug label, keep,
+  secondary languages and sub-type, κ 0.93 on file counts (four annotator
+  slips, no rule amended). It shows consistent application of the rules, not
+  that the boundaries are right; prevalence is therefore reported as a range.
 - **Parseability is measured with one parser per language** (CPython `ast`,
   tree-sitter-java). A file another parser could read counts as unparseable here.
   Mitigation: parse_status is recorded per file and released; `parse_error` is

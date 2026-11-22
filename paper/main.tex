@@ -193,7 +193,7 @@ it. The contributions are:
 Section~\ref{sec:design} describes its design, Section~\ref{sec:results} the
 results, Section~\ref{sec:discussion} their implications and
 Section~\ref{sec:threats} the threats to validity. The supplementary material
-(Sections S1--S7) gives the supporting tables and analyses.
+(Sections S1--S8) gives the supporting tables and analyses.
 
 %% ===================================================================
 %% 2 BACKGROUND AND RELATED WORK
@@ -371,8 +371,8 @@ grammar, (C2) the project's parser cannot read it, (C3) its files are read by
 programs rather than by people, and (C4) its files are part of the dataset's
 ground truth. 48 primary-anchored bugs are multi-language only through
 languages that fail C1--C3 (e.g.\ plain-text templates) and are left out of
-the class comparisons. Two annotators classified a stratified sample of 50
-bugs (178 fix files) independently, from the written protocol alone and
+the class comparisons. Two annotators, a Master's student and the first
+author, classified a stratified sample of 50 bugs (178 fix files) independently, from the written protocol alone and
 without access to the classifier. They agreed on the label, the keep decision,
 the secondary languages and the sub-type of every bug (Cohen's $\kappa=1.00$)
 and on whether 174 of the 178 files count ($\kappa=0.93$; pass criterion
@@ -943,8 +943,15 @@ commit may contain unrelated changes (tangling; \citealt{herzig2013impact}).
 Poly-fix fixes are larger and so more likely to be tangled, and a tangled
 secondary file would both create the class and cause the penalty. Removing
 merge commits (S4) leaves the results unchanged but does not address
-squash-merged pull requests; \pending{manual tangling audit of a sample of
-Poly-fix and Mono-fix fixes and the main models without the unrelated files}.
+squash-merged pull requests. We therefore audited 48 test bugs (30 Poly-fix,
+18 Mono-fix; 175 fix files) by hand: an annotator (the Master's student) read
+each report and each file's diff and judged whether the change belongs to the
+fix. Ten files (5.7\%) are unrelated to the bug, all in Poly-fix bugs (7 of
+30), and about as often primary-language (7.9\%) as secondary-language files
+(6.9\%); one Poly-fix bug would become Mono-fix without them. Removing them
+from the ground truth changes the Poly-fix penalty on the audited bugs little
+(FLIM-strict $-0.141$ to $-0.127$, SweRank $-0.180$ to $-0.170$;
+Supplement~\ref{app:tangling}). The audit was coded by one annotator.
 The prevalence depends on the boundary rules and is reported as a range.
 Parseability is measured with one parser per language. The ground truth is
 the change set rather than the fault location; the fault-oriented views (S1,
