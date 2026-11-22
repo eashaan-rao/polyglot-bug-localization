@@ -11,7 +11,7 @@ Every disagreement (A vs B, and each annotator vs the ruleset) gets an impact:
   evaluation  everything else, including is_test (it feeds only the S1
               no-tests view and the Poly sub-type, never training)
 
-    python Scripts/score_annotation.py [--a A --b B]
+    python Scripts/score_annotation.py [--a A --b B] [--dir results/obj2/annotation/human]
 """
 
 import argparse
@@ -73,10 +73,13 @@ def compare(kind, left, right, ln, rn, key_files):
 
 
 def main():
+    global D
     ap = argparse.ArgumentParser()
     ap.add_argument("--a", default="A")
     ap.add_argument("--b", default="B")
+    ap.add_argument("--dir", default=D, help="folder with the annotator CSVs and key_*.csv (default: the AI round, v2)")
     a = ap.parse_args()
+    D = a.dir
     kf = pd.read_csv(os.path.join(D, "key_files.csv"), dtype=str, keep_default_na=False) \
         .set_index(["repo_name", "bug_id", "path"])
     L = ["# 50-bug agreement check — results", ""]

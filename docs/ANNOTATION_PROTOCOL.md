@@ -39,6 +39,15 @@ single case.
 | Appendix A below | the extension → language/category table of the frozen ruleset |
 | `docs/GLOSSARY.md` | definitions |
 
+**Human round (Excel).** For the two-person round each annotator receives one
+workbook, `results/obj2/annotation/human/handout/annotation_<A|B>.xlsx`, which
+holds the same 50 bugs and 178 files (sheets `1_files`, `2_bugs`), a `log`
+sheet in place of `steps_<annotator>.md`, drop-down lists of the allowed
+values, and copies of Appendices A–C and the worked cases. The procedure below
+is unchanged; the filled workbook is returned instead of the CSV files and is
+converted and scored by `Scripts/annotation_workbook.py import`
+(see `results/obj2/annotation/human/README.md`).
+
 **Do not open** `key_bugs.csv`, `key_files.csv`, `Scripts/classification_rules.py`,
 `data/obj2/bug_classification.parquet`, `results/obj2/bug_classification.csv`,
 or the other annotator's files. Decide from the path, the change type and the
