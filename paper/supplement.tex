@@ -1,6 +1,6 @@
 %% Supplementary material. Build with paper/build.sh (main and supplement
-%% cross-reference each other through xr; labels of the other document carry
-%% the prefix M- here and S- in main.tex).
+%% cite each other's numbers, written in directly with the prefix M- here and
+%% S- in main.tex; build.sh checks them against the other document's .aux).
 \documentclass[10pt,a4paper]{article}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
@@ -10,7 +10,6 @@
 \usepackage{booktabs,multirow,xspace,adjustbox,graphicx,enumitem,amsmath}
 \usepackage[table]{xcolor}
 \usepackage[expansion=false]{microtype}
-\usepackage{xr}\externaldocument[M-]{main}
 \usepackage[hidelinks]{hyperref}
 \newcommand{\mono}{Mono-fix\xspace}
 \newcommand{\poly}{Poly-fix\xspace}
@@ -21,6 +20,10 @@
 \title{Supplementary Material for\\``Mono-fix or Poly-fix? Bug Fixes Beyond the Main Language\\and Their Effect on Bug Localization''}
 \author{A Eashaan Rao \and Sridhar Chimalakonda\\[2pt]\small Indian Institute of Technology Tirupati, India}
 \date{}
+% Numbers of the paper's sections and tables cited here (prefix M-), written in
+% directly (see the note in main.tex); build.sh checks them against main.aux.
+\newlabel{M-sec:variants}{{4.5}{}{}{}{}}
+\newlabel{M-tab:feas}{{4}{}{}{}{}}
 \begin{document}
 \maketitle
 \noindent Sections and tables numbered with the prefix S are in this

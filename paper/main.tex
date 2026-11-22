@@ -1,7 +1,6 @@
 \documentclass[a4paper,fleqn]{cas-dc}
 \usepackage{lmodern}          % vector Latin Modern instead of bitmap (Type 3) T1 fonts
 \input{glyphtounicode}\pdfgentounicode=1   % searchable "fi" ligatures
-\usepackage{xr}\externaldocument[S-]{supplement}   % references into the supplementary material
 
 \usepackage[authoryear]{natbib}
 \usepackage{booktabs}
@@ -21,6 +20,17 @@
 \newcommand{\mono}{Mono-fix\xspace}
 \newcommand{\poly}{Poly-fix\xspace}
 
+% Numbers of the supplementary material's sections and tables cited here
+% (prefix S-). They are written in directly rather than read from
+% supplement.aux with xr, because Overleaf names its aux files output.aux and
+% does not compile the supplement. build.sh checks them against supplement.aux;
+% update them if the supplement's sections or tables are renumbered.
+\newlabel{S-app:design}{{S1}{}{}{}{}}
+\newlabel{S-app:rq1}{{S2}{}{}{}{}}
+\newlabel{S-app:results}{{S3}{}{}{}{}}
+\newlabel{S-app:tangling}{{S4}{}{}{}{}}
+\newlabel{S-app:runs}{{S5}{}{}{}{}}
+\newlabel{S-tab:rq3models}{{S5}{}{}{}{}}
 \begin{document}
 \let\WriteBookmarks\relax
 \def\floatpagepagefraction{1}
@@ -1022,24 +1032,27 @@ techniques can be placed on the same footing.
 %% DECLARATIONS
 %% ===================================================================
 \section*{CRediT authorship contribution statement}
-\pending{as in Objective 1.}
-
-\section*{Acknowledgements}
-We thank \pending{name of the Master's student}, who served as the second
-annotator in the classification agreement check.
-
-\section*{Funding}
-\pending{Funding statement; if none: ``This research did not receive any
-specific grant from funding agencies in the public, commercial, or
-not-for-profit sectors.''}
+\textbf{A Eashaan Rao:} Conceptualization, Methodology, Software, Data curation,
+Investigation, Formal analysis, Visualization, Writing -- original draft.
+\textbf{Sridhar Chimalakonda:} Conceptualization, Methodology, Supervision,
+Writing -- review \& editing.
 
 \section*{Declaration of competing interest}
 The authors declare that they have no known competing financial interests or
-personal relationships that could have appeared to influence the work reported
-in this paper.
+personal relationships that could have appeared to influence the work reported in
+this paper.
 
-\section*{Declaration of generative AI and AI-assisted technologies in the writing process}
-\pending{Statement as required by the venue.}
+\section*{Funding}
+This work was supported by the Indian Institute of Technology Tirupati. The
+funder had no role in study design, data collection and analysis, decision to
+publish, or preparation of the manuscript.
+
+\section*{Declaration of generative AI and AI-assisted technologies in the manuscript preparation process}
+During the preparation of this work, the authors used Claude to improve the clarity, presentation, and language of the
+writing. After using this tool, the authors reviewed and edited the content as
+needed and take full responsibility for the content of the publication. AI
+tools were not used to generate the study's research ideas, experimental
+design, analysis, or conclusions.
 
 \section*{Data Availability}
 The code---classifier, technique adapters, evaluator, statistics, and the
@@ -1057,6 +1070,10 @@ tables (positioning against related work, learning-rate selection, per-fold
 reachability, decomposition including MRR, seed variation, results of
 SweRank's retriever per project) and the sensitivity figure are in the
 replication package.
+
+\section*{Acknowledgements}
+We thank Ajinkya Savarkar for independently classifying the project domains
+reported in Section~\ref{sec:dataset}.
 
 \bibliographystyle{cas-model2-names}
 \bibliography{refs}
