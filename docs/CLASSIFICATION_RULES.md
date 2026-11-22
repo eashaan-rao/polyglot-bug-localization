@@ -99,7 +99,7 @@ basename (`Dockerfile*`, `Makefile`, `MANIFEST.in`, `Jenkinsfile`, `LICENSE`, �
 | CI config | `.github/`, `.gitlab-ci.yml`, `.azure-pipelines/`, `Jenkinsfile`, `.pre-commit-config.*`, `.ci/` | **exclude** | `INCLUDE_CI` |
 | Dev tooling | `.flake8`, `.coveragerc`, `.editorconfig`, `.eslint*`, `.prettier*`, `.babelrc`, `tox.ini`, `setup.cfg`, `.gitignore`, `.gitattributes`, `.gitmodules`, `sanity.*.in` | **exclude** (no toggle) | — |
 | SPI registration | `META-INF/services/` | keep as `data-config` | — |
-| Documentation path | `docs/`, `documentation/`, `site/` + a docs extension | **exclude** | `INCLUDE_DOCS` |
+| Documentation (by extension, not by path) | a docs extension (Markdown, reST, AsciiDoc, HTML, LICENSE, ...) or `.txt`, **wherever** it is; a `.yml`, `.py` or `.sha256` under `docs/` is judged by its extension like any other file. (Corrected wording 2026-11-22: an earlier version read as a `docs/` path rule; the frozen code has none, so no result changes.) | **exclude** | `INCLUDE_DOCS` |
 | Test scope | `test/`, `tests/`, `qa/`, `testFixtures/`, `src/test/`, `src/yamlRestTest/`, `*Test.java`, `*IT.java`, `test_*.py`, `*_test.py`, `*Spec.groovy` | **keep, tag `test` / `test_asset`** | `EXCLUDE_TESTS` |
 
 ## 4. Classification

@@ -1,0 +1,9 @@
+pair,level,repo_name,bug_id,path,field,A,B,impact,ruleset
+A vs B,files,elastic/elasticsearch,95522,x-pack/plugin/core/src/main/resources/logs-json-message-pipeline.json,counts,no,yes,evaluation,
+A vs B,files,ansible/ansible,78509,test/integration/targets/connection_paramiko_ssh/test_connection.inventory,counts,no,yes,evaluation,
+A vs B,files,ansible/ansible,62411,lib/ansible/executor/powershell/bootstrap_wrapper.ps1,counts,no,yes,evaluation,
+A vs B,files,apache/airflow,31431,docs/apache-airflow/img/airflow_erd.sha256,counts,no,yes,evaluation,
+A vs ruleset,files,elastic/elasticsearch,95522,x-pack/plugin/core/src/main/resources/logs-json-message-pipeline.json,counts,no,,evaluation,yes
+A vs ruleset,files,ansible/ansible,78509,test/integration/targets/connection_paramiko_ssh/test_connection.inventory,counts,no,,evaluation,yes
+A vs ruleset,files,ansible/ansible,62411,lib/ansible/executor/powershell/bootstrap_wrapper.ps1,counts,no,,evaluation,yes
+A vs ruleset,files,apache/airflow,31431,docs/apache-airflow/img/airflow_erd.sha256,counts,no,,evaluation,yes

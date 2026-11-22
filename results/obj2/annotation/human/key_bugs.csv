@@ -1,0 +1,51 @@
+repo_name,bug_id,stratum,label,keep,secondary_languages,grain_broad,poly_subtype
+elastic/elasticsearch,83311,kept Poly behaviour-bearing,Poly-fix,yes,INI; XML,True,behaviour-bearing
+liquibase/liquibase,4891,"kept Mono-fix, no flag",Mono-fix,yes,,False,
+elastic/elasticsearch,95522,kept Poly behaviour-bearing,Poly-fix,yes,JSON; YAML,True,behaviour-bearing
+apache/airflow,12509,no-primary Poly-fix,Poly-fix,no,Docker; Shell,True,
+liquibase/liquibase,5489,"kept Mono-fix, boundary flag",Mono-fix,yes,,False,
+apache/airflow,18055,Excluded,Excluded,no,,False,
+apache/airflow,23227,kept Poly behaviour-bearing,Poly-fix,yes,TypeScript; YAML,True,behaviour-bearing
+ansible/ansible,60921,kept Poly test-asset-only,Poly-fix,yes,YAML,True,test-asset-only
+apache/dolphinscheduler,4939,kept Poly behaviour-bearing,Poly-fix,yes,XML,True,behaviour-bearing
+ansible/ansible,72582,"kept Mono-fix, boundary flag",Mono-fix,yes,,False,
+elastic/elasticsearch,83431,kept Poly test-asset-only,Poly-fix,yes,Gradle,True,test-asset-only
+apache/dolphinscheduler,7180,kept Poly tier-3,Poly-fix,yes,INI,False,
+localstack/localstack,9812,"kept Mono-fix, boundary flag",Mono-fix,yes,,False,
+elastic/elasticsearch,101595,"kept Mono-fix, no flag",Mono-fix,yes,,False,
+ansible/ansible,78509,kept Poly tier-3,Poly-fix,yes,INI,False,
+apache/dolphinscheduler,14987,"kept Mono-fix, boundary flag",Mono-fix,yes,,False,
+ansible/ansible,62411,no-primary single-language,Mono-fix,no,,False,
+localstack/localstack,6657,kept Poly test-asset-only,Poly-fix,yes,JSON,True,test-asset-only
+apache/dolphinscheduler,6638,"kept Mono-fix, no flag",Mono-fix,yes,,False,
+elastic/elasticsearch,97399,"kept Mono-fix, boundary flag",Mono-fix,yes,,False,
+apache/dolphinscheduler,13945,kept Poly test-asset-only,Poly-fix,yes,JSON,True,test-asset-only
+ansible/ansible,69039,Excluded,Excluded,no,,False,
+liquibase/liquibase,4216,no-primary single-language,Mono-fix,no,,False,
+apache/airflow,24653,"kept Mono-fix, no flag",Mono-fix,yes,,False,
+apache/dolphinscheduler,6593,Other-fix,Other-fix,no,,False,
+ansible/ansible,64399,kept Poly test-asset-only,Poly-fix,yes,YAML,True,test-asset-only
+apache/dolphinscheduler,8029,Excluded,Excluded,no,,False,
+elastic/elasticsearch,91081,no-primary single-language,Mono-fix,no,,False,
+elastic/elasticsearch,85634,Other-fix,Other-fix,no,,False,
+apache/airflow,28483,Other-fix,Other-fix,no,,False,
+ansible/ansible,66457,"kept Mono-fix, no flag",Mono-fix,yes,,False,
+liquibase/liquibase,5263,kept Poly behaviour-bearing,Poly-fix,yes,Groovy; YAML,True,behaviour-bearing
+ansible/ansible,68024,Other-fix,Other-fix,no,,False,
+elastic/elasticsearch,90799,Excluded,Excluded,no,,False,
+apache/airflow,23512,"kept Mono-fix, boundary flag",Mono-fix,yes,,False,
+elastic/elasticsearch,85790,kept Poly test-asset-only,Poly-fix,yes,YAML,True,test-asset-only
+ansible/ansible,68920,kept Poly behaviour-bearing,Poly-fix,yes,YAML,True,behaviour-bearing
+apache/airflow,31431,kept Poly tier-3,Poly-fix,yes,TestData,False,
+liquibase/liquibase,2074,kept Poly test-asset-only,Poly-fix,yes,Groovy,True,test-asset-only
+ansible/ansible,80413,no-primary Poly-fix,Poly-fix,no,Shell; YAML,True,
+apache/dolphinscheduler,5769,no-primary single-language,Mono-fix,no,,False,
+localstack/localstack,7492,kept Poly behaviour-bearing,Poly-fix,yes,JSON,True,behaviour-bearing
+elastic/elasticsearch,84627,kept Poly tier-3,Poly-fix,yes,TestData,False,
+ansible/ansible,76316,"kept Mono-fix, boundary flag",Mono-fix,yes,,False,
+apache/dolphinscheduler,9290,kept Poly behaviour-bearing,Poly-fix,yes,SQL,True,behaviour-bearing
+liquibase/liquibase,2816,Other-fix,Other-fix,no,,False,
+ansible/ansible,69781,kept Poly behaviour-bearing,Poly-fix,yes,Shell; YAML,True,behaviour-bearing
+liquibase/liquibase,2133,kept Poly test-asset-only,Poly-fix,yes,Groovy,True,test-asset-only
+apache/airflow,10438,no-primary single-language,Mono-fix,no,,False,
+apache/airflow,25492,kept Poly behaviour-bearing,Poly-fix,yes,TypeScript; YAML,True,behaviour-bearing

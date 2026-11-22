@@ -61,6 +61,12 @@ decisions.
 
 ### Step 1 — each changed file (`files_*.csv`)
 
+`counts` asks only whether the file passes the boundary rules below. It does
+**not** ask whether the file caused the bug or matters for it: a file that no
+rule excludes counts, however incidental it looks. `counts = no` therefore
+always comes with an `excluded_reason`. (Clarification added after the human
+round, 2026-11-22; the rules are unchanged.)
+
 Apply the rules **in this order**; the first rule that excludes a file decides.
 A renamed file (R) is judged by its new path.
 

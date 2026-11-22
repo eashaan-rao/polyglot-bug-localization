@@ -57,7 +57,17 @@ The written protocol was checked on a stratified sample of 50 bugs before any
 technique was run: annotators classify every fix file (counted or excluded,
 language, test scope) and every bug (label, keep, secondary languages,
 sub-type) from the protocol alone, without access to the classifier; the
-two-person agreement is reported in Section~\ref{sec:classification}. A
+two-person agreement is reported in Section~\ref{sec:classification}. In
+that round both annotators independently raised the same rule readings as the
+automated round (closed dev-tooling list, \texttt{scripts/ci/} not being the CI
+path \texttt{.ci/}, generated files outside \texttt{generated/}, module names
+ending in \texttt{-testing}, tooling under \texttt{test/}); all were applied as
+written. One annotator noticed that the rules document listed a
+documentation-path rule that the protocol and the frozen code do not apply;
+its wording was corrected, with no effect on any result, because files with a
+documentation extension are excluded wherever they are. The protocol now also
+states that \emph{counts} asks only whether a boundary rule excludes a file,
+not whether the file caused the bug, the reading behind the four slips. A
 preliminary round with two independent automated annotators following the
 same protocol agreed with each other and with the ruleset on every bug-level
 field; it led to publishing the exact path patterns in the protocol. Three

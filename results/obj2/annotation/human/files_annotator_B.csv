@@ -1,0 +1,179 @@
+annotator,repo_name,bug_id,path,change_type,counts,excluded_reason,language,category,is_test,notes
+B,elastic/elasticsearch,83311,build-tools-internal/src/main/resources/checkstyle-idea.xml,M,yes,,XML,data-config,no,"checkstyle*.xml: dev-tooling list in Appendix C is closed, so judged by extension .xml -> XML (worked case)."
+B,elastic/elasticsearch,83311,build-tools-internal/src/main/resources/checkstyle.xml,M,yes,,XML,data-config,no,checkstyle*.xml: dev-tooling list is closed -> counted by extension as XML (worked case).
+B,elastic/elasticsearch,83311,build-tools-internal/version.properties,M,yes,,INI,data-config,no,".properties -> INI, data-config (Appendix A)."
+B,elastic/elasticsearch,83311,server/src/main/java/org/elasticsearch/action/datastreams/GetDataStreamAction.java,M,yes,,Java,source,no,
+B,elastic/elasticsearch,83311,server/src/main/java/org/elasticsearch/cluster/routing/IndexRouting.java,M,yes,,Java,source,no,
+B,elastic/elasticsearch,83311,x-pack/plugin/ml/src/main/java/org/elasticsearch/xpack/ml/aggs/changepoint/ChangePointAggregator.java,M,yes,,Java,source,no,
+B,elastic/elasticsearch,83311,x-pack/plugin/ml/src/main/java/org/elasticsearch/xpack/ml/aggs/changepoint/KDE.java,M,yes,,Java,source,no,
+B,elastic/elasticsearch,83311,x-pack/plugin/ml/src/main/java/org/elasticsearch/xpack/ml/inference/nlp/tokenizers/BpeTokenizer.java,M,yes,,Java,source,no,
+B,elastic/elasticsearch,83311,x-pack/plugin/transform/src/main/java/org/elasticsearch/xpack/transform/transforms/Function.java,M,yes,,Java,source,no,
+B,liquibase/liquibase,4891,liquibase-standard/src/main/java/liquibase/command/core/AbstractUpdateCommandStep.java,M,yes,,Java,source,no,
+B,elastic/elasticsearch,95522,docs/changelog/96083.yaml,A,no,changelog_fragment,,,no,Path rule changelog fragment runs before the extension (would be YAML otherwise).
+B,elastic/elasticsearch,95522,modules/data-streams/src/yamlRestTest/resources/rest-api-spec/test/data_stream/220_logs_default_pipeline.yml,M,yes,,YAML,data-config,yes,src/yamlRestTest*/ (and test/ dir) -> test scope.
+B,elastic/elasticsearch,95522,modules/data-streams/src/yamlRestTest/resources/rest-api-spec/test/data_stream/230_logs_message_pipeline.yml,A,yes,,YAML,data-config,yes,src/yamlRestTest*/ (and test/ dir) -> test scope.
+B,elastic/elasticsearch,95522,x-pack/plugin/core/src/main/java/org/elasticsearch/xpack/core/template/IndexTemplateRegistry.java,M,yes,,Java,source,no,
+B,elastic/elasticsearch,95522,x-pack/plugin/core/src/main/java/org/elasticsearch/xpack/core/template/IngestPipelineConfig.java,M,yes,,Java,source,no,
+B,elastic/elasticsearch,95522,x-pack/plugin/core/src/main/resources/logs-json-message-pipeline.json,A,yes,,JSON,data-config,no,"src/main/resources JSON, no test pattern."
+B,elastic/elasticsearch,95522,x-pack/plugin/core/src/test/java/org/elasticsearch/xpack/core/template/IndexTemplateRegistryTests.java,M,yes,,Java,source,yes,*Tests.java is not a file pattern; test because of src/test/ directory.
+B,elastic/elasticsearch,95522,x-pack/plugin/core/src/test/java/org/elasticsearch/xpack/core/template/TestRegistryWithCustomPlugin.java,M,yes,,Java,source,yes,Name starts with Test but no file pattern matches; test because of src/test/ directory.
+B,elastic/elasticsearch,95522,x-pack/plugin/stack/src/main/java/org/elasticsearch/xpack/stack/StackTemplateRegistry.java,M,yes,,Java,source,no,
+B,elastic/elasticsearch,95522,x-pack/plugin/stack/src/test/java/org/elasticsearch/xpack/stack/StackTemplateRegistryTests.java,M,yes,,Java,source,yes,*Tests.java under src/test/ -> test by directory.
+B,apache/airflow,12509,Dockerfile,M,yes,,Docker,build,no,"Extension-less basename Dockerfile -> Docker, build (Appendix B)."
+B,apache/airflow,12509,Dockerfile.ci,M,yes,,Docker,build,no,"Dockerfile.ci: dockerfile* prefix (Appendix B) -> Docker; "".ci"" here is not the .ci/ CI directory."
+B,apache/airflow,12509,IMAGES.rst,M,no,documentation,,,no,".rst -> reST, docs."
+B,apache/airflow,12509,scripts/ci/libraries/_build_images.sh,M,yes,,Shell,source,no,scripts/ci/ is not CI config (only dot-directory .ci/ is) -> counted Shell (worked case).
+B,liquibase/liquibase,5489,liquibase-standard/src/main/java/liquibase/datatype/core/BooleanType.java,M,yes,,Java,source,no,
+B,liquibase/liquibase,5489,liquibase-standard/src/test/java/liquibase/sqlgenerator/core/AddColumnGeneratorTest.java,M,yes,,Java,source,yes,*Test.java and src/test/.
+B,apache/airflow,18055,.github/workflows/build-images.yml,M,no,ci_config,,,no,.github/ -> CI config path rule.
+B,apache/airflow,23227,airflow/api_connexion/endpoints/task_instance_endpoint.py,M,yes,,Python,source,no,
+B,apache/airflow,23227,airflow/api_connexion/openapi/v1.yaml,M,yes,,YAML,data-config,no,"OpenAPI spec .yaml -> YAML, not under a test path."
+B,apache/airflow,23227,airflow/api_connexion/schemas/task_instance_schema.py,M,yes,,Python,source,no,
+B,apache/airflow,23227,airflow/www/static/js/types/api-generated.ts,M,yes,,TypeScript,source,no,"api-generated.ts: generated rule needs generated/ dir or *.generated.* (dot), hyphen does not match -> counted TypeScript (worked case)."
+B,apache/airflow,23227,tests/api_connexion/schemas/test_task_instance_schema.py,M,yes,,Python,source,yes,tests/ dir and test_*.py.
+B,ansible/ansible,60921,lib/ansible/modules/cloud/amazon/rds_instance.py,M,yes,,Python,source,no,
+B,ansible/ansible,60921,test/integration/targets/rds_instance/tasks/test_modification.yml,M,yes,,YAML,data-config,yes,test/integration/targets/... -> test scope.
+B,apache/dolphinscheduler,4939,dolphinscheduler-common/src/main/java/org/apache/dolphinscheduler/common/utils/LoggerUtils.java,M,yes,,Java,source,no,
+B,apache/dolphinscheduler,4939,dolphinscheduler-common/src/test/java/org/apache/dolphinscheduler/common/utils/LoggerUtilsTest.java,M,yes,,Java,source,yes,
+B,apache/dolphinscheduler,4939,dolphinscheduler-server/src/main/java/org/apache/dolphinscheduler/server/log/LoggerRequestProcessor.java,M,yes,,Java,source,no,
+B,apache/dolphinscheduler,4939,dolphinscheduler-server/src/test/java/org/apache/dolphinscheduler/server/log/LoggerRequestProcessorTest.java,A,yes,,Java,source,yes,
+B,apache/dolphinscheduler,4939,dolphinscheduler-service/src/main/java/org/apache/dolphinscheduler/service/log/LogClientService.java,M,yes,,Java,source,no,
+B,apache/dolphinscheduler,4939,dolphinscheduler-service/src/test/java/org/apache/dolphinscheduler/service/log/LogClientServiceTest.java,A,yes,,Java,source,yes,
+B,apache/dolphinscheduler,4939,pom.xml,M,yes,,XML,data-config,no,"pom.xml -> XML data-config, counted (worked case)."
+B,ansible/ansible,72582,changelogs/fragments/72592-catch-broken-cowsay.yaml,A,no,changelog_fragment,,,no,Path rule changelog fragment runs before the extension (would be YAML otherwise).
+B,ansible/ansible,72582,lib/ansible/utils/display.py,M,yes,,Python,source,no,
+B,ansible/ansible,72582,test/units/utils/display/test_broken_cowsay.py,A,yes,,Python,source,yes,test/ dir and test_*.py.
+B,elastic/elasticsearch,83431,docs/changelog/83577.yaml,A,no,changelog_fragment,,,no,Path rule changelog fragment runs before the extension (would be YAML otherwise).
+B,elastic/elasticsearch,83431,x-pack/qa/runtime-fields/build.gradle,M,yes,,Gradle,build,yes,x-pack/qa/ -> test scope applies to build files too (worked case).
+B,elastic/elasticsearch,83431,x-pack/qa/runtime-fields/src/main/java/org/elasticsearch/xpack/runtimefields/test/CoreTestTranslater.java,M,yes,,Java,source,yes,Under src/main/java but qa/ and package dir test/ match test path.
+B,apache/dolphinscheduler,7180,dolphinscheduler-api/src/main/java/org/apache/dolphinscheduler/api/controller/UsersController.java,M,yes,,Java,source,no,
+B,apache/dolphinscheduler,7180,dolphinscheduler-api/src/main/java/org/apache/dolphinscheduler/api/enums/Status.java,M,yes,,Java,source,no,
+B,apache/dolphinscheduler,7180,dolphinscheduler-api/src/main/java/org/apache/dolphinscheduler/api/service/UsersService.java,M,yes,,Java,source,no,
+B,apache/dolphinscheduler,7180,dolphinscheduler-api/src/main/java/org/apache/dolphinscheduler/api/service/impl/UsersServiceImpl.java,M,yes,,Java,source,no,
+B,apache/dolphinscheduler,7180,dolphinscheduler-api/src/main/resources/i18n/messages.properties,M,yes,,INI,data-config,no,".properties (i18n messages) -> INI, data-config."
+B,apache/dolphinscheduler,7180,dolphinscheduler-api/src/main/resources/i18n/messages_en_US.properties,M,yes,,INI,data-config,no,".properties (i18n messages) -> INI, data-config."
+B,apache/dolphinscheduler,7180,dolphinscheduler-api/src/main/resources/i18n/messages_zh_CN.properties,M,yes,,INI,data-config,no,".properties (i18n messages) -> INI, data-config."
+B,apache/dolphinscheduler,7180,dolphinscheduler-api/src/test/java/org/apache/dolphinscheduler/api/controller/UsersControllerTest.java,M,yes,,Java,source,yes,
+B,apache/dolphinscheduler,7180,dolphinscheduler-api/src/test/java/org/apache/dolphinscheduler/api/service/UsersServiceTest.java,M,yes,,Java,source,yes,
+B,localstack/localstack,9812,localstack/services/transcribe/provider.py,M,yes,,Python,source,no,
+B,localstack/localstack,9812,tests/aws/files/en-us_video.mkv,A,no,binary,,,no,".mkv -> Binary, category other -> excluded at step 2 (test fixture media, test scope not reached)."
+B,localstack/localstack,9812,tests/aws/files/en-us_video.mp4,A,no,binary,,,no,".mp4 -> Binary, category other -> excluded at step 2."
+B,localstack/localstack,9812,tests/aws/services/transcribe/test_transcribe.py,M,yes,,Python,source,yes,
+B,elastic/elasticsearch,101595,x-pack/plugin/esql/compute/src/main/java/org/elasticsearch/compute/operator/Driver.java,M,yes,,Java,source,no,
+B,elastic/elasticsearch,101595,x-pack/plugin/esql/compute/src/main/java/org/elasticsearch/compute/operator/DriverContext.java,M,yes,,Java,source,no,
+B,elastic/elasticsearch,101595,x-pack/plugin/esql/compute/src/main/java/org/elasticsearch/compute/operator/DriverRunner.java,M,yes,,Java,source,no,
+B,elastic/elasticsearch,101595,x-pack/plugin/esql/compute/src/main/java/org/elasticsearch/compute/operator/DriverTaskRunner.java,M,yes,,Java,source,no,
+B,ansible/ansible,78509,changelogs/fragments/paramiko_config.yml,A,no,changelog_fragment,,,no,Path rule changelog fragment runs before the extension (would be YAML otherwise).
+B,ansible/ansible,78509,lib/ansible/plugins/connection/paramiko_ssh.py,M,yes,,Python,source,no,
+B,ansible/ansible,78509,test/integration/targets/connection_paramiko_ssh/test_connection.inventory,M,yes,,INI,data-config,yes,.inventory -> INI (Appendix A); test/ dir -> test scope.
+B,apache/dolphinscheduler,14987,dolphinscheduler-common/src/main/java/org/apache/dolphinscheduler/common/constants/DataSourceConstants.java,M,yes,,Java,source,no,
+B,apache/dolphinscheduler,14987,dolphinscheduler-common/src/test/java/org/apache/dolphinscheduler/common/log/SensitiveDataConverterTest.java,M,yes,,Java,source,yes,
+B,ansible/ansible,62411,changelogs/fragments/pwsh-minimum.yaml,A,no,changelog_fragment,,,no,Path rule changelog fragment runs before the extension (would be YAML otherwise).
+B,ansible/ansible,62411,lib/ansible/executor/powershell/bootstrap_wrapper.ps1,M,yes,,PowerShell,source,no,.ps1 -> PowerShell source.
+B,localstack/localstack,6657,localstack/services/sns/provider.py,M,yes,,Python,source,no,
+B,localstack/localstack,6657,tests/integration/test_sns.py,M,yes,,Python,source,yes,
+B,localstack/localstack,6657,tests/integration/test_sns.snapshot.json,M,yes,,JSON,data-config,yes,*.snapshot.json: last extension decides -> JSON; tests/ dir -> test.
+B,apache/dolphinscheduler,6638,dolphinscheduler-server/src/main/java/org/apache/dolphinscheduler/server/master/registry/MasterRegistryClient.java,M,yes,,Java,source,no,
+B,elastic/elasticsearch,97399,modules/data-streams/src/internalClusterTest/java/org/elasticsearch/datastreams/lifecycle/DataStreamLifecycleServiceIT.java,M,yes,,Java,source,yes,src/internalClusterTest*/ and *IT.java.
+B,apache/dolphinscheduler,13945,.github/workflows/api-test.yml,M,no,ci_config,,,no,.github/ -> CI config.
+B,apache/dolphinscheduler,13945,dolphinscheduler-api-test/dolphinscheduler-api-test-case/src/test/java/org/apache/dolphinscheduler/api/test/cases/ProcessDefinitionAPITest.java,A,yes,,Java,source,yes,"dolphinscheduler-api-test/ does not match test/ (part of longer name), but src/test/ does."
+B,apache/dolphinscheduler,13945,dolphinscheduler-api-test/dolphinscheduler-api-test-case/src/test/java/org/apache/dolphinscheduler/api/test/cases/ProjectAPITest.java,M,yes,,Java,source,yes,"dolphinscheduler-api-test/ does not match test/ (part of longer name), but src/test/ does."
+B,apache/dolphinscheduler,13945,dolphinscheduler-api-test/dolphinscheduler-api-test-case/src/test/java/org/apache/dolphinscheduler/api/test/pages/workflow/ProcessDefinitionPage.java,A,yes,,Java,source,yes,"dolphinscheduler-api-test/ does not match test/ (part of longer name), but src/test/ does."
+B,apache/dolphinscheduler,13945,dolphinscheduler-api-test/dolphinscheduler-api-test-case/src/test/java/org/apache/dolphinscheduler/api/test/utils/RequestClient.java,M,yes,,Java,source,yes,"dolphinscheduler-api-test/ does not match test/ (part of longer name), but src/test/ does."
+B,apache/dolphinscheduler,13945,dolphinscheduler-api-test/dolphinscheduler-api-test-case/src/test/resources/workflow-json/test.json,A,yes,,JSON,data-config,yes,src/test/resources JSON -> test.
+B,apache/dolphinscheduler,13945,dolphinscheduler-api-test/dolphinscheduler-api-test-core/src/main/java/org/apache/dolphinscheduler/api/test/core/Constants.java,M,yes,,Java,source,yes,src/main/java but package directory .../api/test/core/ matches test/ (worked case).
+B,ansible/ansible,69039,docs/docsite/rst/network/user_guide/network_best_practices_2.5.rst,M,no,documentation,,,no,.rst -> reST docs.
+B,liquibase/liquibase,4216,liquibase-integration-tests/src/test/resources/liquibase/extension/testing/command/generateChangelog.test.groovy,M,yes,,Groovy,source,yes,generateChangelog.test.groovy: last extension .groovy -> Groovy; src/test/ -> test. liquibase-integration-tests/ itself does not match (longer name).
+B,liquibase/liquibase,4216,liquibase-standard/src/test/groovy/liquibase/integration/commandline/CommandLineUtilsTest.groovy,M,yes,,Groovy,source,yes,src/test/groovy -> test; *Test.groovy is not a file pattern (only *Spec.groovy).
+B,liquibase/liquibase,4216,liquibase-standard/src/test/groovy/liquibase/util/csv/CSVReaderTest.groovy,M,yes,,Groovy,source,yes,src/test/groovy -> test.
+B,apache/airflow,24653,airflow/operators/trigger_dagrun.py,M,yes,,Python,source,no,
+B,apache/dolphinscheduler,6593,sql/dolphinscheduler_postgre.sql,M,yes,,SQL,schema,no,".sql -> SQL, schema (not source)."
+B,ansible/ansible,64399,changelogs/fragments/64399_vmware_guest.yml,A,no,changelog_fragment,,,no,Path rule changelog fragment runs before the extension (would be YAML otherwise).
+B,ansible/ansible,64399,lib/ansible/module_utils/vmware.py,M,yes,,Python,source,no,
+B,ansible/ansible,64399,lib/ansible/modules/cloud/vmware/vmware_guest.py,M,yes,,Python,source,no,
+B,ansible/ansible,64399,test/integration/targets/prepare_vmware_tests/tasks/init_real_lab.yml,M,yes,,YAML,data-config,yes,test/integration/targets/... -> test scope.
+B,ansible/ansible,64399,test/integration/targets/prepare_vmware_tests/tasks/setup_dvs_portgroup.yml,A,yes,,YAML,data-config,yes,test/integration/targets/... -> test scope.
+B,ansible/ansible,64399,test/integration/targets/prepare_vmware_tests/tasks/teardown.yml,M,yes,,YAML,data-config,yes,test/integration/targets/... -> test scope.
+B,ansible/ansible,64399,test/integration/targets/prepare_vmware_tests/vars/common.yml,M,yes,,YAML,data-config,yes,test/integration/targets/... -> test scope.
+B,ansible/ansible,64399,test/integration/targets/vmware_guest/tasks/main.yml,M,yes,,YAML,data-config,yes,test/integration/targets/... -> test scope.
+B,ansible/ansible,64399,test/integration/targets/vmware_guest/tasks/network_with_dvpg.yml,M,yes,,YAML,data-config,yes,test/integration/targets/... -> test scope.
+B,apache/dolphinscheduler,8029,docs/docs/en/guide/task/switch.md,M,no,documentation,,,no,.md -> Markdown docs.
+B,apache/dolphinscheduler,8029,docs/docs/zh/guide/task/switch.md,M,no,documentation,,,no,.md -> Markdown docs.
+B,apache/dolphinscheduler,8029,docs/img/switch_configure.jpg,D,no,binary,,,no,Deleted .jpg: excluded at step 2 as binary before the deletion step (worked case).
+B,apache/dolphinscheduler,8029,docs/img/tasks/demo/switch_01.png,A,no,binary,,,no,".png -> Binary, other."
+B,apache/dolphinscheduler,8029,docs/img/tasks/demo/switch_02.png,A,no,binary,,,no,".png -> Binary, other."
+B,apache/dolphinscheduler,8029,docs/img/tasks/demo/switch_03.png,A,no,binary,,,no,".png -> Binary, other."
+B,apache/dolphinscheduler,8029,docs/img/tasks/demo/switch_04.png,A,no,binary,,,no,".png -> Binary, other."
+B,elastic/elasticsearch,91081,build-tools-internal/src/main/groovy/org/elasticsearch/gradle/internal/doc/RestTestsFromSnippetsTask.groovy,M,yes,,Groovy,source,no,"Gradle build-plugin Groovy under build-tools-internal/src/main; not in dev-tooling list, no test pattern (RestTests... in the name is not a pattern) -> counted Groovy, is_test no."
+B,elastic/elasticsearch,91081,docs/reference/cluster/nodes-stats.asciidoc,M,no,documentation,,,no,.asciidoc -> AsciiDoc docs.
+B,elastic/elasticsearch,91081,docs/reference/ml/trained-models/apis/put-trained-model-vocabulary.asciidoc,M,no,documentation,,,no,.asciidoc -> AsciiDoc docs.
+B,elastic/elasticsearch,85634,distribution/docker/src/docker/Dockerfile,M,yes,,Docker,build,no,Basename Dockerfile -> Docker build.
+B,elastic/elasticsearch,85634,docs/changelog/87812.yaml,A,no,changelog_fragment,,,no,Path rule changelog fragment runs before the extension (would be YAML otherwise).
+B,apache/airflow,28483,airflow/www/static/css/main.css,M,yes,,CSS,style,no,".css -> CSS, style."
+B,ansible/ansible,66457,lib/ansible/modules/cloud/vmware/vmware_host_facts.py,M,yes,,Python,source,no,
+B,liquibase/liquibase,5263,liquibase-extension-testing/src/main/resources/liquibase.sdk.yaml,M,yes,,YAML,data-config,no,"liquibase-extension-testing/ is not a test directory name (no pattern for ""testing""), src/main/resources -> is_test no."
+B,liquibase/liquibase,5263,liquibase-standard/src/main/java/liquibase/datatype/core/UUIDType.java,M,yes,,Java,source,no,
+B,liquibase/liquibase,5263,liquibase-standard/src/test/groovy/liquibase/datatype/DataTypeFactoryTest.groovy,M,yes,,Groovy,source,yes,src/test/groovy -> test.
+B,ansible/ansible,68024,docs/docsite/keyword_desc.yml,M,yes,,YAML,data-config,no,"docs/.../keyword_desc.yml: no documentation-path rule, judged by extension -> YAML (worked case)."
+B,elastic/elasticsearch,90799,x-pack/docs/en/watcher/actions/pagerduty.asciidoc,M,no,documentation,,,no,.asciidoc -> AsciiDoc docs.
+B,elastic/elasticsearch,90799,x-pack/docs/en/watcher/images/pagerduty-integrations.jpg,D,no,binary,,,no,Deleted .jpg -> binary (step 2 before deletion).
+B,elastic/elasticsearch,90799,x-pack/docs/en/watcher/images/pagerduty-services.jpg,D,no,binary,,,no,Deleted .jpg -> binary (step 2 before deletion).
+B,apache/airflow,23512,airflow/cli/commands/webserver_command.py,M,yes,,Python,source,no,
+B,apache/airflow,23512,tests/cli/commands/test_webserver_command.py,M,yes,,Python,source,yes,
+B,elastic/elasticsearch,85790,docs/changelog/85926.yaml,A,no,changelog_fragment,,,no,Path rule changelog fragment runs before the extension (would be YAML otherwise).
+B,elastic/elasticsearch,85790,modules/ingest-common/src/main/java/org/elasticsearch/ingest/common/ScriptProcessor.java,M,yes,,Java,source,no,
+B,elastic/elasticsearch,85790,modules/ingest-common/src/yamlRestTest/resources/rest-api-spec/test/ingest/190_script_processor.yml,M,yes,,YAML,data-config,yes,src/yamlRestTest/ -> test.
+B,elastic/elasticsearch,85790,server/src/main/java/org/elasticsearch/ingest/IngestService.java,M,yes,,Java,source,no,
+B,ansible/ansible,68920,changelogs/fragments/75845-ansible-galaxy-support-collection-skeleton.yml,A,no,changelog_fragment,,,no,Path rule changelog fragment runs before the extension (would be YAML otherwise).
+B,ansible/ansible,68920,lib/ansible/cli/galaxy.py,M,yes,,Python,source,no,
+B,ansible/ansible,68920,lib/ansible/config/base.yml,M,yes,,YAML,data-config,no,"lib/ansible/config/base.yml -> YAML, not test."
+B,apache/airflow,31431,airflow/migrations/versions/0125_2_6_2_add_onupdate_cascade_to_taskmap.py,A,yes,,Python,source,no,
+B,apache/airflow,31431,airflow/migrations/versions/0126_2_7_0_add_index_to_task_instance_table.py,R,yes,,Python,source,no,Renamed (R): judged by the new path -> Python.
+B,apache/airflow,31431,airflow/models/taskmap.py,M,yes,,Python,source,no,
+B,apache/airflow,31431,docs/apache-airflow/img/airflow_erd.sha256,M,yes,,TestData,test-data,no,docs/.../airflow_erd.sha256: no documentation-path rule; .sha256 -> TestData; no test path -> is_test no (worked case).
+B,apache/airflow,31431,docs/apache-airflow/img/airflow_erd.svg,M,no,binary,,,no,.svg -> Binary (Appendix A).
+B,apache/airflow,31431,docs/apache-airflow/migrations-ref.rst,M,no,documentation,,,no,.rst -> reST docs.
+B,apache/airflow,31431,tests/models/test_taskinstance.py,M,yes,,Python,source,yes,
+B,liquibase/liquibase,2074,liquibase-core/src/main/java/liquibase/change/core/CreateProcedureChange.java,M,yes,,Java,source,no,
+B,liquibase/liquibase,2074,liquibase-core/src/main/java/liquibase/change/core/CreateViewChange.java,M,yes,,Java,source,no,
+B,liquibase/liquibase,2074,liquibase-core/src/main/java/liquibase/change/core/LoadDataChange.java,M,yes,,Java,source,no,
+B,liquibase/liquibase,2074,liquibase-core/src/test/groovy/liquibase/change/core/CreateProcedureChangeTest.groovy,M,yes,,Groovy,source,yes,src/test/groovy -> test.
+B,liquibase/liquibase,2074,liquibase-core/src/test/groovy/liquibase/change/core/CreateViewChangeTest.groovy,M,yes,,Groovy,source,yes,src/test/groovy -> test.
+B,liquibase/liquibase,2074,liquibase-core/src/test/groovy/liquibase/change/core/LoadDataChangeTest.groovy,M,yes,,Groovy,source,yes,src/test/groovy -> test.
+B,ansible/ansible,80413,.azure-pipelines/azure-pipelines.yml,M,no,ci_config,,,no,.azure-pipelines/ -> CI config.
+B,ansible/ansible,80413,changelogs/fragments/ansible-test-rhel-9.2-python-3.11.yml,A,no,changelog_fragment,,,no,Path rule changelog fragment runs before the extension (would be YAML otherwise).
+B,ansible/ansible,80413,test/integration/targets/setup_rpm_repo/tasks/main.yml,M,yes,,YAML,data-config,yes,test/integration/targets/... -> test.
+B,ansible/ansible,80413,test/lib/ansible_test/_data/completion/remote.txt,M,no,documentation,,,no,.txt -> documentation regardless of location/content (completion data file) (worked case).
+B,ansible/ansible,80413,test/lib/ansible_test/_util/target/setup/bootstrap.sh,M,yes,,Shell,source,yes,"test/lib/ansible_test/... is ansible-test tooling, but test/ directory matches -> is_test yes."
+B,apache/dolphinscheduler,5769,dolphinscheduler-ui/src/js/conf/home/pages/dag/_source/dag.js,M,yes,,JavaScript,source,no,.js -> JavaScript.
+B,localstack/localstack,7492,localstack/aws/api/s3/__init__.py,M,yes,,Python,source,no,"localstack/aws/api/s3/__init__.py may be code generated from the AWS spec, but no generated path rule matches -> counted Python."
+B,localstack/localstack,7492,localstack/aws/spec-patches.json,M,yes,,JSON,data-config,no,"spec-patches.json -> JSON, not test."
+B,localstack/localstack,7492,localstack/services/s3/provider.py,M,yes,,Python,source,no,
+B,localstack/localstack,7492,tests/integration/s3/test_s3.py,M,yes,,Python,source,yes,
+B,localstack/localstack,7492,tests/integration/s3/test_s3.snapshot.json,M,yes,,JSON,data-config,yes,*.snapshot.json -> JSON; tests/ -> test.
+B,elastic/elasticsearch,84627,docs/changelog/84632.yaml,A,no,changelog_fragment,,,no,Path rule changelog fragment runs before the extension (would be YAML otherwise).
+B,elastic/elasticsearch,84627,x-pack/plugin/sql/qa/server/src/main/resources/math.sql-spec,M,yes,,TestData,test-data,yes,.sql-spec -> TestData; under src/main/resources but qa/ directory matches -> is_test yes.
+B,elastic/elasticsearch,84627,x-pack/plugin/sql/src/main/java/org/elasticsearch/xpack/sql/expression/function/scalar/math/MathProcessor.java,M,yes,,Java,source,no,
+B,elastic/elasticsearch,84627,x-pack/plugin/sql/src/test/java/org/elasticsearch/xpack/sql/expression/function/scalar/math/MathFunctionProcessorTests.java,M,yes,,Java,source,yes,*Tests.java under src/test/ -> test by directory.
+B,ansible/ansible,76316,changelogs/fragments/76316-galaxy-install-role-inaccessible-dir-fix.yml,A,no,changelog_fragment,,,no,Path rule changelog fragment runs before the extension (would be YAML otherwise).
+B,ansible/ansible,76316,lib/ansible/galaxy/role.py,M,yes,,Python,source,no,
+B,apache/dolphinscheduler,9290,dolphinscheduler-api/src/main/java/org/apache/dolphinscheduler/api/service/impl/UsersServiceImpl.java,M,yes,,Java,source,no,
+B,apache/dolphinscheduler,9290,dolphinscheduler-dao/src/main/resources/sql/dolphinscheduler_h2.sql,M,yes,,SQL,schema,no,.sql -> SQL schema; sql/ dir is not a test path.
+B,apache/dolphinscheduler,9290,dolphinscheduler-dao/src/main/resources/sql/dolphinscheduler_mysql.sql,M,yes,,SQL,schema,no,.sql -> SQL schema; sql/ dir is not a test path.
+B,apache/dolphinscheduler,9290,dolphinscheduler-dao/src/main/resources/sql/dolphinscheduler_postgresql.sql,M,yes,,SQL,schema,no,.sql -> SQL schema; sql/ dir is not a test path.
+B,apache/dolphinscheduler,9290,dolphinscheduler-dao/src/main/resources/sql/upgrade/2.0.6_schema/mysql/dolphinscheduler_ddl.sql,M,yes,,SQL,schema,no,.sql -> SQL schema; sql/ dir is not a test path.
+B,apache/dolphinscheduler,9290,dolphinscheduler-dao/src/main/resources/sql/upgrade/2.0.6_schema/postgresql/dolphinscheduler_ddl.sql,M,yes,,SQL,schema,no,.sql -> SQL schema; sql/ dir is not a test path.
+B,liquibase/liquibase,2816,pom.xml,M,yes,,XML,data-config,no,"pom.xml -> XML data-config, counted."
+B,ansible/ansible,69781,lib/ansible/config/ansible_builtin_runtime.yml,M,yes,,YAML,data-config,no,"lib/ansible/config/... YAML, not test."
+B,ansible/ansible,69781,lib/ansible/executor/task_queue_manager.py,M,yes,,Python,source,no,
+B,ansible/ansible,69781,test/integration/targets/collections/collection_root_user/ansible_collections/testns/testcoll/meta/runtime.yml,M,yes,,YAML,data-config,yes,test/integration/... -> test.
+B,ansible/ansible,69781,test/integration/targets/collections/noop.yml,A,yes,,YAML,data-config,yes,test/integration/... -> test.
+B,ansible/ansible,69781,test/integration/targets/collections/runme.sh,M,yes,,Shell,source,yes,"runme.sh under test/integration -> Shell, test."
+B,liquibase/liquibase,2133,liquibase-core/src/main/java/liquibase/util/StringUtil.java,M,yes,,Java,source,no,
+B,liquibase/liquibase,2133,liquibase-core/src/test/groovy/liquibase/parser/core/formattedsql/FormattedSqlChangeLogParserTest.groovy,M,yes,,Groovy,source,yes,src/test/groovy -> test.
+B,apache/airflow,10438,scripts/ci/libraries/_initialization.sh,M,yes,,Shell,source,no,scripts/ci/ is not the .ci/ CI dir -> counted Shell (worked case).
+B,apache/airflow,10438,scripts/ci/libraries/_verbosity.sh,M,yes,,Shell,source,no,scripts/ci/ is not the .ci/ CI dir -> counted Shell (worked case).
+B,apache/airflow,25492,airflow/api_connexion/endpoints/plugin_endpoint.py,M,yes,,Python,source,no,
+B,apache/airflow,25492,airflow/api_connexion/openapi/v1.yaml,M,yes,,YAML,data-config,no,OpenAPI v1.yaml -> YAML.
+B,apache/airflow,25492,airflow/api_connexion/schemas/plugin_schema.py,M,yes,,Python,source,no,
+B,apache/airflow,25492,airflow/www/static/js/types/api-generated.ts,M,yes,,TypeScript,source,no,"api-generated.ts: hyphen, not *.generated.* and no generated/ dir -> counted TypeScript (worked case)."

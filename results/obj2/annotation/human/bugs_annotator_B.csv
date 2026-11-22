@@ -1,0 +1,51 @@
+annotator,repo_name,bug_id,primary_language,commit_summary,n_files,label,keep,secondary_languages,poly_subtype,notes
+B,elastic/elasticsearch,83311,Java,Upgrade Checkstyle to 10.3 (#87792),9.0,Poly-fix,yes,INI; XML,behaviour-bearing,"Secondary INI (no grammar) and XML (grammar, non-test) -> behaviour-bearing."
+B,liquibase/liquibase,4891,Java,Add changelog file path to upToDateFastCheck cache key (#4891) (#5039),1.0,Mono-fix,yes,,,
+B,elastic/elasticsearch,95522,Java,[Logs+] Automatically parse JSON log events into top-level fields (#96083),10.0,Poly-fix,yes,JSON; YAML,behaviour-bearing,
+B,apache/airflow,12509,Python,Fixes unneeded docker-context-files added in CI (#12534),4.0,Poly-fix,no,Docker; Shell,,"Counted Docker (x2) and Shell, no Python: Shell is source so not Other-fix; two languages -> Poly-fix, keep no; poly_subtype empty because not kept."
+B,liquibase/liquibase,5489,Java,MariaDB boolean: back to TINYINT(1) instead of TINYINT (MySQL) (#5522),2.0,Mono-fix,yes,,,
+B,apache/airflow,18055,Python,"Build CI images for the merge result of a PR, not the tip of the PR (#18060)",1.0,Excluded,no,,,Only CI config -> Excluded.
+B,apache/airflow,23227,Python,clear specific dag run TI (#23516),5.0,Poly-fix,yes,TypeScript; YAML,behaviour-bearing,
+B,ansible/ansible,60921,Python,add max_allocated_storage parameter to rds_instance (#61008),2.0,Poly-fix,yes,YAML,test-asset-only,
+B,apache/dolphinscheduler,4939,Java,[Improvement][worker] Optimize KillYarnJob (4939) (#4943),7.0,Poly-fix,yes,XML,behaviour-bearing,
+B,ansible/ansible,72582,Python,catch the case that cowsay is broken (#76326),3.0,Mono-fix,yes,,,
+B,elastic/elasticsearch,83431,Java,Runtime fields core-with-mapped tests support tsdb (#83577),3.0,Poly-fix,yes,Gradle,test-asset-only,Secondary Gradle is under x-pack/qa (is_test yes) -> test-asset-only.
+B,apache/dolphinscheduler,7180,Java,to feature #7180 (#7185),9.0,Poly-fix,yes,INI,,Only secondary is INI (no grammar) -> Poly-fix with empty poly_subtype.
+B,localstack/localstack,9812,Python,Transcribe: Add support for transcribing video files (#9898),4.0,Mono-fix,yes,,,Video fixtures excluded as binary -> Mono-fix Python.
+B,elastic/elasticsearch,101595,Java,Abort drivers on node shutting down (#101701),4.0,Mono-fix,yes,,,
+B,ansible/ansible,78509,Python,paramiko connection now uses the correct source of data (#79704),3.0,Poly-fix,yes,INI,,"Only secondary is INI (.inventory, no grammar) -> Poly-fix with empty poly_subtype."
+B,apache/dolphinscheduler,14987,Java,[Improvement][Task] Mask password in task log (#14988),2.0,Mono-fix,yes,,,
+B,ansible/ansible,62411,Python,Add proper error when trying to run on older PS versions (#62634),2.0,Mono-fix,no,,,"Only PowerShell counted -> Mono-fix in a non-primary language, keep no (protocol: do not change to Other-fix)."
+B,localstack/localstack,6657,Python,fix passing MessageDeduplicationId to SQS queue (#6660),3.0,Poly-fix,yes,JSON,test-asset-only,
+B,apache/dolphinscheduler,6638,Java,[DS-6638][MasterServer] fix task state no change when failover worker (#6639),1.0,Mono-fix,yes,,,
+B,elastic/elasticsearch,97399,Java,Fix test flakiness with a deterministic scenario (#97415),1.0,Mono-fix,yes,,,
+B,apache/dolphinscheduler,13945,Java,[Improvement][API Test] Add API test cases for process definition controller (#14300),7.0,Poly-fix,yes,JSON,test-asset-only,All files test-scoped (incl. Constants.java via package dir test/); secondary JSON is test -> test-asset-only.
+B,ansible/ansible,69039,Python,network: Correct documentation (#71246),1.0,Excluded,no,,,Only .rst -> Excluded.
+B,liquibase/liquibase,4216,Java,Fixed CommandLineUtilsTest for german locale (#4219),3.0,Mono-fix,no,,,"Only Groovy test files counted -> Mono-fix (Groovy), keep no."
+B,apache/airflow,24653,Python,TriggerDagRunOperator.operator_extra_links is attr (#24676),1.0,Mono-fix,yes,,,
+B,apache/dolphinscheduler,6593,Java,[DS-6593][DAO] t_ds_error_command miss message in pgsql (#6594),1.0,Other-fix,no,,,"Only SQL (schema) counted, no source -> Other-fix, keep no."
+B,ansible/ansible,64399,Python,VMware: Handle slash in network name in vmware_guest module (#64494),9.0,Poly-fix,yes,YAML,test-asset-only,
+B,apache/dolphinscheduler,8029,Java,[doc] Add switch task demo (#10247),7.0,Excluded,no,,,Docs + images only -> Excluded.
+B,elastic/elasticsearch,91081,Java,Fix sneaky docs test failure (#91829),3.0,Mono-fix,no,,,"Only the Groovy build-plugin file counts (asciidoc excluded) -> Mono-fix Groovy, keep no."
+B,elastic/elasticsearch,85634,Java,Remove vim-tiny from Docker build (#87812),2.0,Other-fix,no,,,"Only Dockerfile (build) counted -> Other-fix, keep no."
+B,apache/airflow,28483,Python,"navbar, cap dropdown size, and add scroll bar (#28561)",1.0,Other-fix,no,,,"Only CSS (style) counted -> Other-fix, keep no."
+B,ansible/ansible,66457,Python,"Add example for retrieve Product, Version, Build, Update info for ESXi",1.0,Mono-fix,yes,,,
+B,liquibase/liquibase,5263,Java,Use mariadb UUID when specify UUID type (#5274),3.0,Poly-fix,yes,Groovy; YAML,behaviour-bearing,
+B,ansible/ansible,68024,Python,Add description of collections and become_exe keywords (#68055),1.0,Other-fix,no,,,"Only YAML under docs/ counted (no doc-path rule) -> Other-fix, keep no."
+B,elastic/elasticsearch,90799,Java,Clarify watcher action uses PagerDuty API v2 (#90800),3.0,Excluded,no,,,Asciidoc + deleted jpgs only -> Excluded.
+B,apache/airflow,23512,Python,Fix IntegrityError during webserver startup (#27297),2.0,Mono-fix,yes,,,
+B,elastic/elasticsearch,85790,Java,Execute self-reference checks once per pipeline (#85926),4.0,Poly-fix,yes,YAML,test-asset-only,
+B,ansible/ansible,68920,Python,Add support for distinct collection skeleton configuration (#75845),3.0,Poly-fix,yes,YAML,behaviour-bearing,
+B,apache/airflow,31431,Python,Cascade update of taskinstance to TaskMap table (#31445),7.0,Poly-fix,yes,TestData,,"Only secondary is TestData (.sha256, no grammar) -> Poly-fix with empty poly_subtype."
+B,liquibase/liquibase,2074,Java,Merge pull request #2073 from smainz/fix_load_ralative_file,6.0,Poly-fix,yes,Groovy,test-asset-only,
+B,ansible/ansible,80413,Python,Add test support for Python 3.11 on RHEL 8.8/9.2 (#80990),5.0,Poly-fix,no,Shell; YAML,,"Counted YAML + Shell (both test), no Python -> Poly-fix, keep no, subtype empty (not kept)."
+B,apache/dolphinscheduler,5769,Java,"[Improvement][Fix-5769][UI]When we try to delete the existing dag, the console in web browser would shows exception (#5770)",1.0,Mono-fix,no,,,"Only JavaScript counted -> Mono-fix (JavaScript), keep no."
+B,localstack/localstack,7492,Python,add validation for multipart upload order (#7495),5.0,Poly-fix,yes,JSON,behaviour-bearing,spec-patches.json is non-test JSON -> behaviour-bearing.
+B,elastic/elasticsearch,84627,Java,SQL: `RANDOM(<expr>)` always evaluates to `NULL` if `<expr>` is `NULL` (#84632),4.0,Poly-fix,yes,TestData,,"Only secondary is TestData (.sql-spec, no grammar) -> Poly-fix with empty poly_subtype."
+B,ansible/ansible,76316,Python,galaxy: raise error when inaccessible path is specified multiple times (#76318),2.0,Mono-fix,yes,,,
+B,apache/dolphinscheduler,9290,Java,[bug][db] Table relation_project_user have duplicate record (#9536),6.0,Poly-fix,yes,SQL,behaviour-bearing,
+B,liquibase/liquibase,2816,Java,Bump mockito-inline from 4.8.1 to 4.10.0 (#3580),1.0,Other-fix,no,,,"Only pom.xml counted -> Other-fix, keep no."
+B,ansible/ansible,69781,Python,try to load unqualified plugins from whitelist (#70086),5.0,Poly-fix,yes,Shell; YAML,behaviour-bearing,
+B,liquibase/liquibase,2133,Java,Merge pull request #2135 from Saucistophe/handle_slash_delimiter_and_comments,2.0,Poly-fix,yes,Groovy,test-asset-only,
+B,apache/airflow,10438,Python,Fix Breeze failure on MacOS (#10440),2.0,Mono-fix,no,,,"Only Shell counted -> Mono-fix (Shell), keep no."
+B,apache/airflow,25492,Python,Sync up plugin API schema and definition (#25524),4.0,Poly-fix,yes,TypeScript; YAML,behaviour-bearing,

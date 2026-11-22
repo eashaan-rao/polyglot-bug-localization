@@ -371,10 +371,16 @@ grammar, (C2) the project's parser cannot read it, (C3) its files are read by
 programs rather than by people, and (C4) its files are part of the dataset's
 ground truth. 48 primary-anchored bugs are multi-language only through
 languages that fail C1--C3 (e.g.\ plain-text templates) and are left out of
-the class comparisons. The written protocol was checked on a stratified
-sample of 50 bugs, annotated from the protocol alone without access to the
-classifier: \pending{Two-person agreement (Cohen's $\kappa$) and its
-resolution.} Supplement~\ref{app:design} gives the protocol details.
+the class comparisons. Two annotators classified a stratified sample of 50
+bugs (178 fix files) independently, from the written protocol alone and
+without access to the classifier. They agreed on the label, the keep decision,
+the secondary languages and the sub-type of every bug (Cohen's $\kappa=1.00$)
+and on whether 174 of the 178 files count ($\kappa=0.93$; pass criterion
+0.80). The four disagreements were slips by one annotator, who marked
+secondary files as not counted without naming an excluding rule while
+counting them in the bug-level answers; none concerns a primary-language file.
+Both annotators agreed with the frozen ruleset on every bug, so no rule was
+amended (Supplement~\ref{app:design}).
 
 %% -------------------------------------------------------------------
 \subsection{Techniques}\label{sec:techniques}
@@ -980,8 +986,10 @@ Other parser-dependent techniques may degrade differently, but the three we
 ran span four years and three designs and show the same interaction. The
 diagnostic variants are untuned, so their gains are lower bounds of what such
 designs could reach, and the RQ5 comparison on behaviour-bearing secondary
-files rests on 66 bugs, 52 of them from airflow. The 50-bug agreement check of the classification
-\pending{human two-person round; Cohen's $\kappa$}.
+files rests on 66 bugs, 52 of them from airflow. The two-person agreement
+check (Section~\ref{sec:classification}) covers 50 bugs; it shows that the
+rules are applied consistently, not that the boundaries they draw are the
+right ones, which is why prevalence is reported as a range.
 
 %% ===================================================================
 %% 7 CONCLUSION
