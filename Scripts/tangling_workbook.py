@@ -261,9 +261,14 @@ def read(path):
 
 
 def ap_without(ranks, keep):
-    r = np.sort(np.asarray([x for x, k in zip(ranks, keep) if k], float))
-    r = r[np.isfinite(r)]
-    return float(np.sum(np.arange(1, len(r) + 1) / r) / len(r)) if len(r) else np.nan
+    """AP over the kept ground-truth files; a file the technique does not rank
+    (rank NaN/inf) is a miss and stays in the denominator. Ranks are those of the
+    full candidate list: removing a file from the ground truth does not move others."""
+    r = np.asarray([x for x, k in zip(ranks, keep) if k], float)
+    if len(r) == 0:
+        return np.nan
+    hit = np.sort(r[np.isfinite(r)])
+    return float(np.sum(np.arange(1, len(hit) + 1) / hit) / len(r))
 
 
 def cmd_import(a):
@@ -322,8 +327,9 @@ def cmd_import(a):
         per = []
         for (fold, seed, proj, b, cls), h in x.groupby(["fold", "seed", "project", "bug_id", "study_class"]):
             keep = [(proj, b, p) not in unrel for p in h.path]
-            per.append(dict(cls=cls, ap=ap_without(h["rank"], [True] * len(h)), ap_clean=ap_without(h["rank"], keep)))
-        d = pd.DataFrame(per)
+            per.append(dict(fold=fold, project=proj, bug_id=b, cls=cls, ap=ap_without(h["rank"], [True] * len(h)),
+                            ap_clean=ap_without(h["rank"], keep)))
+        d = pd.DataFrame(per).groupby(["fold", "project", "bug_id", "cls"], as_index=False)[["ap", "ap_clean"]].mean()  # seed average
         m = d.groupby("cls")[["ap", "ap_clean"]].mean()
         if {"Mono-fix", "Poly-fix"} <= set(m.index):
             rows.append(dict(technique=f"{tech} ({view})", map_mono=m.at["Mono-fix", "ap"], map_poly=m.at["Poly-fix", "ap"],
