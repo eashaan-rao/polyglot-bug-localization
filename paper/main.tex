@@ -944,14 +944,15 @@ Poly-fix fixes are larger and so more likely to be tangled, and a tangled
 secondary file would both create the class and cause the penalty. Removing
 merge commits (S4) leaves the results unchanged but does not address
 squash-merged pull requests. We therefore audited 48 test bugs (30 Poly-fix,
-18 Mono-fix; 175 fix files) by hand: an annotator (the Master's student) read
+18 Mono-fix; 175 fix files) by hand: the first author read
 each report and each file's diff and judged whether the change belongs to the
 fix. Ten files (5.7\%) are unrelated to the bug, all in Poly-fix bugs (7 of
 30), and about as often primary-language (7.9\%) as secondary-language files
 (6.9\%); one Poly-fix bug would become Mono-fix without them. Removing them
 from the ground truth changes the Poly-fix penalty on the audited bugs little
 (FLIM-strict $-0.141$ to $-0.127$, SweRank $-0.180$ to $-0.170$;
-Supplement~\ref{app:tangling}). The audit was coded by one annotator.
+Supplement~\ref{app:tangling}). The audit was coded by the first author
+alone, who knew the study's hypotheses; no second coder checked it.
 The prevalence depends on the boundary rules and is reported as a range.
 Parseability is measured with one parser per language. The ground truth is
 the change set rather than the fault location; the fault-oriented views (S1,
